@@ -1,2 +1,2 @@
 # webserv_21
-create webserver on C++
+webserver on C++
