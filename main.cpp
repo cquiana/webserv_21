@@ -9,9 +9,11 @@ int main() {
 
 	WebServer server;
 
+
 	server.initServ();
 	server.startServ();
 	server.closeServ();
+
 
 	return 0;
 }

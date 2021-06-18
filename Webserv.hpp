@@ -6,6 +6,7 @@
 #define WEBSERV__HPP
 
 #include <iostream>
+#include <fstream>
 #include <unistd.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -24,10 +25,15 @@ public:
 	void startServ();
 	void closeServ();
 	WebServer();
+//	std::string _res;
+
+	std::string createResponse();
+
 private:
 
 	int _sock; // listening socket;
 	struct sockaddr_in _addr; // _sock addr
+
 
 //	WebServer();
 	WebServer(WebServer const &);
