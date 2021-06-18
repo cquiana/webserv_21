@@ -7,11 +7,11 @@
 
 int main() {
 
-	WebServer &server = WebServer::Instance();
+	WebServer server;
 
-	server.setup();
-	server.run();
-	server.finish();
+	server.initServ();
+	server.startServ();
+	server.closeServ();
 
 	return 0;
 }

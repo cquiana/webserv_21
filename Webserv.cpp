@@ -4,55 +4,61 @@
 
 #include "Webserv.hpp"
 
-WebServer & WebServer::Instance() {
-	static WebServer theSingleInstance;
-	return theSingleInstance;
-}
+void WebServer::initServ() {
 
-void WebServer::setup() {
-
-	ls = socket(AF_INET, SOCK_STREAM, 0);
-	if (ls == -1) {
-		std::cerr << "WebSocket.setup(): socket error" << std::endl;
+	_sock = socket(AF_INET, SOCK_STREAM, 0);
+	if (_sock < 0) {
+		std::cerr << "socket error" << std::endl;
 		//TODO: решить, что делать при ошибке
 	}
 
-	/*
-	 * Для избежания залипания порта.
-	 * TODO: Решить, стоит ли оставлять в готовой программе
-	 */
+	// залипание порта
 	int opt = 1;
-	setsockopt(ls, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
+	setsockopt(_sock, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
 
-	struct sockaddr_in addr;
-	addr.sin_family = AF_INET;
-	addr.sin_port = htons(PORT);
-	addr.sin_addr.s_addr = inet_addr(IP);
-	if (addr.sin_addr.s_addr == INADDR_NONE) {
-		std::cerr << "WebSocket.setup(): inet_addr error" << std::endl;
+	struct sockaddr_in _addr;
+	_addr.sin_family = AF_INET; // for IPv4
+	_addr.sin_port = htons(PORT); //  host to network (short)
+	_addr.sin_addr.s_addr = inet_addr(IP); // our IP
+	// если не получилось с адресом
+	if (_addr.sin_addr.s_addr == INADDR_NONE) {
+		std::cerr << "inet_addr error" << std::endl;
 		//TODO: решить, что делать при ошибке
 	}
-	if (bind(ls, ( sockaddr*)&addr, sizeof(addr)) == -1) {
-		std::cerr << "WebSocket.setup(): bind error" << std::endl;
+	if (bind(_sock, ( sockaddr*)&_addr, sizeof(_addr)) == -1) {
+		std::cerr << "bind error" << std::endl;
 		//TODO: решить, что делать при ошибке
 	}
-	if (listen(ls, QLEN) == -1) {
-		std::cerr << "WebSocket.setup(): listen error" << std::endl;
+	if (listen(_sock, QLEN) == -1) {
+		std::cerr << "listen error" << std::endl;
 		//TODO: решить, что делать при ошибке
 	}
 }
 
-void WebServer::run() {
-	//TODO: Реализовать функционал.
-	int cls;
-	socklen_t slen = sizeof(addr);
-	cls = accept(ls, (sockaddr*)&addr, &slen);
-	write(cls, "HTTP/1.1 200 OK\n", 16);
-	close(cls);
+void WebServer::startServ() {
+	int new_sock;
+	socklen_t sock_len = sizeof(_addr);
+	// TODO: получить запрос
+	while (1) {
+		new_sock = accept(_sock, (sockaddr*)&_addr, &sock_len);
+		if (new_sock < 0)
+			std::cerr << "accept error!" << std::endl;
+		char read_buf[1024] = {0};
+		int was_red = recv(new_sock, read_buf, 1024, 0);
+//	std::cout << "request: " << read_buf << std::endl;
+//		if (was_red < 0)
+//			std::cout << "Nothing to read! " << std::endl;
+		std::string hello = "HTTP/1.1 200 OK\nContent-Type: text/plain\nContent-Length: 12\n\nHello world!";
+//	write(new_sock , hello , strlen(hello));
+		send(new_sock, hello.c_str(), hello.size(), 0);
+//		std::cout << "Waiting new connection!" << std::endl;
+		close(new_sock);
+	}
+
 }
 
-void WebServer::finish() {
-	close(ls);
+void WebServer::closeServ() {
+	close(_sock);
 }
 
 WebServer::WebServer() {}
