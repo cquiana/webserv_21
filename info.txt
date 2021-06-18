@@ -13,3 +13,195 @@
 
 
 http://www.4stud.info/web-programming/cgi.html
+
+
+Here's a pot pourri of ideas for those days when we got no idea what to do:
+        - handle authentication encoding/hashing, dehashing and checking
+(OK?)   - add fcntl(fd, F_SETFL, O_NONBLOCK) here and there to our fds before we handle them.
+            I also think we'll have to add select every fcking where before reads.
+
+
+RFC REQUIREMENTS:
+
+    ****************
+******* RFC 7230 *** >>> MESSAGE SYNTAX & ROUTING ********************************************
+    ****************
+
+    Request Line (the first header line):
+OK      - invalid request-line SHOULD respond with a 400 (Bad Request) error
+OK      - bad method (unknown/too long) -> server SHOULD respond with a 501 (Not Implemented)
+OK      - if a request-target is longer than any URI it wishes to parse MUST respond with a
+            414 (URI Too Long) ->>> It is RECOMMENDED that all HTTP senders and recipients
+            support, at a minimum, request-line lengths of 8000 octets BUT a URI should be
+            limited to around 2000 octets.
+    Security:
+        - For security reasons, we need to limit the accepted size everything, including (but
+            not limited to) request methods, response status phrases, header field-names, numeric
+            values, and body chunks.
+
+    Headers:
+OK      - recipients SHOULD ignore unrecognized header fields
+OK      - if we find multiple header fields with the same name: we add the value to the preexisting key
+OK      - A server MUST reject any received request message that contains whitespace between a
+            header field-name and colon with a response code of 400 (Bad Request)
+OK      - A server MUST respond with a 400 (Bad Request) status code to any HTTP/1.1 request
+            message that lacks a Host header field and to any request message that contains more
+            than one Host header field or a Host header field with an invalid field-value.
+
+    Transfer-Encoding:
+OK      - A server that receives a request message with a transfer coding it does not understand
+            SHOULD respond with 501 (Not Implemented). (We should only handle "chunked")
+OK      - Pour les chunked, le format est : chunk-body, suivi de CRLF, puis chunk-size, puis
+            potentiellement le trailer (les especes de header du chunk sous forme key=value.)
+
+    Content-Length:
+        - Dans le ResponseHeader qu'on renvoie, il faut qu'il y ait un Content-Length. Dans ce qu'on
+            recoit, il faut qu'on check si il y a Transfer-Encoding: chunked, auquel cas on read jusqu'a
+            ce que soit indiqué dans le chunk lu que chunk-size = 0; sinon on lit un body de taille
+            Content-Length)
+OK      - Si Content-Length contient plusieurs values ->>> on rejette le message comme invalide
+OK      - if number of octets read in the body < Content-Length, the recipient MUST consider the
+            message to be incomplete and close the connection.
+OK      - if theres a body but no content-length, we MAY respond with the error 411 (Length Required).
+
+    Delimiteurs - les CRLF:
+OK      - en effet ce ne sont pas de simples \n: la premiere ligne du header (request ou response)
+            se finit par un CRLF. Le CRLF est représenté par \r\n. \r correspond à CR (Carriage
+            Return) et \n (pour "new line", « nouvelle ligne ») correspond à LF (Line Feed).
+
+    Random:
+OK?     - HTTP/1.1 defaults to the use of "persistent connections", allowing multiple requests
+            and responses to be carried over a single connection.
+
+
+    ****************
+******* RFC 7231 *** >>> SEMANTICS & CONTENT *************************************************
+    ****************
+
+    Methods: HEAD, GET & POST
+        - All general-purpose servers MUST support the methods GET and HEAD. All other
+            methods are OPTIONAL. (BUT 42 tester asks for POST and maybe others. We can still
+            start with these three and adjust after testing.)
+        - If the request method is GET or HEAD and the response status code
+            is 200 (OK), 204 (No Content), 206 (Partial Content), or 304 (Not
+            Modified), the payload is a representation of the resource
+            identified by the effective request URI. (The HEAD method is identical to GET
+            except that the server MUST NOT send a message body in the response (i.e., the
+            response terminates at the end of the header section)
+        - If one or more resources has been created on the origin server as a
+            result of successfully processing a POST request, the origin server
+            SHOULD send a 201 (Created) response containing a Location header
+            field that provides an identifier for the primary resource created
+            (Section 7.1.2) and a representation that describes the status of the
+            request while referring to the new resource(s).
+
+            Just a nice methods table:
+                +---------+-------------------------------------------------+-------+
+                | Method  | Description                                     | Sec.  |
+                +---------+-------------------------------------------------+-------+
+                | GET     | Transfer a current representation of the target | 4.3.1 |
+                |         | resource.                                       |       |
+                | HEAD    | Same as GET, but only transfer the status line  | 4.3.2 |
+                |         | and header section.                             |       |
+                | POST    | Perform resource-specific processing on the     | 4.3.3 |
+                |         | request payload.                                |       |
+                | PUT     | Replace all current representations of the      | 4.3.4 |
+                |         | target resource with the request payload.       |       |
+                | DELETE  | Remove all current representations of the       | 4.3.5 |
+                |         | target resource.                                |       |
+                | CONNECT | Establish a tunnel to the server identified by  | 4.3.6 |
+                |         | the target resource.                            |       |
+                | OPTIONS | Describe the communication options for the      | 4.3.7 |
+                |         | target resource.                                |       |
+                | TRACE   | Perform a message loop-back test along the path | 4.3.8 |
+                |         | to the target resource.                         |       |
+                +---------+-------------------------------------------------+-------+
+
+    Content-type header:
+OK      - If a Content-Type header field is not present, the recipient MAY either assume a
+            media type of "application/octet-stream"
+
+    About how we don't care about negociation:
+        - If no Content-Language is specified, the default is that the content is intended
+            for all language audiences.  This might mean that the sender does not consider it
+            to be specific to any natural language, or that the sender does not know for which
+            language it is intended.
+
+    Error codes:
+        - List of error codes : RFC7231 p.48
+
+    Security:
+        - Reject ".." pathnames to avoid disclosure of files outside the server bounds
+
+    Date header
+        - Date format is IMF-fixdate standard: Sun, 06 Nov 1994 08:49:37 GMT
+            HTTP-date is case sensitive.  A sender MUST NOT generate additional
+            whitespace in an HTTP-date beyond that specifically included as SP in
+            the grammar.
+
+    I DONT UNDERSTAND WHAT THIS MEANS NOR IF WE SHOULD CARE:
+        - a recipient MUST be able to parse, line breaks in text media that consist of
+            CRLF, bare CR, or bare LF.  In addition, text media in HTTP is not limited to
+            charsets that use octets 13 and 10 for CR and LF, respectively.
+
+    ****************
+******* RFC 7232 *** >>> CONDITIONAL REQUESTS ************************************************
+    ****************
+    Last-modified:
+        -  An origin server SHOULD send Last-Modified for any selected
+            representation for which a last modification date can be reasonably
+            and consistently determined
+        - An origin server with a clock MUST NOT send a Last-Modified date that
+             is later than the server's time of message origination (Date). (DUH! can modify
+             stuff in the future, Marty)
+        - In 200 (OK) responses to GET or HEAD, an origin server
+            SHOULD send a Last-Modified value if it is feasible to send one.
+
+    ****************
+******* RFC 7233 *** >>> RANGE REQUESTS *******************************************************
+    ****************
+
+    "Range requests are an OPTIONAL feature of HTTP."
+    Bye-bye, range requests! We won't miss u!
+
+    ****************
+******* RFC 7234 *** >>> RANGE REQUESTS *******************************************************
+    ****************
+
+    "Any client or server MAY employ a cache"
+    "The goal of caching in HTTP/1.1 is to significantly improve
+   performance by reusing a prior response message to satisfy a current
+   request."
+   We're unambitious, and we are very satisfied with our average performance already.
+   No caching for SweatZers!
+
+    ****************
+******* RFC 7235 *** >>> AUTHENTICATION *******************************************************
+    ****************
+
+    Auth Challenge rules:
+    - a server challenges a client request, for the
+        client provide authentication information
+    - A 401 (Unauthorized) response message is used by an origin server to
+        challenge the authorization of a user agent, and it MUST include a
+        WWW-Authenticate header field containing at least one challenge
+        applicable to the requested resource.
+    - Authentication parameters are name=value pairs, where the name token
+        is matched case-insensitively, and each parameter name MUST only
+        occur once per challenge.
+    - Authorization field value field contains the client's credentials for the
+        realm of the resource being requested
+    - If we receive a request for a protected ressource with bad or missing credentials,
+        we SHOULD send 401 (Unauthorized) response that contains a
+        WWW-Authenticate header field with at least one (possibly new) challenge
+        applicable to the requested resource.
+    - A server that receives valid credentials that are not adequate to
+        gain access ought to respond with the 403 (Forbidden) status code
+
+    Header WWW-Authenticate:
+    - Contains the challenge (? not sure what they mean nor its format)
+        ex: WWW-Authenticate: Newauth realm="apps", type=1,
+                       title="Login to \"apps\"", Basic realm="simple"
+
+    Header Authorization:
+    - Is sent by the client. Contains credentials (username=password)
