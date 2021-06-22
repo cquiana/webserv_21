@@ -65,7 +65,8 @@ void WebServer::startServ() {
 		if (new_sock < 0)
 			std::cerr << "accept error!" << std::endl;
 		FD_SET(new_sock, &rfd);
-		max_fd = new_sock;
+		if (max_fd < new_sock)
+			max_fd = new_sock;
 		// std::cout << max_fd << std::endl;
 		int mx = select(max_fd + 1, &rfd, NULL, NULL, &timeout);
 		// решить что делать по истечении таймаута
