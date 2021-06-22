@@ -11,6 +11,7 @@ void WebServer::initServ() {
 		std::cerr << "socket error" << std::endl;
 		//TODO: решить, что делать при ошибке
 	}
+	std::cout << _sock << std::endl;
 
 	// залипание порта
 	int opt = 1;
@@ -33,29 +34,53 @@ void WebServer::initServ() {
 		std::cerr << "listen error" << std::endl;
 		//TODO: решить, что делать при ошибке
 	}
+	//  fcntl(fd, F_SETFL, O_NONBLOCK);
 }
 
 void WebServer::startServ() {
 	int new_sock;
 	socklen_t sock_len = sizeof(_addr);
+	struct timeval timeout;
+	timeout.tv_sec = 10;
+	timeout.tv_usec = 0;
+	fd_set rfd;
+
+	// TODO: решить в какой форме хоранить дескрипторы set, list, vector
+
 	// TODO: получить запрос
 	while (1) {
+		FD_ZERO(&rfd);
+		int max_fd = _sock;
+
 		new_sock = accept(_sock, (sockaddr*)&_addr, &sock_len);
 		if (new_sock < 0)
 			std::cerr << "accept error!" << std::endl;
+		FD_SET(new_sock, &rfd);
+		max_fd = new_sock;
+		std::cout << max_fd << std::endl;
+		fcntl(new_sock, F_SETFL, O_NONBLOCK);
 		char read_buf[1024] = {0};
-		int was_red = recv(new_sock, read_buf, 1024, 0);
+		int mx = select(max_fd + 1, &rfd, NULL, NULL, &timeout);
+		if (mx < 0)
+			std::cerr << "select error!" << std::endl;
+
+		if (FD_ISSET(new_sock, &rfd)){
+			int was_red = recv(new_sock, read_buf, 1024, 0);
+			if (was_red <= 0) {
+				std::cout << "Nothing to read! " << std::endl;
+				close(new_sock);
+				continue;
+			}
+			std::string hello = "HTTP/1.1 200 OK\nContent-Type: text/plain\nContent-Length: 12\n\nHello world!";
+			send(new_sock, hello.c_str(), hello.size(), 0);
+		}
+
+
+		// std::cout << new_sock << std::endl;
 //	std::cout << "request: " << read_buf << std::endl;
-//		if (was_red < 0)
-//			std::cout << "Nothing to read! " << std::endl;
-		std::string res = createResponse();
-//		std::cout << res;
-		std::string hello = "HTTP/1.1 200 OK\nContent-Type: text/plain\nContent-Length: 1200\n\n";
-		hello.append(res);
 //	write(new_sock , hello , strlen(hello));
-		send(new_sock, hello.c_str(), hello.size(), 0);
 //		std::cout << "Waiting new connection!" << std::endl;
-		close(new_sock);
+		// close(new_sock);
 	}
 
 }

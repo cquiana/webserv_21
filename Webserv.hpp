@@ -9,10 +9,15 @@
 #include <fstream>
 #include <unistd.h>
 #include <sys/socket.h>
+#include <sys/time.h>
+#include <sys/types.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <string.h>
 #include <string>
+#include <fcntl.h>
+#include <map>
+#include <vector>
 
 
 #define PORT 1234
