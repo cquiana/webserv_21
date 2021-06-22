@@ -6,9 +6,11 @@ private:
 
 public:
     std::string _protocol;
-    int _status;
     std::string _statusText;
     std::string _header;
+    std::string _mymeType;
+    int _status;
+    unsigned int _lenght;
 
     Responce(/* args */);
 

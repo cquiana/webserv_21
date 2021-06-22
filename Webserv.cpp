@@ -11,7 +11,8 @@ void WebServer::initServ() {
 		std::cerr << "socket error" << std::endl;
 		//TODO: решить, что делать при ошибке
 	}
-	std::cout << _sock << std::endl;
+	// fcntl(_sock, F_SETFL, O_NONBLOCK);
+	// std::cout << _sock << std::endl;
 
 	// залипание порта
 	int opt = 1;
@@ -34,46 +35,61 @@ void WebServer::initServ() {
 		std::cerr << "listen error" << std::endl;
 		//TODO: решить, что делать при ошибке
 	}
-	//  fcntl(fd, F_SETFL, O_NONBLOCK);
 }
 
 void WebServer::startServ() {
 	int new_sock;
 	socklen_t sock_len = sizeof(_addr);
-	struct timeval timeout;
-	timeout.tv_sec = 10;
-	timeout.tv_usec = 0;
-	fd_set rfd;
 
 	// TODO: решить в какой форме хоранить дескрипторы set, list, vector
 
 	// TODO: получить запрос
+
+	std::set<int> clients;
+	clients.clear();
+
+
 	while (1) {
+
+		// заполняем множество сокетов
+		fd_set rfd;
+		// FD_SET(_sock, &rfd);
 		FD_ZERO(&rfd);
+
 		int max_fd = _sock;
+		struct timeval timeout;
+		timeout.tv_sec = 10;
+		timeout.tv_usec = 0;
 
 		new_sock = accept(_sock, (sockaddr*)&_addr, &sock_len);
 		if (new_sock < 0)
 			std::cerr << "accept error!" << std::endl;
 		FD_SET(new_sock, &rfd);
 		max_fd = new_sock;
-		std::cout << max_fd << std::endl;
-		fcntl(new_sock, F_SETFL, O_NONBLOCK);
-		char read_buf[1024] = {0};
+		// std::cout << max_fd << std::endl;
 		int mx = select(max_fd + 1, &rfd, NULL, NULL, &timeout);
+		// решить что делать по истечении таймаута
+
 		if (mx < 0)
 			std::cerr << "select error!" << std::endl;
+		fcntl(new_sock, F_SETFL, O_NONBLOCK);
+		clients.insert(new_sock);
+		char read_buf[1024] = {0};
 
-		if (FD_ISSET(new_sock, &rfd)){
-			int was_red = recv(new_sock, read_buf, 1024, 0);
-			if (was_red <= 0) {
-				std::cout << "Nothing to read! " << std::endl;
-				close(new_sock);
-				continue;
+		for (std::set<int>::iterator it = clients.begin(); it != clients.end(); ++it) {
+
+			if (FD_ISSET(*it, &rfd)){
+				int was_red = recv(*it, read_buf, 1024, 0);
+				if (was_red <= 0) {
+					std::cout << "Nothing to read! " << std::endl;
+					close(*it);
+					continue;
+				}
+				std::string hello = "HTTP/1.1 200 OK\nContent-Type: text/plain\nContent-Length: 12\n\nHello world!";
+				send(new_sock, hello.c_str(), hello.size(), 0);
 			}
-			std::string hello = "HTTP/1.1 200 OK\nContent-Type: text/plain\nContent-Length: 12\n\nHello world!";
-			send(new_sock, hello.c_str(), hello.size(), 0);
 		}
+	// 		FD_SET(*it, &rfd);
 
 
 		// std::cout << new_sock << std::endl;
