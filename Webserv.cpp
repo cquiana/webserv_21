@@ -11,8 +11,8 @@ void WebServer::initServ() {
 		std::cerr << "socket error" << std::endl;
 		//TODO: решить, что делать при ошибке
 	}
-	// fcntl(_sock, F_SETFL, O_NONBLOCK);
-	// std::cout << _sock << std::endl;
+	fcntl(_sock, F_SETFL, O_NONBLOCK);
+	std::cout << _sock << std::endl;
 
 	// залипание порта
 	int opt = 1;
@@ -27,7 +27,7 @@ void WebServer::initServ() {
 		std::cerr << "inet_addr error" << std::endl;
 		//TODO: решить, что делать при ошибке
 	}
-	if (bind(_sock, ( sockaddr*)&_addr, sizeof(_addr)) == -1) {
+	if (bind(_sock, (struct sockaddr*)&_addr, sizeof(_addr)) == -1) {
 		std::cerr << "bind error" << std::endl;
 		//TODO: решить, что делать при ошибке
 	}
@@ -53,29 +53,38 @@ void WebServer::startServ() {
 
 		// заполняем множество сокетов
 		fd_set rfd;
-		// FD_SET(_sock, &rfd);
 		FD_ZERO(&rfd);
+		FD_SET(_sock, &rfd);
+
+		for (std::set<int>::iterator it = clients.begin(); it != clients.end(); ++it) {
+			FD_SET(*it, &rfd);
+		}
 
 		int max_fd = _sock;
 		struct timeval timeout;
 		timeout.tv_sec = 10;
 		timeout.tv_usec = 0;
 
-		new_sock = accept(_sock, (sockaddr*)&_addr, &sock_len);
-		if (new_sock < 0)
-			std::cerr << "accept error!" << std::endl;
-		FD_SET(new_sock, &rfd);
-		if (max_fd < new_sock)
-			max_fd = new_sock;
-		// std::cout << max_fd << std::endl;
 		int mx = select(max_fd + 1, &rfd, NULL, NULL, &timeout);
-		// решить что делать по истечении таймаута
-
 		if (mx < 0)
 			std::cerr << "select error!" << std::endl;
-		fcntl(new_sock, F_SETFL, O_NONBLOCK);
-		clients.insert(new_sock);
+		if (FD_ISSET(_sock, &rfd)) {
+			new_sock = accept(_sock, (sockaddr*)&_addr, &sock_len);
+			std::cout << new_sock << std::endl;
+			if (new_sock < 0)
+				std::cerr << "accept error!" << std::endl;
+			FD_SET(new_sock, &rfd);
+			if (max_fd < new_sock)
+				max_fd = new_sock;
+			// std::cout << max_fd << std::endl;
+			// решить что делать по истечении таймаута
+
+			fcntl(new_sock, F_SETFL, O_NONBLOCK);
+			clients.insert(new_sock);
+		}
 		char read_buf[1024] = {0};
+				// std::string body = createResponse();
+				// std::cout << body;
 
 		for (std::set<int>::iterator it = clients.begin(); it != clients.end(); ++it) {
 
@@ -91,9 +100,7 @@ void WebServer::startServ() {
 			}
 		}
 	// 		FD_SET(*it, &rfd);
-
-
-		// std::cout << new_sock << std::endl;
+// std::cout << new_sock << std::endl;
 //	std::cout << "request: " << read_buf << std::endl;
 //	write(new_sock , hello , strlen(hello));
 //		std::cout << "Waiting new connection!" << std::endl;
@@ -111,8 +118,9 @@ std::string WebServer::createResponse() {
 			res.append(tmp);
 		}
 	}
+	std::cout << "you are here\n";
 	is.close();
-//	std::cout << res;
+	// std::cout << res;
 	return res;
 }
 
