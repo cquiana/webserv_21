@@ -12,11 +12,11 @@
 #include "Location_config.hpp"
 #include "Http_config.hpp"
 
-std::string parseConfig(std::string in_string)
-{
-	std::size_t found_pattern = -1;
-	if ()
-}
+//std::string parseConfig(std::string in_string)
+//{
+//	std::size_t found_pattern = -1;
+//	if ()
+//}
 
 int main()
 {

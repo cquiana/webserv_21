@@ -7,6 +7,7 @@
 
 #include <string>
 #include <vector>
+#include <iostream>
 #include "Location_config.hpp"
 
 class Server_config
@@ -17,16 +18,15 @@ private:
 	std::string _root;
 	std::string _index;
 	int _autoindex;
-	std::vector<Location_config*> _locations;
+	std::vector<Location_config> _locations;
 	int _return_code;
 	std::string _return_adress;
-
-	Server_config(Server_config const &another);
-	Server_config &operator=(Server_config const &another);
 
 public:
 	Server_config();
 	~Server_config();
+	Server_config(Server_config const &another);
+	Server_config &operator=(Server_config const &another);
 
 	bool havePort() const;
 	bool haveName() const;
@@ -35,6 +35,7 @@ public:
 	bool haveAutoindex() const;
 	bool haveLocation() const;
 	bool haveReturnCode() const;
+    bool blockedReturnCode() const;
 
 	int getPort() const;
 	std::string getName() const;
@@ -44,7 +45,7 @@ public:
 	int getReturnCode() const;
 	std::string getReturnArdess() const;
 
-	std::string getRootByLocation(std::string type) const;
+	std::string getRootByLocation(std::string type,std::string loc) const;
 
 	void setPort(int port);
 	void setName(std::string name);
@@ -53,24 +54,31 @@ public:
 	void setAutoindex(int autoindex);
 	void setReturnCode(int return_code, std::string return_adress);
 
-	void setLocation();
+	void addLocation(std::string location_path, std::vector<std::string> types);
+	void checkLastLocation();
 
-	class PortAlraedySetException: public std::exception {
+	class PortAlraedySetException:			public std::exception {
 		virtual const char *what() const throw() ;
 	};
-	class NameAlraedySetException: public std::exception {
+	class NameAlraedySetException:			public std::exception {
 		virtual const char *what() const throw() ;
 	};
-	class RootAlraedySetException: public std::exception {
+	class RootAlraedySetException:			public std::exception {
 		virtual const char *what() const throw() ;
 	};
-	class IndexAlraedySetException: public std::exception {
+	class IndexAlraedySetException:			public std::exception {
 		virtual const char *what() const throw() ;
 	};
-	class AutoindexAlraedySetException: public std::exception {
+	class AutoindexAlraedySetException:		public std::exception {
 		virtual const char *what() const throw() ;
 	};
-	class ReturnCodeAlraedySetException: public std::exception {
+	class ReturnCodeAlraedySetException:	public std::exception {
+		virtual const char *what() const throw() ;
+	};
+    class BlockedReturnCodeException:		public std::exception {
+        virtual const char *what() const throw() ;
+    };
+	class SizeLocationsException:			public std::exception {
 		virtual const char *what() const throw() ;
 	};
 //	class CodePageNumberAlraedySetException: public std::exception {

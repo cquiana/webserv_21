@@ -16,7 +16,6 @@ private:
 	std::vector<int> _error_page_ints;
 	std::vector<std::string> _error_page_strings;
 	std::vector<Server_config> _servers;
-	std::vector<std::string> _servers_names;
 
 	Http_config(Http_config const &another);
 	Http_config &operator=(Http_config const &another);
@@ -33,25 +32,33 @@ public:
 
 	std::string getErrorPage(int page) const;
 	int getMaxBody() const;
-	Server_config* getServer(std::string servers_name) const;
+	Server_config getServer(std::string servers_name) const;
 
 	void setErrorPage(int error_page_int, std::string error_page_string);
 	void setMaxBody(int max_body);
-	//int setServer(std::string servers_name, Server_config serverConfig);
 
-	class PageAlreadySetException: public std::exception {
+	void addServer();
+	void checkLastServeer();
+
+	class PageAlreadySetException:			public std::exception {
 		virtual const char *what() const throw() ;
 	};
-	class MaxBodyAlreadySetException: public std::exception {
+	class MaxBodyAlreadySetException:		public std::exception {
 		virtual const char *what() const throw() ;
 	};
-	class ServerExistException: public std::exception {
+	class ServerExistException:				public std::exception {
 		virtual const char *what() const throw() ;
 	};
-	class ErrorPageNotExistException: public std::exception {
+	class ErrorPageNotExistException:		public std::exception {
 		virtual const char *what() const throw() ;
 	};
-	class ErrorPageAlreadyExistException: public std::exception {
+	class ErrorPageAlreadyExistException:	public std::exception {
+		virtual const char *what() const throw() ;
+	};
+	class ServerNotFoundException:			public std::exception {
+		virtual const char *what() const throw() ;
+	};
+	class SizeServersException:				public std::exception {
 		virtual const char *what() const throw() ;
 	};
 };

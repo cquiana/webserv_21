@@ -13,39 +13,43 @@ class Location_config
 {
 private:
 	Location_config();
-	Location_config(Location_config const &another);
-	Location_config &operator=(Location_config const &another);
+	std::string _location_path;
 	std::vector<std::string> _types;
-	std::string _fastcgi_pass;
+	std::string _cgi_path;
 	std::string _root;
 	int _methods;
+	bool _some;
 
 public:
 	~Location_config();
-	Location_config(std::vector<std::string> types, std::string fastcgi_pass, std::string root, int methods);
+	Location_config(std::string location_path, std::vector<std::string> types);
+	Location_config(Location_config const &another);
+	Location_config &operator=(Location_config const &another);
 
 	bool isType(std::string type) const;
 
 	bool haveRoot() const;
-	bool haveFastCgi() const;
+	bool haveCgiPath() const;
 	bool methodsNull() const;
+	bool haveType(std::string type) const;
 
 	std::vector<std::string> getTypes() const;
+	std::string getLocationPath() const;
 	std::string getRoot() const;
-	std::string getFastCgi() const;
+	std::string getCgiPath() const;
 	int getMethods() const;
 
 	void setRoot(std::string root);
-	void setFastCgi(std::string fastcgi_pass);
+	void setCgiPath(std::string fastcgi_pass);
 	void setMethods(int methods);
 
-	class RootAlraedySetException: public std::exception {
+	class RootAlraedySetException:			public std::exception {
 		virtual const char *what() const throw() ;
 	};
-	class FastCgiAlraedySetException: public std::exception {
+	class CgiPathAlraedySetException:		public std::exception {
 		virtual const char *what() const throw() ;
 	};
-	class MethodsAlraedySetException: public std::exception {
+	class MethodsAlraedySetException:		public std::exception {
 		virtual const char *what() const throw() ;
 	};
 };

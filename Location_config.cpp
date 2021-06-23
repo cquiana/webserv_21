@@ -6,8 +6,21 @@
 
 Location_config::~Location_config() {}
 
-Location_config::Location_config(std::vector<std::string> types, std::string fastcgi_pass, std::string root, int methods) :
-		_types(types), _fastcgi_pass(""), _root(""), _methods(0) {}
+Location_config::Location_config(std::string location_path, std::vector<std::string> types) :
+		_location_path(location_path), _types(types), _cgi_path(""), _root(""), _methods(0), _some(false) {}
+
+Location_config::Location_config(Location_config const &another) :
+	_location_path(another._location_path), _types(another._types), _cgi_path(another._cgi_path), _root(another._root), _methods(another._methods), _some(another._some) {}
+
+Location_config& Location_config::operator=(Location_config const &another) {
+	_location_path = another._location_path;
+	_types = another._types;
+	_cgi_path = another._cgi_path;
+	_root = another._root;
+	_methods =another._methods;
+	_some = another._some;
+	return *this;
+}
 
 bool Location_config::isType(std::string type) const {
 	if (std::find(_types.begin(), _types.end(), type) != _types.end())
@@ -20,28 +33,38 @@ bool Location_config::haveRoot() const {
 	return (!(_root.empty()));
 }
 
-bool Location_config::haveFastCgi() const {
-	return (!(_fastcgi_pass.empty()));
+bool Location_config::haveCgiPath() const {
+	return (!(_cgi_path.empty()));
 }
 
-bool Location_config::methodsNull() const
-{
+bool Location_config::methodsNull() const {
 	if (_methods != 0)
 		return false;
 	else
 		return true;
 }
 
+bool Location_config::haveType(std::string type) const {
+	if (std::find(_types.begin(), _types.end(), type) != _types.end())
+		return true;
+	else
+		return false;
+}
+
 std::vector<std::string> Location_config::getTypes() const {
 	return _types;
+}
+
+std::string Location_config::getLocationPath() const{
+	return _location_path;
 }
 
 std::string Location_config::getRoot() const{
 	return _root;
 }
 
-std::string Location_config::getFastCgi() const{
-	return _fastcgi_pass;
+std::string Location_config::getCgiPath() const{
+	return _cgi_path;
 }
 
 int Location_config::getMethods() const{
@@ -51,29 +74,29 @@ int Location_config::getMethods() const{
 void Location_config::setRoot(std::string root){
 	if (haveRoot())
 		throw Location_config::RootAlraedySetException();
-	else
-		_root = root;
+	_root = root;
+	_some = true;
 }
 
-void Location_config::setFastCgi(std::string fastcgi_pass) {
-	if (haveFastCgi())
-		throw Location_config::FastCgiAlraedySetException();
-	else
-		_fastcgi_pass = fastcgi_pass;
+void Location_config::setCgiPath(std::string cgi_path) {
+	if (haveCgiPath())
+		throw Location_config::CgiPathAlraedySetException();
+	_cgi_path = cgi_path;
+	_some = true;
 }
 
 void Location_config::setMethods(int methods) {
 	if (methodsNull())
 		throw Location_config::MethodsAlraedySetException();
-	else
-		_methods = methods;
+	_methods = methods;
+	_some = true;
 }
 
 const char *Location_config::RootAlraedySetException::what() const throw() {
 	return ("EXCEPTION! Root Alraedy Set in this Location...");
 };
 
-const char *Location_config::FastCgiAlraedySetException::what() const throw() {
+const char *Location_config::CgiPathAlraedySetException::what() const throw() {
 	return ("EXCEPTION! FastCgi Alraedy Set in this Location...");
 };
 
