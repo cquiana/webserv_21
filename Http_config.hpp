@@ -18,11 +18,12 @@ private:
 	std::vector<Server_config> _servers;
 	std::vector<std::string> _servers_names;
 
+	Http_config(Http_config const &another);
+	Http_config &operator=(Http_config const &another);
+
 public:
 	Http_config();
 	~Http_config();
-	Http_config(Http_config const &another);
-	Http_config &operator=(Http_config const &another);
 
 	bool haveErrorPage(int page) const;
 	bool haveMaxBody() const;
@@ -34,8 +35,8 @@ public:
 	int getMaxBody() const;
 	Server_config* getServer(std::string servers_name) const;
 
-	int setErrorPage(int error_page_int, std::string error_page_string);
-	int setMaxBody(int max_body);
+	void setErrorPage(int error_page_int, std::string error_page_string);
+	void setMaxBody(int max_body);
 	//int setServer(std::string servers_name, Server_config serverConfig);
 
 	class PageAlreadySetException: public std::exception {
@@ -45,6 +46,12 @@ public:
 		virtual const char *what() const throw() ;
 	};
 	class ServerExistException: public std::exception {
+		virtual const char *what() const throw() ;
+	};
+	class ErrorPageNotExistException: public std::exception {
+		virtual const char *what() const throw() ;
+	};
+	class ErrorPageAlreadyExistException: public std::exception {
 		virtual const char *what() const throw() ;
 	};
 };
