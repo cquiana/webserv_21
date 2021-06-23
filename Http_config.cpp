@@ -78,21 +78,21 @@ void Http_config::setMaxBody(int max_body) {
 
 
 const char *Http_config::PageAlreadySetException::what() const throw() {
-	return ("EXCEPTION! Page Alraedy Set in this server...");
+	return ("EXCEPTION! Page Alraedy Set in this http...");
 };
 
 const char *Http_config::MaxBodyAlreadySetException::what() const throw() {
-	return ("EXCEPTION! Max Body Alraedy Set in this server...");
+	return ("EXCEPTION! Max Body Alraedy Set in this http...");
 };
 
 const char *Http_config::ServerExistException::what() const throw() {
-	return ("EXCEPTION! Server Alraedy Set in this server...");
+	return ("EXCEPTION! Server Alraedy Set in this http...");
 };
 
 const char *Http_config::ErrorPageNotExistException::what() const throw() {
-	return ("EXCEPTION! Error Page Not Exist in this server...");
+	return ("EXCEPTION! Error Page Not Exist in this http...");
 };
 
 const char *Http_config::ErrorPageAlreadyExistException::what() const throw() {
-	return ("EXCEPTION! Error Page Alraedy Set in this server...");
+	return ("EXCEPTION! Error Page Alraedy Set in this http...");
 };

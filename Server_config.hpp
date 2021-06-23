@@ -21,11 +21,12 @@ private:
 	int _return_code;
 	std::string _return_adress;
 
+	Server_config(Server_config const &another);
+	Server_config &operator=(Server_config const &another);
+
 public:
 	Server_config();
 	~Server_config();
-	Server_config(Server_config const &another);
-	Server_config &operator=(Server_config const &another);
 
 	bool havePort() const;
 	bool haveName() const;
@@ -45,13 +46,14 @@ public:
 
 	std::string getRootByLocation(std::string type) const;
 
-	int setPort(int port);
-	int setName(std::string name);
-	int setRoot(std::string root);
-	int setIndex(std::string index);
-	int setReturnCode(int return_code, std::string return_adress);
+	void setPort(int port);
+	void setName(std::string name);
+	void setRoot(std::string root);
+	void setIndex(std::string index);
+	void setAutoindex(int autoindex);
+	void setReturnCode(int return_code, std::string return_adress);
 
-	int setLocation();
+	void setLocation();
 
 	class PortAlraedySetException: public std::exception {
 		virtual const char *what() const throw() ;
@@ -68,9 +70,12 @@ public:
 	class AutoindexAlraedySetException: public std::exception {
 		virtual const char *what() const throw() ;
 	};
-	class CodePageNumberAlraedySetException: public std::exception {
+	class ReturnCodeAlraedySetException: public std::exception {
 		virtual const char *what() const throw() ;
 	};
+//	class CodePageNumberAlraedySetException: public std::exception {
+//		virtual const char *what() const throw() ;
+//	};
 };
 
 #endif //WEBSERVER_SERVER_CONFIG_HPP
