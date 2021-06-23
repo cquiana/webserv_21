@@ -23,7 +23,7 @@
 #include <unistd.h>
 #include <iostream>
 
-#define PORT 1234 // default port
+#define PORT 8888 // default port
 
 
 

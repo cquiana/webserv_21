@@ -18,6 +18,7 @@
 #include <fcntl.h>
 #include <set>
 #include <vector>
+#include <algorithm>
 
 
 #define PORT 1234
@@ -27,7 +28,8 @@
 class WebServer {
 public:
 	void initServ();
-	void startServ();
+
+	_Noreturn void startServ();
 	void closeServ();
 	WebServer();
 //	std::string _res;

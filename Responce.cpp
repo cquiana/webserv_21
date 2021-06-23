@@ -2,6 +2,7 @@
 
 Responce::Responce(/* args */)
 {
+	_header =
 }
 
 Responce::~Responce()

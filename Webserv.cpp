@@ -37,9 +37,10 @@ void WebServer::initServ() {
 	}
 }
 
-void WebServer::startServ() {
-	int new_sock;
+_Noreturn void WebServer::startServ() {
+	int new_sock = 0;
 	socklen_t sock_len = sizeof(_addr);
+	char read_buf[1024] = {0};
 
 	// TODO: решить в какой форме хоранить дескрипторы set, list, vector
 
@@ -55,16 +56,18 @@ void WebServer::startServ() {
 		fd_set rfd;
 		FD_ZERO(&rfd);
 		FD_SET(_sock, &rfd);
+		int max_fd = _sock;
 
 		for (std::set<int>::iterator it = clients.begin(); it != clients.end(); ++it) {
 			FD_SET(*it, &rfd);
+			if (*it > max_fd)
+				max_fd = *it;
 		}
 
-		int max_fd = _sock;
 		struct timeval timeout;
-		timeout.tv_sec = 10;
+		timeout.tv_sec = 60;
 		timeout.tv_usec = 0;
-
+//		max_fd = std::max(_sock, *max_element(clients.begin(), clients.end()));
 		int mx = select(max_fd + 1, &rfd, NULL, NULL, &timeout);
 		if (mx < 0)
 			std::cerr << "select error!" << std::endl;
@@ -73,16 +76,16 @@ void WebServer::startServ() {
 			std::cout << new_sock << std::endl;
 			if (new_sock < 0)
 				std::cerr << "accept error!" << std::endl;
-			FD_SET(new_sock, &rfd);
-			if (max_fd < new_sock)
-				max_fd = new_sock;
+//			FD_SET(new_sock, &rfd);
+//			if (max_fd < new_sock)
+//				max_fd = new_sock;
 			// std::cout << max_fd << std::endl;
 			// решить что делать по истечении таймаута
 
 			fcntl(new_sock, F_SETFL, O_NONBLOCK);
 			clients.insert(new_sock);
 		}
-		char read_buf[1024] = {0};
+
 				// std::string body = createResponse();
 				// std::cout << body;
 
@@ -93,10 +96,15 @@ void WebServer::startServ() {
 				if (was_red <= 0) {
 					std::cout << "Nothing to read! " << std::endl;
 					close(*it);
+					clients.erase(*it);
 					continue;
 				}
-				std::string hello = "HTTP/1.1 200 OK\nContent-Type: text/plain\nContent-Length: 12\n\nHello world!";
-				send(new_sock, hello.c_str(), hello.size(), 0);
+//				std::string hello = "HTTP/1.1 200 OK\nContent-Type: text/plain\nContent-Length: 12\n\nHello world!";
+
+				std::string hello = "HTTP/1.1 200 OK\nContent-Type: text/html\nContent-Length: 1600\n\n";
+				std::string body = createResponse();
+				hello.append(body);
+				send(*it, hello.c_str(), hello.size(), 0);
 			}
 		}
 	// 		FD_SET(*it, &rfd);
