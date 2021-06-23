@@ -13,6 +13,8 @@ class Location_config
 {
 private:
 	Location_config();
+	Location_config(Location_config const &another);
+	Location_config &operator=(Location_config const &another);
 	std::vector<std::string> _types;
 	std::string _fastcgi_pass;
 	std::string _root;
@@ -20,23 +22,22 @@ private:
 
 public:
 	~Location_config();
-	Location_config(std::vector<std::string> _types);
-	Location_config(Location_config const &another);
-	Location_config &operator=(Location_config const &another);
+	Location_config(std::vector<std::string> types, std::string fastcgi_pass, std::string root, int methods);
 
 	bool isType(std::string type) const;
+
 	bool haveRoot() const;
 	bool haveFastCgi() const;
-	bool methodsNotNull() const;
+	bool methodsNull() const;
 
 	std::vector<std::string> getTypes() const;
 	std::string getRoot() const;
 	std::string getFastCgi() const;
 	int getMethods() const;
 
-	int setRoot();
-	int setFastCgi();
-	int setMethods();
+	void setRoot(std::string root);
+	void setFastCgi(std::string fastcgi_pass);
+	void setMethods(int methods);
 
 	class RootAlraedySetException: public std::exception {
 		virtual const char *what() const throw() ;
