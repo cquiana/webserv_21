@@ -99,13 +99,13 @@ std::string Server_config::getReturnArdess() const {
 	return _return_adress;
 }
 
-std::string Server_config::getRootByLocation(std::string type, std::string loc) const {
-	for(std::vector<const Location_config>::iterator it = _locations.begin(); it != _locations.end(); it++) // ToDo WTF const !!!!?????
+std::string Server_config::getRootByLocation(std::string type, std::string loc) {
+	for(std::vector<Location_config>::iterator it = _locations.begin(); it != _locations.end(); it++) // ToDo WTF const !!!!?????
 	{
 		if ((*it).haveType(type) && (*it).haveRoot())
 			return ((*it).getRoot());
 	}
-	for(std::vector<const Location_config>::iterator it = _locations.begin(); it != _locations.end(); it++) // ToDo WTF const !!!!?????
+	for(std::vector<Location_config>::iterator it = _locations.begin(); it != _locations.end(); it++) // ToDo WTF const !!!!?????
 	{
 		if ((*it).getLocationPath() == loc && (*it).haveRoot())
 			return ((*it).getRoot());

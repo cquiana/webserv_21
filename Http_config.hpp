@@ -26,13 +26,13 @@ public:
 
 	bool haveErrorPage(int page) const;
 	bool haveMaxBody() const;
-	bool haveServer(std::string servers_name) const;
+	bool haveServer(std::string servers_name);
 
 	bool haveSomeServer() const;
 
-	std::string getErrorPage(int page) const;
+	std::string getErrorPage(int page);
 	int getMaxBody() const;
-	Server_config getServer(std::string servers_name) const;
+	Server_config getServer(std::string servers_name);
 
 	void setErrorPage(int error_page_int, std::string error_page_string);
 	void setMaxBody(int max_body);

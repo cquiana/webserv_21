@@ -45,7 +45,7 @@ public:
 	int getReturnCode() const;
 	std::string getReturnArdess() const;
 
-	std::string getRootByLocation(std::string type,std::string loc) const;
+	std::string getRootByLocation(std::string type,std::string loc);
 
 	void setPort(int port);
 	void setName(std::string name);

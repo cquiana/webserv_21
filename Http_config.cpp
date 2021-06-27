@@ -23,13 +23,13 @@ bool Http_config::haveMaxBody() const {
 		return true;
 }
 
-bool Http_config::haveServer(std::string servers_name) const {
+bool Http_config::haveServer(std::string servers_name) {
 //	if (std::find(_servers_names.begin(), _servers_names.end(), servers_name) != _servers_names.end())
 //		return true;
 //	else
 //		return false;
 //
-	for(std::vector<const Server_config>::iterator it = _servers.begin(); it != _servers.end(); it++) // ToDo WTF const !!!!?????
+	for(std::vector<Server_config>::iterator it = _servers.begin(); it != _servers.end(); it++) // ToDo WTF const !!!!?????
 	{
 		if ((*it).getName() == servers_name)
 			return (true);
@@ -43,10 +43,10 @@ bool Http_config::haveSomeServer() const {
 }
 
 
-std::string Http_config::getErrorPage(int page) const {
+std::string Http_config::getErrorPage(int page){
 	int n = 0;
 
-	for(std::vector<const int>::iterator it = _error_page_ints.begin(); it != _error_page_ints.end(); it++) // ToDo WTF const !!!!?????
+	for(std::vector<int>::iterator it = _error_page_ints.begin(); it != _error_page_ints.end(); it++) // ToDo WTF const !!!!?????
 	{
 		if ((*it) == page)
 			return (_error_page_strings[n]);
@@ -59,9 +59,9 @@ int Http_config::getMaxBody() const {
 	return _client_max_body_size;
 }
 
-Server_config Http_config::getServer(std::string servers_name) const {
+Server_config Http_config::getServer(std::string servers_name) {
 	// ToDo WTF ?																									!!!!
-	for(std::vector<const Server_config>::iterator it = _servers.begin(); it != _servers.end(); it++) // ToDo WTF const !!!!?????
+	for(std::vector<Server_config>::iterator it = _servers.begin(); it != _servers.end(); it++) // ToDo WTF const !!!!?????
 	{
 		if ((*it).getName() == servers_name)
 			return ((*it));
