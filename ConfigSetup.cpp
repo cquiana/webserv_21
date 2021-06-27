@@ -12,11 +12,15 @@
 #include "Location_config.hpp"
 #include "Http_config.hpp"
 
-//std::string parseConfig(std::string in_string)
-//{
-//	std::size_t found_pattern = -1;
-//	if ()
-//}
+void parseConfig(std::string in_string)
+{
+	size_t found_pattern = in_string.find("server_name");
+	if (found_pattern != std::string::npos)
+		std::cout << "Found at pos = " << found_pattern << "\n";
+	else
+		std::cout << "Not found\n";
+
+}
 
 int main()
 {
@@ -35,7 +39,10 @@ int main()
 				std::cout << "Find wrong character ' " << strbuf_config[found_wrong_char] << " ' at position ' " << found_wrong_char << " ' in config file line " << num_line << std::endl << "\t" <<strbuf_config << std::endl << std::endl;
             std::replace( strbuf_config.begin(), strbuf_config.end(), '\t', '\0'); // replace all 'x' to 'y'
             if (strbuf_config.rfind("#", 0) != 0 && !strbuf_config.empty())
-                vector_str_conf_file.push_back(strbuf_config);
+			{
+				parseConfig(strbuf_config);
+				vector_str_conf_file.push_back(strbuf_config);
+			}
 //            vector_str_conf_file.push_back(parseConfig(strbuf_config));
 
 //            std::cout << str_config << "\n"; //print the data of the string
