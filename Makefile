@@ -10,7 +10,7 @@ OBJS = $(SRCS:.cpp=.o)
 
 CL = clang++
 
-FLAGS = -std=c++98
+FLAGS = -std=c++98 -g
 
 #FLAGS = -std=c++98 -Wall -Wextra -Werror
 

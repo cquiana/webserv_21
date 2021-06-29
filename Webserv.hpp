@@ -9,10 +9,16 @@
 #include <fstream>
 #include <unistd.h>
 #include <sys/socket.h>
+#include <sys/time.h>
+#include <sys/types.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <string.h>
 #include <string>
+#include <fcntl.h>
+#include <set>
+#include <vector>
+#include <algorithm>
 
 
 #define PORT 1234
@@ -22,7 +28,8 @@
 class WebServer {
 public:
 	void initServ();
-	void startServ();
+
+	_Noreturn void startServ();
 	void closeServ();
 	WebServer();
 //	std::string _res;
