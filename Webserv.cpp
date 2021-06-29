@@ -48,10 +48,10 @@ void WebServer::startServ() {
 //	std::cout << "request: " << read_buf << std::endl;
 //		if (was_red < 0)
 //			std::cout << "Nothing to read! " << std::endl;
-		std::string res = createResponse();
+		// std::string res = createResponse();
 //		std::cout << res;
-		std::string hello = "HTTP/1.1 200 OK\nContent-Type: text/plain\nContent-Length: 1200\n\n";
-		hello.append(res);
+		std::string hello = "HTTP/1.1 200 OK\nContent-Type: text/plain\nContent-Length: 10\n\nHello world!";
+		// hello.append(res);
 //	write(new_sock , hello , strlen(hello));
 		send(new_sock, hello.c_str(), hello.size(), 0);
 //		std::cout << "Waiting new connection!" << std::endl;
@@ -70,7 +70,7 @@ std::string WebServer::createResponse() {
 		}
 	}
 	is.close();
-//	std::cout << res;
+	std::cout << res.length();
 	return res;
 }
 
