@@ -100,8 +100,7 @@ void WebServer::createSock() {
 		std::cout << "Client sock = " << (*it).getSock() << std::endl;
 		if (FD_ISSET((*it).getSock(), &_rFd)) {
 			char buff[4096 + 1];
-			int ret = 0;
-			ret = read((*it).getSock(), buff, 4096);
+			int ret = read((*it).getSock(), buff, 4096);
 			std::cout << ret << std::endl;
 			if (ret == -1) {
 				std::cout << "read error\n";
