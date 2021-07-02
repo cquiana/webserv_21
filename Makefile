@@ -1,9 +1,17 @@
 NAME	=	webserv
 
 SRCS	=	Webserv.cpp \
+			Request.cpp \
+			Client.cpp \
+			Server.cpp \
+			utils.cpp \
 			main.cpp
 
-HEADER	=	Webserv.hpp
+HEADER	=	Webserv.hpp \
+			Request.hpp \
+			Client.hpp \
+			Server.hpp \
+			utils.hpp
 
 
 OBJS = $(SRCS:.cpp=.o)

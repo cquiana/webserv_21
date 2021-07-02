@@ -1,9 +1,4 @@
-//
-// Created by Candy Quiana on 5/27/21.
-//
-
-#ifndef WEBSERV__HPP
-#define WEBSERV__HPP
+#pragma once
 
 #include <iostream>
 #include <fstream>
@@ -17,8 +12,12 @@
 #include <string>
 #include <fcntl.h>
 #include <set>
+#include <map>
 #include <vector>
 #include <algorithm>
+#include "utils.hpp"
+#include "Client.hpp"
+// #include "Server.hpp"
 
 
 #define PORT 1234
@@ -29,22 +28,35 @@ class WebServer {
 public:
 	void initServ();
 
-	_Noreturn void startServ();
+	void startServ();
 	void closeServ();
 	WebServer();
 //	std::string _res;
 
 	std::string createResponse();
+	int getMaxFd();
+	void setMaxFd();
+	void createNewConnect();
+	void waitConnect();
+	void createSock();
+	// void reloadFd();
+	const std::vector<Client> &getClients();
 
 private:
 
-	int _sock; // listening socket;
-	struct sockaddr_in _addr; // _sock addr
+	std::vector<Server> _servers;
+	std::vector<Client> _clients;
+	size_t _servMaxCount;
+	int _sock;
+	int _maxFd;
+	struct sockaddr_in _addr;
+	fd_set _rFd;
+	fd_set _wFd;
 
 
-//	WebServer();
+
+	// WebServer();
 	WebServer(WebServer const &);
 	WebServer& operator=(WebServer const &);
 };
 
-#endif //WEBSERV_HPP

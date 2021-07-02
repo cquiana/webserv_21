@@ -11,7 +11,13 @@ int main() {
 
 
 	server.initServ();
-	server.startServ();
+	while (1) {
+		server.startServ();
+		server.waitConnect();
+		server.createSock();
+		std::cout << "Main!\n";
+		sleep(15);
+	}
 	server.closeServ();
 
 
