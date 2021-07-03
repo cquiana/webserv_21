@@ -34,8 +34,8 @@ public:
 	int getMaxBody() const;
 	Server_config getServer(std::string servers_name);
 
-	void setErrorPage(int error_page_int, std::string error_page_string);
-	void setMaxBody(int max_body);
+	void setErrorPage(size_t error_page_int, std::string error_page_string);
+	void setMaxBody(size_t max_body);
 
 	void addServer();
 	void checkLastServeer();
@@ -44,6 +44,9 @@ public:
 		virtual const char *what() const throw() ;
 	};
 	class MaxBodyAlreadySetException:		public std::exception {
+		virtual const char *what() const throw() ;
+	};
+	class MaxBodyWrongSetException:		public std::exception {
 		virtual const char *what() const throw() ;
 	};
 	class ServerExistException:				public std::exception {

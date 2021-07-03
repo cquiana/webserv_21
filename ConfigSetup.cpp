@@ -12,13 +12,97 @@
 #include "Location_config.hpp"
 #include "Http_config.hpp"
 
-void parseConfig(std::string in_string)
+std::string ltrim(std::string s, const char* t = " \t\n\r\f\v")
 {
-	size_t found_pattern = in_string.find("server_name");
-	if (found_pattern != std::string::npos)
-		std::cout << "Found at pos = " << found_pattern << "\n";
+	std::string ss = s;
+	ss.erase(0, ss.find_first_not_of(t));
+	return s;
+}
+
+// trim from right
+std::string rtrim(std::string s, const char* t = " \t\n\r\f\v")
+{
+	std::string ss = s;
+	ss.erase(ss.find_last_not_of(t) + 1);
+	return s;
+}
+
+// trim from left & right
+std::string wwtrim(std::string s, const char* t = " \t\n\r\f\v")
+{
+	return ltrim(rtrim(s, t), t);
+}
+
+size_t skipDigits(std::string in_string)
+{
+	size_t len = 0;
+	std::string aaa = "0123456789\t\v\r\n ";
+
+	for(std::string::iterator it = in_string.begin(); it != in_string.end(); it++) // ToDo WTF const !!!!?????
+	{
+		size_t ff = aaa.find_first_of((*it));
+		if (ff != std::string::npos)
+			return (len);
+		len++;
+	}
+	return (-2);
+}
+
+int intString(std::string in_string, std::string search_string)
+{
+	return (atoi(in_string.substr(in_string.find(search_string) + search_string.length()).c_str()));
+}
+
+bool checkString(std::string in_string, std::string search_string)
+{
+	size_t found_pattern = in_string.find(search_string);
+	size_t not_found_pattern = in_string.find_first_not_of("\t\v\r\n ");
+	if (found_pattern == std::string::npos)
+	{
+		std::cout << "In " << in_string << " @not found " << search_string << "\n";
+		return (false);
+	}
+	else if (not_found_pattern < found_pattern)
+	{
+		std::cout << "In " << in_string << " @error in pattern " << search_string << "\n"; //ToDo DEL after debug
+		return (false);
+	}
 	else
-		std::cout << "Not found\n";
+	{
+		std::cout << "In " << in_string << " found " << search_string << " at pos: " << found_pattern << "\n"; //ToDo DEL after debug
+		return (true);
+	}
+}
+
+void parseConfig(std::string in_string, Http_config* http_config)
+{
+	if (checkString(in_string, "client_max_body_size"))
+	{
+		http_config->setMaxBody(intString(in_string, "client_max_body_size"));
+	}
+	else if (checkString(in_string, "error_page"))
+	{
+		size_t i = intString(in_string, "error_page");
+		size_t l = in_string.find_first_of("0123456789");
+		size_t e = in_string.find_first_of(';');
+		if (e != std::string::npos)
+			http_config->setErrorPage(i, wwtrim(in_string.substr(l + skipDigits(in_string.substr(l)), e)));
+		else
+			std::cout << "In " << in_string << " @error in pattern error_page" << "\n";
+	}
+	else if (checkString(in_string, "server"))
+	{
+		size_t found_pattern = in_string.find("server");
+		size_t found_pattern2 = in_string.find_first_of('#');
+		size_t found_pattern3 = in_string.find_first_of('{');
+		found_pattern += 6;
+		size_t not_found_pattern = in_string.substr(found_pattern, found_pattern2).find_first_not_of("\t\v\r\n ;");
+		if (not_found_pattern == std::string::npos && found_pattern3 != std::string::npos)
+			http_config->addServer(); //ToDo need mark aktive server & location until its done
+
+
+
+	}
 
 }
 
@@ -27,6 +111,7 @@ int main()
     std::fstream file_config;
     std::vector<std::string> vector_str_conf_file;
     std::string strbuf_config;
+    Http_config http_config;
     int num_line = 0;
 
     if(!file_config.is_open())
@@ -40,7 +125,7 @@ int main()
             std::replace( strbuf_config.begin(), strbuf_config.end(), '\t', '\0'); // replace all 'x' to 'y'
             if (strbuf_config.rfind("#", 0) != 0 && !strbuf_config.empty())
 			{
-				parseConfig(strbuf_config);
+				parseConfig(strbuf_config, &http_config);
 				vector_str_conf_file.push_back(strbuf_config);
 			}
 //            vector_str_conf_file.push_back(parseConfig(strbuf_config));
