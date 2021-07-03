@@ -108,9 +108,7 @@ void Request::receive() {
 	char buff[BUFFER_SIZE + 1];
 	int ret;
 	std::cout << "Recv req!\n";
-	std::cout << _sock << std::endl;
 	ret = read(_sock, buff, BUFFER_SIZE);
-	std::cout << ret << std::endl;
 	if (ret == -1) {
 		std::cout << "read error\n";
 	} else {

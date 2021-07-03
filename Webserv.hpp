@@ -40,12 +40,12 @@ public:
 	void waitConnect();
 	void createSock();
 	// void reloadFd();
-	const std::vector<Client> &getClients();
+	const std::vector<Client*> &getClients();
 
 private:
 
 	std::vector<Server> _servers;
-	std::vector<Client> _clients;
+	std::vector<Client*> _clients;
 	size_t _servMaxCount;
 	int _sock;
 	int _maxFd;

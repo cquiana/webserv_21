@@ -1,4 +1,0 @@
-GET / HTTP/1.1*
-Host: developer.mozilla.org*
-Authorization: blablabli blablablu*
-Referer: http://ehfuiweh fuiwehi*

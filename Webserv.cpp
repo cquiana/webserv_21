@@ -49,9 +49,10 @@ void WebServer::startServ() {
 	// TODO: получить запрос
 	FD_ZERO(&_rFd);
 	FD_ZERO(&_wFd);
-	for (std::vector<Client>::iterator it = _clients.begin(); it != _clients.end(); ++it) {
-		FD_SET((*it).getSock(), &_rFd);
-		FD_SET((*it).getSock(), &_wFd);
+	for (std::vector<Client*>::iterator it = _clients.begin(); it != _clients
+	.end(); ++it) {
+		FD_SET((*it)->getSock(), &_rFd);
+		FD_SET((*it)->getSock(), &_wFd);
 	}
 	//  cycle servers
 	FD_SET(_sock, &_rFd);
@@ -83,7 +84,7 @@ void WebServer::createNewConnect() {
 	 std::cout << "newsock = " << new_connect << std::endl;
 	if (new_connect < 0)
 		std::cerr << "accept error!" << std::endl;
-	Client new_client(new_connect);
+	Client* new_client(new Client(new_connect));
 	_clients.push_back(new_client);
 	// std::cout << _clients.size() << std::endl;
 	fcntl(new_connect, F_SETFL, O_NONBLOCK);
@@ -93,27 +94,15 @@ void WebServer::createNewConnect() {
 }
 
 void WebServer::createSock() {
-	std::vector<Client>::iterator it;
+	std::vector<Client*>::iterator it;
 	// std::cout << _clients.size() << std::endl;s
 	for (it = _clients.begin(); it != _clients.end(); ++it) {
 		// добавить проверку статуса
-		std::cout << "Client sock = " << (*it).getSock() << std::endl;
-		if (FD_ISSET((*it).getSock(), &_rFd)) {
-			char buff[4096 + 1];
-			int ret = read((*it).getSock(), buff, 4096);
-			std::cout << ret << std::endl;
-			if (ret == -1) {
-				std::cout << "read error\n";
-			} else {
-				std::cout << ret << std::endl;
-				buff[ret] = '\0';
-				// _toRead.append(buff);
-				bzero(buff, 4096);
-			}
-			// (*it).recvReq();
+		if (FD_ISSET((*it)->getSock(), &_rFd)) {
+			(*it)->recvReq();
 			std::cout << "recv\n";
 		}
-		else if (FD_ISSET((*it).getSock(), &_wFd)) {
+		else if (FD_ISSET((*it)->getSock(), &_wFd)) {
 			// (*it).sendResp();
 			std::cout << "send\n";
 		}
@@ -143,7 +132,7 @@ void WebServer::closeServ() {
 // WebServer::WebServer(WebServer const &x) { (void)x; }
 WebServer& WebServer::operator=(WebServer const &x) { (void)x; return *this; }
 
-const std::vector<Client> &WebServer::getClients(){
+const std::vector<Client*> &WebServer::getClients(){
 	return _clients;
 }
 int WebServer::getMaxFd() {
@@ -153,7 +142,7 @@ int WebServer::getMaxFd() {
 void WebServer::setMaxFd() {
 	_maxFd = _sock;
 	for (size_t i = 0; i < getClients().size(); ++i) {
-		_maxFd = std::max(_clients[i].getSock(), _maxFd);
+		_maxFd = std::max(_clients[i]->getSock(), _maxFd);
 	}
 
 	// for (size_t i = 0; i < getClients().size(); ++i) {
