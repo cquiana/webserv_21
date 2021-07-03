@@ -21,14 +21,14 @@ console.log('<div class="card-body">');
 console.log('<div class="card-text">');
 console.log('<div class="d-grid">');
 console.log('<div class="btn-group" role="group" aria-label="Basic mixed styles example">');
-console.log('<button type="button" class="btn btn-lg btn-primary">Get запрос</button>');
-console.log('<button type="button" class="btn btn-lg btn-danger">Delete запрос</button>');
+console.log('<a class="btn btn-lg btn-primary">Get запрос</a>');
+console.log('<a class="btn btn-lg btn-danger">Delete запрос</a>');
 console.log('</div></div>');
 console.log('<div class="border border-secondary rounded p-3 mt-3">');
 console.log('<input class="form-control" placeholder="Введите что-нибудь...">');
 console.log('<input class="form-control mt-2" type="file">');
 console.log('<div class="d-grid"><a class="btn btn-secondary btn-lg mt-2">Post запрос</a></div></div>');
-console.log('<div class="d-grid"><button class="btn btn-dark btn-lg mt-3" type="button">Redirect to Google</button></div></div></div></div>');
+console.log('<div class="d-grid"><a class="btn btn-dark btn-lg mt-3">Redirect to Google</a></div></div></div></div>');
 
 console.log('<p class="text-muted mt-3 text-center">Сообщений нет</p>');
 
