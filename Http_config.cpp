@@ -5,7 +5,7 @@
 #include "Http_config.hpp"
 #include <vector>
 
-Http_config::Http_config() : _client_max_body_size(-2) {}  // ToDo WTF ?											!!!!
+Http_config::Http_config() : _client_max_body_size(-2), _active_server(-1) {}  // ToDo WTF ?											!!!!
 
 Http_config::~Http_config() {}
 
@@ -53,6 +53,13 @@ bool Http_config::haveSomeServer() const {
 	return (!(_servers.empty()));
 }
 
+bool Http_config::haveActiveServer() const {
+	if (_active_server == -1)
+		return (false);
+	else
+		return (true);
+}
+
 
 std::string Http_config::getErrorPage(int page){
 	int n = 0;
@@ -67,7 +74,11 @@ std::string Http_config::getErrorPage(int page){
 }
 
 int Http_config::getMaxBody() const {
-	return _client_max_body_size;
+	return (_client_max_body_size);
+}
+
+int Http_config::getActiveServer() const {
+	return (_active_server);
 }
 
 Server_config Http_config::getServer(std::string servers_name) {
@@ -89,10 +100,10 @@ void Http_config::setErrorPage(size_t error_page_int, std::string error_page_str
 	_error_page_strings.push_back(error_page_string);
 }
 
-void Http_config::setMaxBody(size_t max_body) {
+void Http_config::setMaxBody(int max_body) {
 	if (haveMaxBody())
 		throw Http_config::MaxBodyAlreadySetException();
-	else if (max_body < -2)
+	else if (max_body < 0)
 		throw Http_config::MaxBodyWrongSetException();
 	else
 		_client_max_body_size = max_body;
@@ -100,20 +111,26 @@ void Http_config::setMaxBody(size_t max_body) {
 
 void Http_config::addServer() {
 	// ToDo WTF ?					!!!!
+	if (_active_server != -1) // -1 server can create, 0....1000000 current opened server
+		throw Http_config::ServerNotOpenedException();
 	_servers.push_back(Server_config());
+	_active_server = _servers.size() - 1;
 }
 
 void Http_config::checkLastServeer() {
-	int n = _servers.size();
-	if (n <= 0)
+	int n = _active_server;
+	if (n < 0)
 		throw Server_config::SizeLocationsException();
-	n--;
 	if (_servers[n].havePort() && _servers[n].haveRoot() && !_servers[n].haveName())
+	{
 		std::cout << "Server done" << std::endl;
+		_active_server = -1;
+	}
 	else
 	{
 		std::cout << "Server wrong : " << _servers[n].getPort() << " : " << _servers[n].getName()[0] << " : " << _servers[n].getRoot() << " : " << _servers[n].getIndex() << " : " << _servers[n].getAutoindex() << " : " << _servers[n].haveLocation() << " : " << _servers[n].getReturnCode() << " : " << _servers[n].getReturnArdess() << std::endl;
 		_servers.pop_back();
+		_active_server = -1;
 	}
 }
 
@@ -145,6 +162,10 @@ const char *Http_config::ErrorPageAlreadyExistException::what() const throw() {
 
 const char *Http_config::ServerNotFoundException::what() const throw() {
 	return ("EXCEPTION! Server Not Found on this http...");
+};
+
+const char *Http_config::ServerNotOpenedException::what() const throw() {
+	return ("EXCEPTION! Server Not Opened on this http...");
 };
 
 const char *Http_config::SizeServersException::what() const throw() {

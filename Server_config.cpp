@@ -6,12 +6,12 @@
 #include "Location_config.hpp"
 
 Server_config::Server_config() :
-	_port(-1), _name(""), _root(""), _index(""), _autoindex(-1), _return_code(-1), _return_adress("") {}
+	_port(-1), _name(""), _root(""), _index(""), _autoindex(-1), _return_code(-1), _return_adress(""), _active_location(-1) {}
 
 Server_config::~Server_config() {}
 
 Server_config::Server_config(Server_config const &another) :
-	_port(another._port), _name(another._name), _root(another._root), _index(another._index), _autoindex(another._autoindex), _return_code(another._return_code), _return_adress(another._return_adress) {}
+	_port(another._port), _name(another._name), _root(another._root), _index(another._index), _autoindex(another._autoindex), _return_code(another._return_code), _return_adress(another._return_adress), _active_location(another._active_location) {}
 
 Server_config& Server_config::operator=(Server_config const &another) {
 	_port = another._port;
@@ -21,6 +21,7 @@ Server_config& Server_config::operator=(Server_config const &another) {
 	_autoindex = another._autoindex;
 	_return_code = another._return_code;
 	_return_adress = another._return_adress;
+	_active_location = another._active_location;
 	return *this;
 }
 
@@ -71,6 +72,16 @@ bool Server_config::blockedReturnCode() const {
 		return false;
 }
 
+bool Server_config::haveActiveLocation() const {
+	if (_active_location > -1)
+		return true;
+	else
+		return false;
+}
+
+
+
+
 int Server_config::getPort() const {
 	return _port;
 }
@@ -99,18 +110,31 @@ std::string Server_config::getReturnArdess() const {
 	return _return_adress;
 }
 
-std::string Server_config::getRootByLocation(std::string type, std::string loc) {
+std::string Server_config::getRootByLocation(std::string loc) {
 	for(std::vector<Location_config>::iterator it = _locations.begin(); it != _locations.end(); it++) // ToDo WTF const !!!!?????
 	{
-		if ((*it).haveType(type) && (*it).haveRoot())
-			return ((*it).getRoot());
-	}
-	for(std::vector<Location_config>::iterator it = _locations.begin(); it != _locations.end(); it++) // ToDo WTF const !!!!?????
-	{
-		if ((*it).getLocationPath() == loc && (*it).haveRoot())
+		if ((*it).mIsPrefic() && (*it).haveRoot() && (*it).prefixCheck(loc))
 			return ((*it).getRoot());
 	}
 	return (_root);
+}
+
+//std::string Server_config::getRootByLocation(std::string type, std::string loc) {
+//	for(std::vector<Location_config>::iterator it = _locations.begin(); it != _locations.end(); it++) // ToDo WTF const !!!!?????
+//	{
+//		if ((*it).haveType(type) && (*it).haveRoot())
+//			return ((*it).getRoot());
+//	}
+//	for(std::vector<Location_config>::iterator it2 = _locations.begin(); it2 != _locations.end(); it2++) // ToDo WTF const !!!!?????
+//	{
+//		if ((*it2).getLocationPrefix() == loc && (*it2).haveRoot())
+//			return ((*it2).getRoot());
+//	}
+//	return (_root);
+//}
+
+int Server_config::getActiveLocation() const {
+	return (_active_location);
 }
 
 
@@ -160,23 +184,31 @@ void Server_config::setReturnCode(int return_code, std::string return_adress) {
 	_return_adress = return_adress;
 }
 
-void Server_config::addLocation(std::string location_path, std::vector<std::string> types) { // ToDo WTF ?				need test !!!!
+void Server_config::addLocation(std::string location_path, std::string type) { // ToDo WTF ?				need test !!!!
 	//Location_config nLocation(location_path, types);
-	_locations.push_back(Location_config(location_path, types));
+	//_locations.push_back(Location_config(location_path, types));
 	//setReturnCode(0, "");	// Block returnCode
+
+	if (_active_location != -1) // -1 server can create, 0....1000000 current opened server
+		throw Server_config::LocationNotOpenedException();
+	_locations.push_back(Location_config(location_path, type));
+	_active_location = _locations.size() - 1;
 }
 
 void Server_config::checkLastLocation() {													// ToDo WTF ?				need test !!!!
-	int n = _locations.size();
-	if (n <= 0)
+	int n = _active_location;
+	if (n < 0)
 		throw Server_config::SizeLocationsException();
-	n--;
-	if (_locations[n].haveCgiPath() && _locations[n].haveRoot() && !_locations[n].methodsNull())
+	if (_locations[n].haveCgiPath() && _locations[n].haveRoot() && !_locations[n].methodsNull() && (_locations[n].mIsPrefic() || _locations[n].mIsCGI()))
+	{
 		std::cout << "location done" << std::endl;
+		_active_location = -1;
+	}
 	else
 	{
-		std::cout << "location wrong : " << _locations[n].getLocationPath() << " : " << _locations[n].getTypes()[0] << " : " << _locations[n].getMethods() << " : " << _locations[n].getRoot() << " : " << _locations[n].getCgiPath() << std::endl;
+		std::cout << "location wrong : " << _locations[n].getLocationPrefix() << " : " << _locations[n].getType()[0] << " : " << _locations[n].getMethods() << " : " << _locations[n].getRoot() << " : " << _locations[n].getCgiPath() << std::endl;
 		_locations.pop_back();
+		_active_location = -1;
 	}
 }
 
@@ -213,6 +245,11 @@ const char *Server_config::BlockedReturnCodeException::what() const throw() {
 const char *Server_config::SizeLocationsException::what() const throw() {
 	return ("EXCEPTION! Size of locations[] wrong...");
 };
+
+const char *Server_config::LocationNotOpenedException::what() const throw() {
+	return ("EXCEPTION! Location Not Opened in this server...");
+};
+
 
 //const char *Server_config::CodePageNumberAlraedySetException::what() const throw() {
 //	return ("EXCEPTION! Code Page Number Alraedy Set in this server...");

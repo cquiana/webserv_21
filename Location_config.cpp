@@ -6,24 +6,47 @@
 
 Location_config::~Location_config() {}
 
-Location_config::Location_config(std::string location_path, std::vector<std::string> types) :
-		_location_path(location_path), _types(types), _cgi_path(""), _root(""), _methods(0), _some(false) {}
+Location_config::Location_config(std::string location_prefix, std::string type) :
+		_location_prefix(location_prefix), _type(type), _cgi_path(""), _root(""), _methods(0), _IsCGI(false) , _IsPrefix(false) {
+	if (location_prefix == "" && type != "")
+		_IsPrefix = true;
+	else if (location_prefix != "" && type == "")
+		_IsCGI = true;
+	else
+		throw Location_config::SetLocationException();
+}
 
 Location_config::Location_config(Location_config const &another) :
-	_location_path(another._location_path), _types(another._types), _cgi_path(another._cgi_path), _root(another._root), _methods(another._methods), _some(another._some) {}
+		_location_prefix(another._location_prefix), _type(another._type), _cgi_path(another._cgi_path), _root(another._root), _methods(another._methods), _IsCGI(another._IsCGI) , _IsPrefix(another._IsPrefix) {}
 
 Location_config& Location_config::operator=(Location_config const &another) {
-	_location_path = another._location_path;
-	_types = another._types;
+	_location_prefix = another._location_prefix;
+	_type = another._type;
 	_cgi_path = another._cgi_path;
 	_root = another._root;
 	_methods =another._methods;
-	_some = another._some;
+//	_some = another._some;
+	_IsCGI = another._IsCGI;
+	_IsPrefix = another._IsPrefix;
 	return *this;
 }
 
-bool Location_config::isType(std::string type) const {
-	if (std::find(_types.begin(), _types.end(), type) != _types.end())
+//bool Location_config::isType(std::string type) const {
+//	if (std::find(_types.begin(), _types.end(), type) != _types.end())
+//		return true;
+//	else
+//		return false;
+//}
+
+bool Location_config::mIsCGI() const {
+	if (_IsCGI)
+		return true;
+	else
+		return false;
+}
+
+bool Location_config::mIsPrefic() const {
+	if (_IsPrefix)
 		return true;
 	else
 		return false;
@@ -45,18 +68,28 @@ bool Location_config::methodsNull() const {
 }
 
 bool Location_config::haveType(std::string type) const {
-	if (std::find(_types.begin(), _types.end(), type) != _types.end())
+//	if (std::find(_types.begin(), _types.end(), type) != _types.end())
+	if (type == _type)
 		return true;
 	else
 		return false;
 }
 
-std::vector<std::string> Location_config::getTypes() const {
-	return _types;
+bool Location_config::prefixCheck(std::string prefix) const {
+	size_t found_pattern = prefix.find(_location_prefix);
+	if (found_pattern != std::string::npos && found_pattern < 4)
+		return true;
+	else
+		return false;
 }
 
-std::string Location_config::getLocationPath() const{
-	return _location_path;
+
+std::string Location_config::getType() const {
+	return _type;
+}
+
+std::string Location_config::getLocationPrefix() const {
+	return _location_prefix;
 }
 
 std::string Location_config::getRoot() const{
@@ -75,21 +108,21 @@ void Location_config::setRoot(std::string root){
 	if (haveRoot())
 		throw Location_config::RootAlraedySetException();
 	_root = root;
-	_some = true;
+//	_some = true;
 }
 
 void Location_config::setCgiPath(std::string cgi_path) {
 	if (haveCgiPath())
 		throw Location_config::CgiPathAlraedySetException();
 	_cgi_path = cgi_path;
-	_some = true;
+//	_some = true;
 }
 
 void Location_config::setMethods(int methods) {
 	if (methodsNull())
 		throw Location_config::MethodsAlraedySetException();
 	_methods = methods;
-	_some = true;
+//	_some = true;
 }
 
 const char *Location_config::RootAlraedySetException::what() const throw() {
@@ -102,4 +135,8 @@ const char *Location_config::CgiPathAlraedySetException::what() const throw() {
 
 const char *Location_config::MethodsAlraedySetException::what() const throw() {
 	return ("EXCEPTION! Methods Alraedy Set in this Location...");
+};
+
+const char *Location_config::SetLocationException::what() const throw() {
+	return ("EXCEPTION! Type and prefix missmath...");
 };

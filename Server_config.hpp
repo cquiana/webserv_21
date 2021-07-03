@@ -18,15 +18,17 @@ private:
 	std::string _root;
 	std::string _index;
 	int _autoindex;
-	std::vector<Location_config> _locations;
 	int _return_code;
 	std::string _return_adress;
+	int _active_location;
 
 public:
 	Server_config();
 	~Server_config();
 	Server_config(Server_config const &another);
 	Server_config &operator=(Server_config const &another);
+
+	std::vector<Location_config> _locations;
 
 	bool havePort() const;
 	bool haveName() const;
@@ -36,6 +38,7 @@ public:
 	bool haveLocation() const;
 	bool haveReturnCode() const;
     bool blockedReturnCode() const;
+    bool haveActiveLocation() const;
 
 	int getPort() const;
 	std::string getName() const;
@@ -44,8 +47,10 @@ public:
 	int getAutoindex() const;
 	int getReturnCode() const;
 	std::string getReturnArdess() const;
+	int getActiveLocation() const;
 
-	std::string getRootByLocation(std::string type,std::string loc);
+//	std::string getRootByLocation(std::string type, std::string loc);
+	std::string getRootByLocation(std::string loc);
 
 	void setPort(int port);
 	void setName(std::string name);
@@ -54,7 +59,7 @@ public:
 	void setAutoindex(int autoindex);
 	void setReturnCode(int return_code, std::string return_adress);
 
-	void addLocation(std::string location_path, std::vector<std::string> types);
+	void addLocation(std::string location_path, std::string type);
 	void checkLastLocation();
 
 	class PortAlraedySetException:			public std::exception {
@@ -81,6 +86,11 @@ public:
 	class SizeLocationsException:			public std::exception {
 		virtual const char *what() const throw() ;
 	};
+	class LocationNotOpenedException:		public std::exception {
+		virtual const char *what() const throw() ;
+	};
+
+
 //	class CodePageNumberAlraedySetException: public std::exception {
 //		virtual const char *what() const throw() ;
 //	};

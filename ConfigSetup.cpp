@@ -12,25 +12,32 @@
 #include "Location_config.hpp"
 #include "Http_config.hpp"
 
-std::string ltrim(std::string s, const char* t = " \t\n\r\f\v")
+std::string ltrim(std::string in_string, const char* t = " \t\n\r\f\v")
 {
-	std::string ss = s;
+	std::string ss = in_string;
 	ss.erase(0, ss.find_first_not_of(t));
-	return s;
+	return ss;
 }
 
 // trim from right
-std::string rtrim(std::string s, const char* t = " \t\n\r\f\v")
+std::string rtrim(std::string in_string, const char* t = " \t\n\r\f\v")
 {
-	std::string ss = s;
+	std::string ss = in_string;
 	ss.erase(ss.find_last_not_of(t) + 1);
-	return s;
+	return ss;
 }
 
 // trim from left & right
-std::string wwtrim(std::string s, const char* t = " \t\n\r\f\v")
+std::string wwtrim(std::string in_string, const char* t = " \t\n\r\f\v")
 {
-	return ltrim(rtrim(s, t), t);
+	size_t found_pattern = in_string.find(';');
+	if (found_pattern == std::string::npos)
+	{
+		std::cout << "In " << in_string << " @not found `;`" << "\n";
+		return ("");
+	}
+	else
+		return ltrim(rtrim(in_string.substr(0, found_pattern), t), t);
 }
 
 size_t skipDigits(std::string in_string)
@@ -46,6 +53,11 @@ size_t skipDigits(std::string in_string)
 		len++;
 	}
 	return (-2);
+}
+
+std::string strString(std::string in_string, std::string search_string)
+{
+	return (wwtrim(in_string.substr(in_string.find(search_string) + search_string.length())));
 }
 
 int intString(std::string in_string, std::string search_string)
@@ -64,7 +76,7 @@ bool checkString(std::string in_string, std::string search_string)
 	}
 	else if (not_found_pattern < found_pattern)
 	{
-		std::cout << "In " << in_string << " @error in pattern " << search_string << "\n"; //ToDo DEL after debug
+		std::cout << "In " << in_string << " @error_0 in pattern " << search_string << "\n"; //ToDo DEL after debug
 		return (false);
 	}
 	else
@@ -74,36 +86,140 @@ bool checkString(std::string in_string, std::string search_string)
 	}
 }
 
-void parseConfig(std::string in_string, Http_config* http_config)
+void parseConfig(std::string in_string2, Http_config* http_config)
 {
+	size_t found_pattern_hash = in_string2.find_first_of('#');
+	std::string in_string = in_string2.substr(0, found_pattern_hash);
+	if (in_string.length() < 3)
+	{
+		std::cout << "In " << in_string2 << " @ only #####" << "\n";
+		return;
+	}
+	size_t e = in_string.find_first_of(';');
 	if (checkString(in_string, "client_max_body_size"))
 	{
-		http_config->setMaxBody(intString(in_string, "client_max_body_size"));
+		if (e != std::string::npos && !http_config->haveActiveServer())
+			http_config->setMaxBody(intString(in_string, "client_max_body_size"));
+		else
+			std::cout << "In " << in_string << " @error in pattern __client_max_body_size" << "\n";
 	}
 	else if (checkString(in_string, "error_page"))
 	{
-		size_t i = intString(in_string, "error_page");
-		size_t l = in_string.find_first_of("0123456789");
-		size_t e = in_string.find_first_of(';');
-		if (e != std::string::npos)
-			http_config->setErrorPage(i, wwtrim(in_string.substr(l + skipDigits(in_string.substr(l)), e)));
+		size_t ddd = in_string.find_first_of("0123456789");
+		if (e != std::string::npos && !http_config->haveActiveServer())
+			http_config->setErrorPage(intString(in_string, "error_page"), wwtrim(in_string.substr(ddd + skipDigits(in_string.substr(ddd)), e)));
 		else
-			std::cout << "In " << in_string << " @error in pattern error_page" << "\n";
+			std::cout << "In " << in_string << " @error in pattern __error_page" << "\n";
 	}
 	else if (checkString(in_string, "server"))
 	{
-		size_t found_pattern = in_string.find("server");
-		size_t found_pattern2 = in_string.find_first_of('#');
-		size_t found_pattern3 = in_string.find_first_of('{');
-		found_pattern += 6;
-		size_t not_found_pattern = in_string.substr(found_pattern, found_pattern2).find_first_not_of("\t\v\r\n ;");
-		if (not_found_pattern == std::string::npos && found_pattern3 != std::string::npos)
-			http_config->addServer(); //ToDo need mark aktive server & location until its done
-
-
-
+		if (checkString(in_string, "server_name"))
+		{
+			if (http_config->haveActiveServer() && e != std::string::npos && !http_config->_servers[http_config->getActiveServer()].haveActiveLocation())
+				http_config->_servers[http_config->getActiveServer()].setName(strString(in_string, "server_name"));
+			else
+				std::cout << "In " << in_string << " @error in pattern __server_name" << "\n";
+		}
+		else
+		{
+			size_t found_pattern2 = in_string.find("server");
+			size_t found_pattern3 = in_string.find_first_of('{');
+			size_t not_found_pattern = in_string.substr(0, found_pattern2).find_first_not_of("\t\v\r\n ");
+			if (not_found_pattern == std::string::npos && found_pattern3 != std::string::npos &&
+				http_config->haveActiveServer() == false)
+				http_config->addServer();                                                                                    //ToDo need mark aktive server & location until its done
+			else
+				std::cout << "In " << in_string << " @error in pattern __server" << "\n";
+		}
 	}
-
+	else if (checkString(in_string, "listen"))
+	{
+		if (http_config->haveActiveServer() && e != std::string::npos && !http_config->_servers[http_config->getActiveServer()].haveActiveLocation())
+			http_config->_servers[http_config->getActiveServer()].setPort(intString(in_string, "listen"));
+		else
+			std::cout << "In " << in_string << " @error in pattern __listen" << "\n";
+	}
+	else if (checkString(in_string, "root"))
+	{
+		if (http_config->haveActiveServer() && http_config->_servers[http_config->getActiveServer()].haveActiveLocation() && e != std::string::npos)
+			http_config->_servers[http_config->getActiveServer()]._locations[http_config->_servers[http_config->getActiveServer()].getActiveLocation()].setRoot(strString(in_string, "root"));
+		else if (http_config->haveActiveServer() && e != std::string::npos && !http_config->_servers[http_config->getActiveServer()].haveActiveLocation())
+			http_config->_servers[http_config->getActiveServer()].setRoot(strString(in_string, "root"));
+		else
+			std::cout << "In " << in_string << " @error in pattern __root" << "\n";
+	}
+	else if (checkString(in_string, "autoindex"))
+	{
+		size_t found_pattern4 = in_string.substr(0, e).find("on");
+		size_t found_pattern5 = in_string.substr(0, e).find("off");
+		if (http_config->haveActiveServer() && found_pattern4 != std::string::npos && e != std::string::npos && !http_config->_servers[http_config->getActiveServer()].haveActiveLocation())
+			http_config->_servers[http_config->getActiveServer()].setAutoindex(1);
+		else if (http_config->haveActiveServer() && found_pattern5 != std::string::npos && e != std::string::npos && !http_config->_servers[http_config->getActiveServer()].haveActiveLocation())
+			http_config->_servers[http_config->getActiveServer()].setAutoindex(0);
+		else
+			std::cout << "In " << in_string << " @error in pattern __autoindex" << "\n";
+	}
+	else if (checkString(in_string, "index"))
+	{
+		if (http_config->haveActiveServer() && e != std::string::npos && !http_config->_servers[http_config->getActiveServer()].haveActiveLocation())
+			http_config->_servers[http_config->getActiveServer()].setIndex(strString(in_string, "index"));
+		else
+			std::cout << "In " << in_string << " @error in pattern __index" << "\n";
+	}
+	else if (checkString(in_string, "location"))
+	{
+		size_t found_pattern = in_string.find("location") + 8;
+		size_t found_pattern2 = in_string.find('~');
+		size_t found_pattern3 = in_string.find_first_of('{');
+		size_t not_found_pattern = in_string.substr(found_pattern).find_first_not_of("\t\v\r\n ");
+		size_t found_pattern4 = in_string.find('.');
+		size_t found_pattern5 = in_string.find('$');
+		if (found_pattern2 != std::string::npos && not_found_pattern == std::string::npos && found_pattern3 != std::string::npos) // dl9 CGI
+		{
+			if (found_pattern4 != std::string::npos && found_pattern5 != std::string::npos)
+				http_config->_servers[http_config->getActiveServer()].addLocation("", in_string.substr(found_pattern4 + 1, found_pattern5));
+			else
+				std::cout << "In " << in_string << " @error in CGI pattern __location" << "\n";
+		}
+		else if (found_pattern2 == std::string::npos && not_found_pattern == std::string::npos && found_pattern3 != std::string::npos) // dl9 PREFIX
+			http_config->_servers[http_config->getActiveServer()].addLocation(strString(in_string, "location"), "");
+		else
+			std::cout << "In " << in_string << " @error in pattern __location" << "\n";
+	}
+	else if (checkString(in_string, "cgi_path"))
+	{
+		if (http_config->haveActiveServer() && http_config->_servers[http_config->getActiveServer()].haveActiveLocation() && e != std::string::npos)
+			http_config->_servers[http_config->getActiveServer()]._locations[http_config->_servers[http_config->getActiveServer()].getActiveLocation()].setCgiPath(strString(in_string, "cgi_path"));
+		else
+			std::cout << "In " << in_string << " @error in pattern __cgi_path" << "\n";
+	}
+	else if (checkString(in_string, "methods"))
+	{
+		size_t found_pattern = in_string.find("GET POST DELETE");
+		if (e != std::string::npos && found_pattern != std::string::npos && http_config->haveActiveServer() && http_config->_servers[http_config->getActiveServer()].haveActiveLocation())
+			http_config->_servers[http_config->getActiveServer()]._locations[http_config->_servers[http_config->getActiveServer()].getActiveLocation()].setMethods(1);
+		else if (e != std::string::npos && found_pattern == std::string::npos && http_config->haveActiveServer() && http_config->_servers[http_config->getActiveServer()].haveActiveLocation())
+			http_config->_servers[http_config->getActiveServer()]._locations[http_config->_servers[http_config->getActiveServer()].getActiveLocation()].setMethods(0);
+		else
+			std::cout << "In " << in_string << " @error in pattern __cgi_path" << "\n";
+	}
+	else if (checkString(in_string, "return"))
+	{
+		size_t ddd = in_string.find_first_of("0123456789");
+		if (http_config->haveActiveServer() && e != std::string::npos && !http_config->_servers[http_config->getActiveServer()].haveActiveLocation())
+			http_config->_servers[http_config->getActiveServer()].setReturnCode(intString(in_string, "return"), wwtrim(in_string.substr(ddd + skipDigits(in_string.substr(ddd)), e)));
+		else
+			std::cout << "In " << in_string << " @error in pattern __return" << "\n";
+	}
+	else if (checkString(in_string, "}"))
+	{
+		if (http_config->haveActiveServer() && e == std::string::npos && http_config->_servers[http_config->getActiveServer()].haveActiveLocation())
+			http_config->_servers[http_config->getActiveServer()].checkLastLocation();
+		else if (http_config->haveActiveServer() && e == std::string::npos && !http_config->_servers[http_config->getActiveServer()].haveActiveLocation())
+			http_config->checkLastServeer();
+		else
+			std::cout << "In " << in_string << " @error in close pattern `}`" << "\n";
+	}
 }
 
 int main()

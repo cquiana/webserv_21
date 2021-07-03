@@ -15,7 +15,7 @@ private:
 	int _client_max_body_size;
 	std::vector<int> _error_page_ints;
 	std::vector<std::string> _error_page_strings;
-	std::vector<Server_config> _servers;
+	int _active_server;
 
 	Http_config(Http_config const &another);
 	Http_config &operator=(Http_config const &another);
@@ -24,18 +24,22 @@ public:
 	Http_config();
 	~Http_config();
 
+	std::vector<Server_config> _servers;
+
 	bool haveErrorPage(int page) const;
 	bool haveMaxBody() const;
 	bool haveServer(std::string servers_name);
 
 	bool haveSomeServer() const;
+	bool haveActiveServer() const;
 
 	std::string getErrorPage(int page);
 	int getMaxBody() const;
+	int getActiveServer() const;
 	Server_config getServer(std::string servers_name);
 
 	void setErrorPage(size_t error_page_int, std::string error_page_string);
-	void setMaxBody(size_t max_body);
+	void setMaxBody(int max_body);
 
 	void addServer();
 	void checkLastServeer();
@@ -59,6 +63,9 @@ public:
 		virtual const char *what() const throw() ;
 	};
 	class ServerNotFoundException:			public std::exception {
+		virtual const char *what() const throw() ;
+	};
+	class ServerNotOpenedException:			public std::exception {
 		virtual const char *what() const throw() ;
 	};
 	class SizeServersException:				public std::exception {
