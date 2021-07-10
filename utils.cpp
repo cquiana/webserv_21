@@ -34,21 +34,19 @@ std::string getTime(const time_t *time) {
 
 bool fileExist(const std::string &path) {
 	struct stat buff = {};
-	int ret;
 
-	ret = stat(path.c_str(), &buff);
-	if (ret != 0)
+	if (stat(path.c_str(), &buff) != 0)
 		return false;
-	bool res = S_ISDIR(buff.st_mode);
-	return res;
+	return true;
 }
 
 bool isDirectory(const std::string &path) {
 	struct stat buff = {};
-	int ret;
 
-	ret = stat(path.c_str(), &buff);
-	return (ret == 0);
+	if (stat(path.c_str(), &buff) != 0)
+		return false;
+	bool res = S_ISDIR(buff.st_mode);
+	return res;
 }
 
 std::string ft_tolower(std::string &str) {

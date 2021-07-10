@@ -9,6 +9,7 @@ class Response
 private:
 
 public:
+	Request _request;
 	std::map<std::string, std::string> _headers;
 	std::map<int, std::string> _errors;
     std::string _protocol;
@@ -37,6 +38,7 @@ public:
     std::string getHeader(std::string &key) const;
 
 	void startGenerateResponse();
+	void setErrorPage(int code);
 };
 
 

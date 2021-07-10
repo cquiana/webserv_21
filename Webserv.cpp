@@ -105,8 +105,8 @@ void WebServer::createSock() {
 		else if (FD_ISSET((*it)->getSock(), &_wFd)) {
 			// (*it).sendResp();
 			std::string recp = "HTTP/1.1 200 OK\nContent-Type: text/plain\nContent-Length: 10\n\nHello world!";
-			std::cout << "send\n";
-			std::cout << recp << std::endl;
+//			std::cout << "send\n";
+//			std::cout << recp << std::endl;
 			send((*it)->getSock(), recp.c_str(), recp.length(), 0);
 		}
 	}

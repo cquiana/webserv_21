@@ -24,11 +24,12 @@ private:
 	bool _correctBody;
 	int _sock;
 
-	Request();
+
 
 
 public:
 	Request(int sock);
+	Request();
 	virtual ~Request();
 
 	void parseRequest(std::string request);
@@ -45,6 +46,7 @@ public:
 	std::string getUri();
 	std::string getPath();
 	std::string getQueryString();
+	std::string getHttpVers();
 	bool getCompete();
 	bool checkHeader();
 

@@ -6,6 +6,9 @@ Request::Request(int sock) : _sock(sock), _isComplete(false),
 							_correctBody(true), _contentLength (0) {
 }
 
+Request::Request() {
+}
+
 Request::~Request() {
 }
 
@@ -119,7 +122,6 @@ bool Request::getCompete() {
 void Request::receive() {
 	char buff[BUFFER_SIZE + 1];
 	int ret;
-	std::cout << "Recv req!\n";
 	ret = read(_sock, buff, BUFFER_SIZE);
 	if (ret == -1) {
 		std::cout << "read error\n";
@@ -130,4 +132,13 @@ void Request::receive() {
 		bzero(buff, BUFFER_SIZE);
 	}
 	parseRequest(_toRead);
+	std::cout << getMethod() << std::endl;
+}
+
+std::string Request::getHttpVers()
+{
+	std::string res;
+
+	res = _headers["version"];
+	return res;
 }

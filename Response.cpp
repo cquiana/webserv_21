@@ -18,6 +18,8 @@ void Response::setErrors() {
 	_errors[405] = "Method Not Allowed";
 	_errors[413] = "Payload Too Large";
 	_errors[500] = "Internal Server Error";
+	_errors[505] = "HTTP version not supported";
+
 
 
 }
@@ -72,3 +74,18 @@ std::string Response::getHeader(std::string &key) const {
 		return "";
 	}
 }
+
+void Response::startGenerateResponse(const Request &request) {
+	std::string reqcopy = _request.getMethod();
+	if (_request.getCompete() == false)
+		setErrorPage(400);
+	else if (_request.getHttpVers() != "HTTP/1.1")
+		setErrorPage(505);
+
+}
+
+void Response::setErrorPage(int code) {
+
+}
+
+
