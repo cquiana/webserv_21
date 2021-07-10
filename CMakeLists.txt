@@ -8,6 +8,6 @@ add_executable(webserv
         Webserv.cpp
         Client.cpp
         Request.cpp
-        Responce.cpp
+        Response.cpp
         utils.cpp
         Server.cpp)

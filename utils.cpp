@@ -51,3 +51,26 @@ bool isDirectory(const std::string &path) {
 	return (ret == 0);
 }
 
+std::string ft_tolower(std::string &str) {
+	std::string result(str);
+	std::transform(result.begin(), result.end(), result.begin(), ::tolower);
+	return result;
+}
+
+long checkSize(const char *str, int n) {
+	long size;
+	char *end = 0;
+	size = std::strtol(str, &end, n);
+	if (size == 0 && end == str)
+		return -1;
+	return size;
+}
+
+std::string ft_skip_space(std::string str)
+{
+	std::stringstream trimmer;
+	trimmer << str;
+	str.clear();
+	trimmer >> str;
+	return str;
+}

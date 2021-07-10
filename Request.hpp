@@ -18,8 +18,10 @@ private:
 	std::string _queryString;
 	std::string _reqBody;
 	std::string _toRead;
+
 	size_t _contentLength;
 	bool _isComplete;
+	bool _correctBody;
 	int _sock;
 
 	Request();

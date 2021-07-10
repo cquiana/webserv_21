@@ -79,93 +79,93 @@ include CMakeFiles/webserv.dir/flags.make
 CMakeFiles/webserv.dir/main.cpp.o: CMakeFiles/webserv.dir/flags.make
 CMakeFiles/webserv.dir/main.cpp.o: ../main.cpp
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/Beto/CLionProjects/webserv_21/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/webserv.dir/main.cpp.o"
-	/Library/Developer/CommandLineTools/usr/bin/clang $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/webserv.dir/main.cpp.o -c /Users/Beto/CLionProjects/webserv_21/main.cpp
+	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/webserv.dir/main.cpp.o -c /Users/Beto/CLionProjects/webserv_21/main.cpp
 
 CMakeFiles/webserv.dir/main.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/webserv.dir/main.cpp.i"
-	/Library/Developer/CommandLineTools/usr/bin/clang $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/Beto/CLionProjects/webserv_21/main.cpp > CMakeFiles/webserv.dir/main.cpp.i
+	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/Beto/CLionProjects/webserv_21/main.cpp > CMakeFiles/webserv.dir/main.cpp.i
 
 CMakeFiles/webserv.dir/main.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/webserv.dir/main.cpp.s"
-	/Library/Developer/CommandLineTools/usr/bin/clang $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/Beto/CLionProjects/webserv_21/main.cpp -o CMakeFiles/webserv.dir/main.cpp.s
+	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/Beto/CLionProjects/webserv_21/main.cpp -o CMakeFiles/webserv.dir/main.cpp.s
 
 CMakeFiles/webserv.dir/Webserv.cpp.o: CMakeFiles/webserv.dir/flags.make
 CMakeFiles/webserv.dir/Webserv.cpp.o: ../Webserv.cpp
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/Beto/CLionProjects/webserv_21/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/webserv.dir/Webserv.cpp.o"
-	/Library/Developer/CommandLineTools/usr/bin/clang $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/webserv.dir/Webserv.cpp.o -c /Users/Beto/CLionProjects/webserv_21/Webserv.cpp
+	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/webserv.dir/Webserv.cpp.o -c /Users/Beto/CLionProjects/webserv_21/Webserv.cpp
 
 CMakeFiles/webserv.dir/Webserv.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/webserv.dir/Webserv.cpp.i"
-	/Library/Developer/CommandLineTools/usr/bin/clang $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/Beto/CLionProjects/webserv_21/Webserv.cpp > CMakeFiles/webserv.dir/Webserv.cpp.i
+	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/Beto/CLionProjects/webserv_21/Webserv.cpp > CMakeFiles/webserv.dir/Webserv.cpp.i
 
 CMakeFiles/webserv.dir/Webserv.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/webserv.dir/Webserv.cpp.s"
-	/Library/Developer/CommandLineTools/usr/bin/clang $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/Beto/CLionProjects/webserv_21/Webserv.cpp -o CMakeFiles/webserv.dir/Webserv.cpp.s
+	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/Beto/CLionProjects/webserv_21/Webserv.cpp -o CMakeFiles/webserv.dir/Webserv.cpp.s
 
 CMakeFiles/webserv.dir/Client.cpp.o: CMakeFiles/webserv.dir/flags.make
 CMakeFiles/webserv.dir/Client.cpp.o: ../Client.cpp
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/Beto/CLionProjects/webserv_21/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/webserv.dir/Client.cpp.o"
-	/Library/Developer/CommandLineTools/usr/bin/clang $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/webserv.dir/Client.cpp.o -c /Users/Beto/CLionProjects/webserv_21/Client.cpp
+	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/webserv.dir/Client.cpp.o -c /Users/Beto/CLionProjects/webserv_21/Client.cpp
 
 CMakeFiles/webserv.dir/Client.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/webserv.dir/Client.cpp.i"
-	/Library/Developer/CommandLineTools/usr/bin/clang $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/Beto/CLionProjects/webserv_21/Client.cpp > CMakeFiles/webserv.dir/Client.cpp.i
+	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/Beto/CLionProjects/webserv_21/Client.cpp > CMakeFiles/webserv.dir/Client.cpp.i
 
 CMakeFiles/webserv.dir/Client.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/webserv.dir/Client.cpp.s"
-	/Library/Developer/CommandLineTools/usr/bin/clang $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/Beto/CLionProjects/webserv_21/Client.cpp -o CMakeFiles/webserv.dir/Client.cpp.s
+	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/Beto/CLionProjects/webserv_21/Client.cpp -o CMakeFiles/webserv.dir/Client.cpp.s
 
 CMakeFiles/webserv.dir/Request.cpp.o: CMakeFiles/webserv.dir/flags.make
 CMakeFiles/webserv.dir/Request.cpp.o: ../Request.cpp
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/Beto/CLionProjects/webserv_21/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/webserv.dir/Request.cpp.o"
-	/Library/Developer/CommandLineTools/usr/bin/clang $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/webserv.dir/Request.cpp.o -c /Users/Beto/CLionProjects/webserv_21/Request.cpp
+	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/webserv.dir/Request.cpp.o -c /Users/Beto/CLionProjects/webserv_21/Request.cpp
 
 CMakeFiles/webserv.dir/Request.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/webserv.dir/Request.cpp.i"
-	/Library/Developer/CommandLineTools/usr/bin/clang $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/Beto/CLionProjects/webserv_21/Request.cpp > CMakeFiles/webserv.dir/Request.cpp.i
+	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/Beto/CLionProjects/webserv_21/Request.cpp > CMakeFiles/webserv.dir/Request.cpp.i
 
 CMakeFiles/webserv.dir/Request.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/webserv.dir/Request.cpp.s"
-	/Library/Developer/CommandLineTools/usr/bin/clang $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/Beto/CLionProjects/webserv_21/Request.cpp -o CMakeFiles/webserv.dir/Request.cpp.s
+	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/Beto/CLionProjects/webserv_21/Request.cpp -o CMakeFiles/webserv.dir/Request.cpp.s
 
 CMakeFiles/webserv.dir/Responce.cpp.o: CMakeFiles/webserv.dir/flags.make
 CMakeFiles/webserv.dir/Responce.cpp.o: ../Responce.cpp
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/Beto/CLionProjects/webserv_21/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/webserv.dir/Responce.cpp.o"
-	/Library/Developer/CommandLineTools/usr/bin/clang $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/webserv.dir/Responce.cpp.o -c /Users/Beto/CLionProjects/webserv_21/Responce.cpp
+	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/webserv.dir/Responce.cpp.o -c /Users/Beto/CLionProjects/webserv_21/Responce.cpp
 
 CMakeFiles/webserv.dir/Responce.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/webserv.dir/Responce.cpp.i"
-	/Library/Developer/CommandLineTools/usr/bin/clang $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/Beto/CLionProjects/webserv_21/Responce.cpp > CMakeFiles/webserv.dir/Responce.cpp.i
+	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/Beto/CLionProjects/webserv_21/Responce.cpp > CMakeFiles/webserv.dir/Responce.cpp.i
 
 CMakeFiles/webserv.dir/Responce.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/webserv.dir/Responce.cpp.s"
-	/Library/Developer/CommandLineTools/usr/bin/clang $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/Beto/CLionProjects/webserv_21/Responce.cpp -o CMakeFiles/webserv.dir/Responce.cpp.s
+	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/Beto/CLionProjects/webserv_21/Responce.cpp -o CMakeFiles/webserv.dir/Responce.cpp.s
 
 CMakeFiles/webserv.dir/utils.cpp.o: CMakeFiles/webserv.dir/flags.make
 CMakeFiles/webserv.dir/utils.cpp.o: ../utils.cpp
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/Beto/CLionProjects/webserv_21/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object CMakeFiles/webserv.dir/utils.cpp.o"
-	/Library/Developer/CommandLineTools/usr/bin/clang $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/webserv.dir/utils.cpp.o -c /Users/Beto/CLionProjects/webserv_21/utils.cpp
+	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/webserv.dir/utils.cpp.o -c /Users/Beto/CLionProjects/webserv_21/utils.cpp
 
 CMakeFiles/webserv.dir/utils.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/webserv.dir/utils.cpp.i"
-	/Library/Developer/CommandLineTools/usr/bin/clang $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/Beto/CLionProjects/webserv_21/utils.cpp > CMakeFiles/webserv.dir/utils.cpp.i
+	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/Beto/CLionProjects/webserv_21/utils.cpp > CMakeFiles/webserv.dir/utils.cpp.i
 
 CMakeFiles/webserv.dir/utils.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/webserv.dir/utils.cpp.s"
-	/Library/Developer/CommandLineTools/usr/bin/clang $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/Beto/CLionProjects/webserv_21/utils.cpp -o CMakeFiles/webserv.dir/utils.cpp.s
+	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/Beto/CLionProjects/webserv_21/utils.cpp -o CMakeFiles/webserv.dir/utils.cpp.s
 
 CMakeFiles/webserv.dir/Server.cpp.o: CMakeFiles/webserv.dir/flags.make
 CMakeFiles/webserv.dir/Server.cpp.o: ../Server.cpp
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/Beto/CLionProjects/webserv_21/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building CXX object CMakeFiles/webserv.dir/Server.cpp.o"
-	/Library/Developer/CommandLineTools/usr/bin/clang $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/webserv.dir/Server.cpp.o -c /Users/Beto/CLionProjects/webserv_21/Server.cpp
+	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/webserv.dir/Server.cpp.o -c /Users/Beto/CLionProjects/webserv_21/Server.cpp
 
 CMakeFiles/webserv.dir/Server.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/webserv.dir/Server.cpp.i"
-	/Library/Developer/CommandLineTools/usr/bin/clang $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/Beto/CLionProjects/webserv_21/Server.cpp > CMakeFiles/webserv.dir/Server.cpp.i
+	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/Beto/CLionProjects/webserv_21/Server.cpp > CMakeFiles/webserv.dir/Server.cpp.i
 
 CMakeFiles/webserv.dir/Server.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/webserv.dir/Server.cpp.s"
-	/Library/Developer/CommandLineTools/usr/bin/clang $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/Beto/CLionProjects/webserv_21/Server.cpp -o CMakeFiles/webserv.dir/Server.cpp.s
+	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/Beto/CLionProjects/webserv_21/Server.cpp -o CMakeFiles/webserv.dir/Server.cpp.s
 
 # Object files for target webserv
 webserv_OBJECTS = \
