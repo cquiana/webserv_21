@@ -3,9 +3,10 @@
 
 #include <iostream>
 
-class ErrorPattern {
+class HtmlTemplate {
 public:
 	virtual std::string ShowErrorPage(const std::string &code, const std::string &textCode) = 0;
+	virtual std::string ShowListPage() = 0;
 };
 
 #endif

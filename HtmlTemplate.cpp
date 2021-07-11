@@ -1,6 +1,6 @@
-#include "ErrorPattern.h"
+#include "HtmlTemplate.h"
 
-std::string ErrorPattern::ShowErrorPage(const std::string &code,
+std::string HtmlTemplate::ShowErrorPage(const std::string &code,
 										const std::string &textCode) {
 	std::string result;
 
@@ -26,6 +26,34 @@ std::string ErrorPattern::ShowErrorPage(const std::string &code,
 	result += "<div class=\"col-auto\">\n<h5>Error " + code + " / Webserv</h5>\n</div>\n";
 	result += "<div class=\"col\"></div>\n";
 	result += "</div>\n</div>\n</body>\n</html>\n";
+
+	return (result);
+}
+
+std::string HtmlTemplate::ShowListPage() {
+	std::string result;
+
+	result = "Content-type:text/html\r\n\r\n";
+	result += "<!DOCTYPE html>\n";
+	result += "<html lang=\"en\">\n";
+	result += "<head>\n";
+	result += "<meta charset=\"UTF-8\">\n";
+	result += "<title>Autoindex</title>\n";
+	result += "<link href=\"https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css\" rel=\"stylesheet\" integrity=\"sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x\" crossorigin=\"anonymous\">\n";
+	result += "</head>\n";
+	result += "<body>\n";
+	result += "<div class=\"container\">\n";
+	result += "<table class=\"table mt-5\">\n";
+	result += "<thead><tr><th scope=\"col\">Name</th></tr></thead>\n";
+	result += "<tbody>\n";
+
+	//  Тут идет цикл файлов и папок
+
+	result += "</tbody>\n";
+	result += "</table>\n";
+	result += "</div>\n";
+	result += "</body>\n";
+	result += "</html>\n";
 
 	return (result);
 }
