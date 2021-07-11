@@ -15,7 +15,7 @@ private:
 	int _client_max_body_size;
 	std::vector<int> _error_page_ints;
 	std::vector<std::string> _error_page_strings;
-	int _active_server;
+	bool _active_server;
 
 	Http_config(Http_config const &another);
 	Http_config &operator=(Http_config const &another);
@@ -35,8 +35,8 @@ public:
 
 	std::string getErrorPage(int page);
 	int getMaxBody() const;
-	int getActiveServer() const;
 	Server_config getServer(std::string servers_name);
+	int getActiveServer() const;
 
 	void setErrorPage(size_t error_page_int, std::string error_page_string);
 	void setMaxBody(int max_body);
@@ -71,6 +71,10 @@ public:
 	class SizeServersException:				public std::exception {
 		virtual const char *what() const throw() ;
 	};
+	class ServerAlreadyOpenedException:		public std::exception {
+		virtual const char *what() const throw() ;
+	};
+
 };
 
 #endif //WEBSERVER_HTTP_CONFIG_HPP

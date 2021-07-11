@@ -5,7 +5,7 @@
 #include "Http_config.hpp"
 #include <vector>
 
-Http_config::Http_config() : _client_max_body_size(-2), _active_server(-1) {}  // ToDo WTF ?											!!!!
+Http_config::Http_config() : _client_max_body_size(-2), _active_server(false) {}  // ToDo WTF ?											!!!!
 
 Http_config::~Http_config() {}
 
@@ -54,10 +54,7 @@ bool Http_config::haveSomeServer() const {
 }
 
 bool Http_config::haveActiveServer() const {
-	if (_active_server == -1)
-		return (false);
-	else
-		return (true);
+	return (_active_server);
 }
 
 
@@ -77,19 +74,21 @@ int Http_config::getMaxBody() const {
 	return (_client_max_body_size);
 }
 
-int Http_config::getActiveServer() const {
-	return (_active_server);
-}
-
 Server_config Http_config::getServer(std::string servers_name) {
-	// ToDo WTF ?																									!!!!
-	for(std::vector<Server_config>::iterator it = _servers.begin(); it != _servers.end(); it++) // ToDo WTF const !!!!?????
+																														// ToDo WTF ? !!!!
+	for(std::vector<Server_config>::iterator it = _servers.begin(); it != _servers.end(); it++)
 	{
 		if ((*it).getName() == servers_name)
 			return ((*it));
 	}
 	throw Http_config::ServerNotFoundException();
 	// return (Server_config());
+}
+
+int Http_config::getActiveServer() const {
+	if (!(_active_server))
+		throw Http_config::ServerNotOpenedException();
+	return (_servers.size() - 1);
 }
 
 
@@ -110,27 +109,27 @@ void Http_config::setMaxBody(int max_body) {
 }
 
 void Http_config::addServer() {
-	// ToDo WTF ?					!!!!
-	if (_active_server != -1) // -1 server can create, 0....1000000 current opened server
-		throw Http_config::ServerNotOpenedException();
+																														// ToDo WTF ?	!!!!
+	if (_active_server) // -1 server can create, 0....1000000 current opened server
+		throw Http_config::ServerAlreadyOpenedException();
 	_servers.push_back(Server_config());
-	_active_server = _servers.size() - 1;
+	_active_server = true;
 }
 
 void Http_config::checkLastServeer() {
-	int n = _active_server;
-	if (n < 0)
-		throw Server_config::SizeLocationsException();
+	int n = _servers.size() - 1;
+	if (n == 0)
+		;//throw Server_config::SizeLocationsException();   																//ToDo need change exception
 	if (_servers[n].havePort() && _servers[n].haveRoot() && !_servers[n].haveName())
 	{
 		std::cout << "Server done" << std::endl;
-		_active_server = -1;
+		_active_server = false;
 	}
 	else
 	{
 		std::cout << "Server wrong : " << _servers[n].getPort() << " : " << _servers[n].getName()[0] << " : " << _servers[n].getRoot() << " : " << _servers[n].getIndex() << " : " << _servers[n].getAutoindex() << " : " << _servers[n].haveLocation() << " : " << _servers[n].getReturnCode() << " : " << _servers[n].getReturnArdess() << std::endl;
 		_servers.pop_back();
-		_active_server = -1;
+		_active_server = false;
 	}
 }
 
@@ -171,3 +170,8 @@ const char *Http_config::ServerNotOpenedException::what() const throw() {
 const char *Http_config::SizeServersException::what() const throw() {
 	return ("EXCEPTION! Size of servers[] wrong...");
 };
+
+const char *Http_config::ServerAlreadyOpenedException::what() const throw() {
+	return ("EXCEPTION! Size of servers[] wrong...");
+};
+

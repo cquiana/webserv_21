@@ -17,7 +17,7 @@ private:
 	std::string _type;
 	std::string _cgi_path;
 	std::string _root;
-	int _methods;
+	int _methods;  //ToDo 1 + 2 + 4 tri methoda
 //	bool _some;
 	bool _IsCGI;
 	bool _IsPrefix;

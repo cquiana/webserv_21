@@ -76,12 +76,12 @@ bool checkString(std::string in_string, std::string search_string)
 	}
 	else if (not_found_pattern < found_pattern)
 	{
-		std::cout << "In " << in_string << " @error_0 in pattern " << search_string << "\n"; //ToDo DEL after debug
+		std::cout << "In " << in_string << " @error_0 in pattern " << search_string << "\n"; 							//ToDo DEL after debug
 		return (false);
 	}
 	else
 	{
-		std::cout << "In " << in_string << " found " << search_string << " at pos: " << found_pattern << "\n"; //ToDo DEL after debug
+		std::cout << "In " << in_string << " found " << search_string << " at pos: " << found_pattern << "\n"; 			//ToDo DEL after debug
 		return (true);
 	}
 }
@@ -90,7 +90,8 @@ void parseConfig(std::string in_string2, Http_config* http_config)
 {
 	size_t found_pattern_hash = in_string2.find_first_of('#');
 	std::string in_string = in_string2.substr(0, found_pattern_hash);
-	if (in_string.length() < 3)
+	size_t found_pattern_skobka = in_string2.find_first_of('}');
+	if (found_pattern_skobka != std::string::npos || in_string.length() < 3)
 	{
 		std::cout << "In " << in_string2 << " @ only #####" << "\n";
 		return;
@@ -115,8 +116,9 @@ void parseConfig(std::string in_string2, Http_config* http_config)
 	{
 		if (checkString(in_string, "server_name"))
 		{
-			if (http_config->haveActiveServer() && e != std::string::npos && !http_config->_servers[http_config->getActiveServer()].haveActiveLocation())
-				http_config->_servers[http_config->getActiveServer()].setName(strString(in_string, "server_name"));
+			std::string sn = strString(in_string, "server_name");
+			if (http_config->haveActiveServer() && e != std::string::npos && !http_config->_servers[http_config->getActiveServer()].haveActiveLocation() && !http_config->haveServer(sn))
+				http_config->_servers[http_config->getActiveServer()].setName(sn);
 			else
 				std::cout << "In " << in_string << " @error in pattern __server_name" << "\n";
 		}
@@ -125,8 +127,7 @@ void parseConfig(std::string in_string2, Http_config* http_config)
 			size_t found_pattern2 = in_string.find("server");
 			size_t found_pattern3 = in_string.find_first_of('{');
 			size_t not_found_pattern = in_string.substr(0, found_pattern2).find_first_not_of("\t\v\r\n ");
-			if (not_found_pattern == std::string::npos && found_pattern3 != std::string::npos &&
-				http_config->haveActiveServer() == false)
+			if (not_found_pattern == std::string::npos && found_pattern3 != std::string::npos && http_config->haveActiveServer() == false)
 				http_config->addServer();                                                                                    //ToDo need mark aktive server & location until its done
 			else
 				std::cout << "In " << in_string << " @error in pattern __server" << "\n";
