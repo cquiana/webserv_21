@@ -49,7 +49,7 @@ bool isDirectory(const std::string &path) {
 	return res;
 }
 
-std::string ft_tolower(std::string &str) {
+std::string ft_tolower(std::string str) {
 	std::string result(str);
 	std::transform(result.begin(), result.end(), result.begin(), ::tolower);
 	return result;

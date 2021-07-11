@@ -55,7 +55,7 @@ void Request::parseBody(std::string &request) {
 
 }
 
-std::string const &Request::getMethod() {
+const std::string  &Request::getMethod() {
 	return (_headers["method"]);
 }
 
@@ -64,7 +64,7 @@ size_t Request::getContentLength() {
 		return _contentLength;
 }
 
-std::string Request::getHost() {
+std::string Request::getHost()  {
 	std::map<std::string, std::string>::iterator it = _headers.find("host");
 	if (it == _headers.end()) {
 		return "";
@@ -72,7 +72,7 @@ std::string Request::getHost() {
 		return it->second;
 	}
 }
-std::string const &Request::getReqBody() {
+std::string  &Request::getReqBody() {
 	return (_headers["body"]);
 }
 
@@ -132,7 +132,9 @@ void Request::receive() {
 		bzero(buff, BUFFER_SIZE);
 	}
 	parseRequest(_toRead);
-	std::cout << getMethod() << std::endl;
+	std::cout << ret << std::endl;
+
+//	std::cout << getMethod() << std::endl;
 }
 
 std::string Request::getHttpVers()

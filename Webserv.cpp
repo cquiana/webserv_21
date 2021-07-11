@@ -49,8 +49,7 @@ void WebServer::startServ() {
 	// TODO: получить запрос
 	FD_ZERO(&_rFd);
 	FD_ZERO(&_wFd);
-	for (std::vector<Client*>::iterator it = _clients.begin(); it != _clients
-	.end(); ++it) {
+	for (std::vector<Client*>::iterator it = _clients.begin(); it != _clients.end(); ++it) {
 		FD_SET((*it)->getSock(), &_rFd);
 		FD_SET((*it)->getSock(), &_wFd);
 	}
@@ -64,7 +63,7 @@ void WebServer::startServ() {
 	if (mx < 0)
 		std::cerr << "select error!" << std::endl;
 
-	// fcntl(_sock, F_SETFL, O_NONBLOCK);
+	fcntl(_sock, F_SETFL, O_NONBLOCK);
 	std::cout << "Webserv!\n";
 }
 
@@ -98,16 +97,16 @@ void WebServer::createSock() {
 	// std::cout << _clients.size() << std::endl;s
 	for (it = _clients.begin(); it != _clients.end(); ++it) {
 		// добавить проверку статуса
-		if (FD_ISSET((*it)->getSock(), &_rFd)) {
+		if (FD_ISSET((*it)->getSock(), &_rFd) && (*it)->getStatus() == READY_TO_RECV) {
 			(*it)->recvReq();
 			std::cout << "recv\n";
 		}
 		else if (FD_ISSET((*it)->getSock(), &_wFd)) {
-			// (*it).sendResp();
-			std::string recp = "HTTP/1.1 200 OK\nContent-Type: text/plain\nContent-Length: 10\n\nHello world!";
+			 (*it)->sendResp();
+//			std::string recp = "HTTP/1.1 200 OK\nContent-Type: text/plain\nContent-Length: 12\n\nHello world!";
 //			std::cout << "send\n";
 //			std::cout << recp << std::endl;
-			send((*it)->getSock(), recp.c_str(), recp.length(), 0);
+//			send((*it)->getSock(), recp.c_str(), recp.length(), 0);
 		}
 	}
 }

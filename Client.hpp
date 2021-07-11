@@ -1,10 +1,12 @@
 #pragma once
 #include "Request.hpp"
 #include "Server.hpp"
+#include "Response.hpp"
 #include <unistd.h>
 
 
-// class Request;
+class Request;
+class Response;
 
 enum client_status {
 	READY_TO_RECV,
@@ -22,15 +24,20 @@ private:
 	std::string _reqMsg;
 	client_status _status;
 
-	Client();
+
 
 public:
+	Client();
 	Client(Server &serv, int sock);
 	Client(int sock);
 	~Client();
 
 	int getSock();
 	void recvReq();
+	void sendResp();
+	client_status getStatus();
+
+//	Response startGenerateResponse(Request request);
 };
 
 

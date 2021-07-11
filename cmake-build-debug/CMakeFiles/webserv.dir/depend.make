@@ -4,26 +4,29 @@
 CMakeFiles/webserv.dir/Client.cpp.o: ../Client.cpp
 CMakeFiles/webserv.dir/Client.cpp.o: ../Client.hpp
 CMakeFiles/webserv.dir/Client.cpp.o: ../Request.hpp
+CMakeFiles/webserv.dir/Client.cpp.o: ../Response.hpp
 CMakeFiles/webserv.dir/Client.cpp.o: ../Server.hpp
+CMakeFiles/webserv.dir/Client.cpp.o: ../Webserv.hpp
 CMakeFiles/webserv.dir/Client.cpp.o: ../utils.hpp
 
 CMakeFiles/webserv.dir/Request.cpp.o: ../Request.cpp
 CMakeFiles/webserv.dir/Request.cpp.o: ../Request.hpp
 CMakeFiles/webserv.dir/Request.cpp.o: ../utils.hpp
 
-CMakeFiles/webserv.dir/Responce.cpp.o: ../Client.hpp
-CMakeFiles/webserv.dir/Responce.cpp.o: ../Request.hpp
-CMakeFiles/webserv.dir/Responce.cpp.o: ../Responce.cpp
-CMakeFiles/webserv.dir/Responce.cpp.o: ../Responce.hpp
-CMakeFiles/webserv.dir/Responce.cpp.o: ../Server.hpp
-CMakeFiles/webserv.dir/Responce.cpp.o: ../Webserv.hpp
-CMakeFiles/webserv.dir/Responce.cpp.o: ../utils.hpp
+CMakeFiles/webserv.dir/Response.cpp.o: ../Client.hpp
+CMakeFiles/webserv.dir/Response.cpp.o: ../Request.hpp
+CMakeFiles/webserv.dir/Response.cpp.o: ../Response.cpp
+CMakeFiles/webserv.dir/Response.cpp.o: ../Response.hpp
+CMakeFiles/webserv.dir/Response.cpp.o: ../Server.hpp
+CMakeFiles/webserv.dir/Response.cpp.o: ../Webserv.hpp
+CMakeFiles/webserv.dir/Response.cpp.o: ../utils.hpp
 
 CMakeFiles/webserv.dir/Server.cpp.o: ../Server.cpp
 CMakeFiles/webserv.dir/Server.cpp.o: ../Server.hpp
 
 CMakeFiles/webserv.dir/Webserv.cpp.o: ../Client.hpp
 CMakeFiles/webserv.dir/Webserv.cpp.o: ../Request.hpp
+CMakeFiles/webserv.dir/Webserv.cpp.o: ../Response.hpp
 CMakeFiles/webserv.dir/Webserv.cpp.o: ../Server.hpp
 CMakeFiles/webserv.dir/Webserv.cpp.o: ../Webserv.cpp
 CMakeFiles/webserv.dir/Webserv.cpp.o: ../Webserv.hpp
@@ -31,6 +34,7 @@ CMakeFiles/webserv.dir/Webserv.cpp.o: ../utils.hpp
 
 CMakeFiles/webserv.dir/main.cpp.o: ../Client.hpp
 CMakeFiles/webserv.dir/main.cpp.o: ../Request.hpp
+CMakeFiles/webserv.dir/main.cpp.o: ../Response.hpp
 CMakeFiles/webserv.dir/main.cpp.o: ../Server.hpp
 CMakeFiles/webserv.dir/main.cpp.o: ../Webserv.hpp
 CMakeFiles/webserv.dir/main.cpp.o: ../main.cpp

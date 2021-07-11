@@ -67,10 +67,10 @@ RM = /Applications/CLion.app/Contents/bin/cmake/mac/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /Users/Beto/CLionProjects/webserv_21
+CMAKE_SOURCE_DIR = /Users/cquiana/CLionProjects/webserv_21
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /Users/Beto/CLionProjects/webserv_21/cmake-build-debug
+CMAKE_BINARY_DIR = /Users/cquiana/CLionProjects/webserv_21/cmake-build-debug
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -99,9 +99,9 @@ edit_cache/fast: edit_cache
 
 # The main all target
 all: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/Beto/CLionProjects/webserv_21/cmake-build-debug/CMakeFiles /Users/Beto/CLionProjects/webserv_21/cmake-build-debug//CMakeFiles/progress.marks
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/cquiana/CLionProjects/webserv_21/cmake-build-debug/CMakeFiles /Users/cquiana/CLionProjects/webserv_21/cmake-build-debug//CMakeFiles/progress.marks
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 all
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/Beto/CLionProjects/webserv_21/cmake-build-debug/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/cquiana/CLionProjects/webserv_21/cmake-build-debug/CMakeFiles 0
 .PHONY : all
 
 # The main clean target
@@ -196,32 +196,32 @@ Request.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/webserv.dir/build.make CMakeFiles/webserv.dir/Request.cpp.s
 .PHONY : Request.cpp.s
 
-Responce.o: Responce.cpp.o
+Response.o: Response.cpp.o
 
-.PHONY : Responce.o
+.PHONY : Response.o
 
 # target to build an object file
-Responce.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/webserv.dir/build.make CMakeFiles/webserv.dir/Responce.cpp.o
-.PHONY : Responce.cpp.o
+Response.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/webserv.dir/build.make CMakeFiles/webserv.dir/Response.cpp.o
+.PHONY : Response.cpp.o
 
-Responce.i: Responce.cpp.i
+Response.i: Response.cpp.i
 
-.PHONY : Responce.i
+.PHONY : Response.i
 
 # target to preprocess a source file
-Responce.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/webserv.dir/build.make CMakeFiles/webserv.dir/Responce.cpp.i
-.PHONY : Responce.cpp.i
+Response.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/webserv.dir/build.make CMakeFiles/webserv.dir/Response.cpp.i
+.PHONY : Response.cpp.i
 
-Responce.s: Responce.cpp.s
+Response.s: Response.cpp.s
 
-.PHONY : Responce.s
+.PHONY : Response.s
 
 # target to generate assembly for a file
-Responce.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/webserv.dir/build.make CMakeFiles/webserv.dir/Responce.cpp.s
-.PHONY : Responce.cpp.s
+Response.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/webserv.dir/build.make CMakeFiles/webserv.dir/Response.cpp.s
+.PHONY : Response.cpp.s
 
 Server.o: Server.cpp.o
 
@@ -346,9 +346,9 @@ help:
 	@echo "... Request.o"
 	@echo "... Request.i"
 	@echo "... Request.s"
-	@echo "... Responce.o"
-	@echo "... Responce.i"
-	@echo "... Responce.s"
+	@echo "... Response.o"
+	@echo "... Response.i"
+	@echo "... Response.s"
 	@echo "... Server.o"
 	@echo "... Server.i"
 	@echo "... Server.s"

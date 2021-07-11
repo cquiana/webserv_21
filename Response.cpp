@@ -4,6 +4,10 @@ Response::Response(/* args */) {
 
 }
 
+Response::Response(int code) : _code(code) {
+
+}
+
 Response::~Response() {
 
 }
@@ -47,13 +51,13 @@ void Response::setLastModif(const std::string &str) {
 	}
 }
 
-void Response::startGenerateResponse() {
-
-}
+//void Response::startGenerateResponse() {
+//
+//}
 
 std::string Response::responseToString() {
 	std::ostringstream out;
-	out << _protocol << " " << _status << " " << _errors.at(_status) << "\r\n";
+	out << "HTTP/1.1 " << _code << " " << _errors.at(_code) << "\r\n";
 	std::map<std::string, std::string>::const_iterator it;
 	for (it = _headers.cbegin(); it != _headers.cend(); ++it) {
 		out << it->first << ": " << it->second << "\r\n";
@@ -63,7 +67,7 @@ std::string Response::responseToString() {
 	return result + _body;
 }
 
-void Response::setHeaders(std::string &key, std::string &value) {
+void Response::setHeaders(const std::string &key, const std::string &value) {
 	_headers[ft_tolower(key)] = value;
 }
 
@@ -75,17 +79,77 @@ std::string Response::getHeader(std::string &key) const {
 	}
 }
 
-void Response::startGenerateResponse(const Request &request) {
-	std::string reqcopy = _request.getMethod();
-	if (_request.getCompete() == false)
+Response Response::startGenerateResponse(Request &request) {
+	std::string reqcopy = request.getMethod();
+	if (request.getCompete() == false)
 		setErrorPage(400);
-	else if (_request.getHttpVers() != "HTTP/1.1")
+	if (request.getHttpVers() != "HTTP/1.1")
 		setErrorPage(505);
+	std::cout << reqcopy << std::endl;
+//	if (request.getMethod() == "GET")
+//		Response  getresp = generateGET(request);
 
+
+	/*в целом шаги такие:
+- разбираешься с путем до файла (в зависимости от конфига)
+- проверяешь есть ли он, права доступа, папка ли это (мы еще тут же проверяли, сgi ли это, и, если да, то запускали и дальше уже)
+- если права есть, не папка, то читаем из него в буфер и отправляем
+- если папка и включен автоиндекс, то выводили страничку-перечисление содержимого, как в nginx autoindex
+- если ошибки, то формировали хедер с ошибкой и отправляли
+- если cgi, то когда cgi будет возвращать что-то в ответ, отправляем это в ответе*/
+
+}
+
+Response Response::generateGET(const Request &request) {
+
+	//TODO: check CGI
+	Response resp(200);
+	struct stat st;
+	std::stringstream  buff;
+	std::ifstream file("/Users/cquiana/CLionProjects/webserv_21/index.html");
+	if (!file.is_open()) {
+		std::cerr << "Open file error\n";
+	}
+	buff << file.rdbuf();
+	file.close();
+	std::string body = buff.str();
+	setBody(body);
+	return  resp;
 }
 
 void Response::setErrorPage(int code) {
 
 }
+
+void Response::errorPageFromFile(const std::string &path) {
+	std::stringstream  buff;
+	std::ifstream file(path);
+
+	if (!file.is_open()) {
+		std::cerr << "Open file error\n";
+	}
+	buff << file.rdbuf();
+	file.close();
+	std::string body = buff.str();
+	setBody(body);
+	setHeaders("Content-Type", "test/html");
+}
+
+void Response::setBody(std::string &body) {
+	_body = body;
+}
+
+bool Response::isCGI() {
+	std::string tmp = _request.getPath();
+	size_t dot = tmp.find_last_of('.');
+	std::string ext = tmp.substr(dot + 1);
+	return (ext == "php" || ext == "py");
+}
+
+bool Response::isAutoIndex() {
+	return false;
+}
+
+
 
 

@@ -24,6 +24,7 @@
 #define QLEN 10
 #define IP "127.0.0.1"
 
+class Client;
 class WebServer {
 public:
 	void initServ();

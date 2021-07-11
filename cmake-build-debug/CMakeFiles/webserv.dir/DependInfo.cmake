@@ -4,13 +4,13 @@ set(CMAKE_DEPENDS_LANGUAGES
   )
 # The set of files for implicit dependencies of each language:
 set(CMAKE_DEPENDS_CHECK_CXX
-  "/Users/Beto/CLionProjects/webserv_21/Client.cpp" "/Users/Beto/CLionProjects/webserv_21/cmake-build-debug/CMakeFiles/webserv.dir/Client.cpp.o"
-  "/Users/Beto/CLionProjects/webserv_21/Request.cpp" "/Users/Beto/CLionProjects/webserv_21/cmake-build-debug/CMakeFiles/webserv.dir/Request.cpp.o"
-  "/Users/Beto/CLionProjects/webserv_21/Responce.cpp" "/Users/Beto/CLionProjects/webserv_21/cmake-build-debug/CMakeFiles/webserv.dir/Responce.cpp.o"
-  "/Users/Beto/CLionProjects/webserv_21/Server.cpp" "/Users/Beto/CLionProjects/webserv_21/cmake-build-debug/CMakeFiles/webserv.dir/Server.cpp.o"
-  "/Users/Beto/CLionProjects/webserv_21/Webserv.cpp" "/Users/Beto/CLionProjects/webserv_21/cmake-build-debug/CMakeFiles/webserv.dir/Webserv.cpp.o"
-  "/Users/Beto/CLionProjects/webserv_21/main.cpp" "/Users/Beto/CLionProjects/webserv_21/cmake-build-debug/CMakeFiles/webserv.dir/main.cpp.o"
-  "/Users/Beto/CLionProjects/webserv_21/utils.cpp" "/Users/Beto/CLionProjects/webserv_21/cmake-build-debug/CMakeFiles/webserv.dir/utils.cpp.o"
+  "/Users/cquiana/CLionProjects/webserv_21/Client.cpp" "/Users/cquiana/CLionProjects/webserv_21/cmake-build-debug/CMakeFiles/webserv.dir/Client.cpp.o"
+  "/Users/cquiana/CLionProjects/webserv_21/Request.cpp" "/Users/cquiana/CLionProjects/webserv_21/cmake-build-debug/CMakeFiles/webserv.dir/Request.cpp.o"
+  "/Users/cquiana/CLionProjects/webserv_21/Response.cpp" "/Users/cquiana/CLionProjects/webserv_21/cmake-build-debug/CMakeFiles/webserv.dir/Response.cpp.o"
+  "/Users/cquiana/CLionProjects/webserv_21/Server.cpp" "/Users/cquiana/CLionProjects/webserv_21/cmake-build-debug/CMakeFiles/webserv.dir/Server.cpp.o"
+  "/Users/cquiana/CLionProjects/webserv_21/Webserv.cpp" "/Users/cquiana/CLionProjects/webserv_21/cmake-build-debug/CMakeFiles/webserv.dir/Webserv.cpp.o"
+  "/Users/cquiana/CLionProjects/webserv_21/main.cpp" "/Users/cquiana/CLionProjects/webserv_21/cmake-build-debug/CMakeFiles/webserv.dir/main.cpp.o"
+  "/Users/cquiana/CLionProjects/webserv_21/utils.cpp" "/Users/cquiana/CLionProjects/webserv_21/cmake-build-debug/CMakeFiles/webserv.dir/utils.cpp.o"
   )
 set(CMAKE_CXX_COMPILER_ID "AppleClang")
 

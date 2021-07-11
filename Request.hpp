@@ -37,9 +37,9 @@ public:
 	void parseBody(std::string &request);
 	void receive();
 	size_t getContentLength();
-	std::string const &getMethod();
+	const std::string &getMethod();
 	std::string getHost();
-	std::string const &getReqBody();
+	std::string  &getReqBody();
 	std::string getAuthType();
 	std::string getConnection();
 	std::string getUserAgent();
@@ -47,7 +47,7 @@ public:
 	std::string getPath();
 	std::string getQueryString();
 	std::string getHttpVers();
-	bool getCompete();
+	bool getCompete() ;
 	bool checkHeader();
 
 };
