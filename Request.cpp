@@ -132,7 +132,7 @@ void Request::receive() {
 		bzero(buff, BUFFER_SIZE);
 	}
 	parseRequest(_toRead);
-	std::cout << ret << std::endl;
+//	std::cout << ret << std::endl;
 
 //	std::cout << getMethod() << std::endl;
 }

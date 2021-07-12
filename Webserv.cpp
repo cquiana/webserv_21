@@ -102,28 +102,29 @@ void WebServer::createSock() {
 			std::cout << "recv\n";
 		}
 		else if (FD_ISSET((*it)->getSock(), &_wFd)) {
-			 (*it)->sendResp();
-//			std::string recp = "HTTP/1.1 200 OK\nContent-Type: text/plain\nContent-Length: 12\n\nHello world!";
+//			 (*it)->sendResp();
+			std::string recp = createResponse();
 //			std::cout << "send\n";
 //			std::cout << recp << std::endl;
-//			send((*it)->getSock(), recp.c_str(), recp.length(), 0);
+			send((*it)->getSock(), recp.c_str(), recp.length(), 0);
 		}
 	}
 }
 
 std::string WebServer::createResponse() {
-	std::string res;
-	std::string tmp;
-	std::ifstream is("./html/main.html");
-	if (is.is_open()) {
-		while (getline(is, tmp)) {
-			res.append(tmp);
-		}
+	std::string res  = " HTTP/1.1 200 OK\nContent-Type: text/html\nContent-Length: 1364\n\n";
+	std::stringstream  buff;
+	std::ifstream file("../index.html");
+	if (file.is_open()) {
+
+		buff << file.rdbuf();
+		file.close();
+
 	}
-	// std::cout << "you are here\n";
-	is.close();
-	// std::cout << res;
-	return res;
+	std::string body = buff.str();
+//	 std::cout << body.size() << std::endl;
+		// std::cout << res;
+	return res += body;
 }
 
 void WebServer::closeServ() {

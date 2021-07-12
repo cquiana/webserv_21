@@ -85,9 +85,9 @@ Response Response::startGenerateResponse(Request &request) {
 		setErrorPage(400);
 	if (request.getHttpVers() != "HTTP/1.1")
 		setErrorPage(505);
-	std::cout << reqcopy << std::endl;
+//	std::cout << reqcopy << std::endl;
 //	if (request.getMethod() == "GET")
-//		Response  getresp = generateGET(request);
+		Response  getresp = generateGET(request);
 
 
 	/*в целом шаги такие:

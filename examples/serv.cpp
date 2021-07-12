@@ -96,7 +96,8 @@ int main() {
         if(was_red < 0)
             std::cout << "[No bytes are there to read]" << std::endl;
         // we are gonna send a message with a proper HTTP header format (or the browser wouldn't accept it)
-        char hello[] = "HTTP/1.1 200 OK\nContent-Type: text/plain\nContent-Length: 10\n\nHello world!";//IMPORTANT! WE WILL GET TO IT
+        char hello[] = "HTTP/1.1 200 OK\nContent-Type: text/html\nContent-Length: 1364\n\nHello world!";//IMPORTANT! WE
+        // WILL GET TO IT
         write(new_sock , hello , strlen(hello));
         std::cout << "[--- HELLO MSG SENT ---]" << std::endl;
 
