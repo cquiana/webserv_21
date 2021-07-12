@@ -17,7 +17,7 @@ private:
 	std::string _type;
 	std::string _cgi_path;
 	std::string _root;
-	int _methods;  //ToDo 1 + 2 + 4 tri methoda
+	int _methods;  // DELETE = 1, POST = 2, GET = 4
 //	bool _some;
 	bool _IsCGI;
 	bool _IsPrefix;
@@ -34,7 +34,7 @@ public:
 
 	bool haveRoot() const;
 	bool haveCgiPath() const;
-	bool methodsNull() const;
+	bool haveMethods() const;
 	bool haveType(std::string type) const;
 	bool prefixCheck(std::string prefix) const;
 

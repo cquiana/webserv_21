@@ -3,15 +3,17 @@
 //
 
 #include "Location_config.hpp"
+#include <iostream>
 
 Location_config::~Location_config() {}
 
 Location_config::Location_config(std::string location_prefix, std::string type) :
 		_location_prefix(location_prefix), _type(type), _cgi_path(""), _root(""), _methods(0), _IsCGI(false) , _IsPrefix(false) {
+	std::cout << "Type ##_" << _type << "##_location_prefix ##_" << _location_prefix << "_## \n"; //ToDo comment Debug
 	if (location_prefix == "" && type != "")
-		_IsPrefix = true;
-	else if (location_prefix != "" && type == "")
 		_IsCGI = true;
+	else if (location_prefix != "" && type == "")
+		_IsPrefix = true;
 	else
 		throw Location_config::SetLocationException();
 }
@@ -60,11 +62,11 @@ bool Location_config::haveCgiPath() const {
 	return (!(_cgi_path.empty()));
 }
 
-bool Location_config::methodsNull() const {
+bool Location_config::haveMethods() const {
 	if (_methods != 0)
-		return false;
-	else
 		return true;
+	else
+		return false;
 }
 
 bool Location_config::haveType(std::string type) const {
@@ -85,6 +87,7 @@ bool Location_config::prefixCheck(std::string prefix) const {
 
 
 std::string Location_config::getType() const {
+	std::cout << "Type ##" << _type << "##\n";
 	return _type;
 }
 
@@ -119,7 +122,7 @@ void Location_config::setCgiPath(std::string cgi_path) {
 }
 
 void Location_config::setMethods(int methods) {
-	if (methodsNull())
+	if (haveMethods())
 		throw Location_config::MethodsAlraedySetException();
 	_methods = methods;
 //	_some = true;

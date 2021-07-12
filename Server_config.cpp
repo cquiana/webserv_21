@@ -6,7 +6,7 @@
 #include "Location_config.hpp"
 
 Server_config::Server_config() :
-	_port(-1), _name(""), _root(""), _index(""), _autoindex(-1), _return_code(-1), _return_adress(""), _active_location(-1) {}
+	_port(-1), _name(""), _root(""), _index(""), _autoindex(-1), _return_code(-1), _return_adress(""), _active_location(false) {}
 
 Server_config::~Server_config() {}
 
@@ -66,17 +66,14 @@ bool Server_config::haveReturnCode() const {
 }
 
 bool Server_config::blockedReturnCode() const {
-	if (_return_code == -1)
+	if (_return_code == 0)
 		return true;
 	else
 		return false;
 }
 
 bool Server_config::haveActiveLocation() const {
-	if (_active_location > -1)
-		return true;
-	else
-		return false;
+	return (_active_location);
 }
 
 
@@ -111,7 +108,7 @@ std::string Server_config::getReturnArdess() const {
 }
 
 std::string Server_config::getRootByLocation(std::string loc) {
-	for(std::vector<Location_config>::iterator it = _locations.begin(); it != _locations.end(); it++) // ToDo WTF const !!!!?????
+	for(std::vector<Location_config>::iterator it = _locations.begin(); it != _locations.end(); it++)
 	{
 		if ((*it).mIsPrefic() && (*it).haveRoot() && (*it).prefixCheck(loc))
 			return ((*it).getRoot());
@@ -120,12 +117,12 @@ std::string Server_config::getRootByLocation(std::string loc) {
 }
 
 //std::string Server_config::getRootByLocation(std::string type, std::string loc) {
-//	for(std::vector<Location_config>::iterator it = _locations.begin(); it != _locations.end(); it++) // ToDo WTF const !!!!?????
+//	for(std::vector<Location_config>::iterator it = _locations.begin(); it != _locations.end(); it++)
 //	{
 //		if ((*it).haveType(type) && (*it).haveRoot())
 //			return ((*it).getRoot());
 //	}
-//	for(std::vector<Location_config>::iterator it2 = _locations.begin(); it2 != _locations.end(); it2++) // ToDo WTF const !!!!?????
+//	for(std::vector<Location_config>::iterator it2 = _locations.begin(); it2 != _locations.end(); it2++)
 //	{
 //		if ((*it2).getLocationPrefix() == loc && (*it2).haveRoot())
 //			return ((*it2).getRoot());
@@ -134,7 +131,9 @@ std::string Server_config::getRootByLocation(std::string loc) {
 //}
 
 int Server_config::getActiveLocation() const {
-	return (_active_location);
+	if (_active_location)
+		return (_locations.size() - 1);
+	return (-1);
 }
 
 
@@ -189,26 +188,33 @@ void Server_config::addLocation(std::string location_path, std::string type) { /
 	//_locations.push_back(Location_config(location_path, types));
 	//setReturnCode(0, "");	// Block returnCode
 
-	if (_active_location != -1) // -1 server can create, 0....1000000 current opened server
+	if (_active_location)
 		throw Server_config::LocationNotOpenedException();
+	// std::cout << "Location_config add: " << location_path << " - " << type << std::endl;
 	_locations.push_back(Location_config(location_path, type));
-	_active_location = _locations.size() - 1;
+	_active_location = true;
+	setReturnCode(0, "");	// Block returnCode
 }
 
 void Server_config::checkLastLocation() {													// ToDo WTF ?				need test !!!!
-	int n = _active_location;
+	int n = _locations.size() - 1;
 	if (n < 0)
 		throw Server_config::SizeLocationsException();
-	if (_locations[n].haveCgiPath() && _locations[n].haveRoot() && !_locations[n].methodsNull() && (_locations[n].mIsPrefic() || _locations[n].mIsCGI()))
+	if (_locations[n].mIsCGI() && _locations[n].haveCgiPath() && !_locations[n].getType().empty())
 	{
-		std::cout << "location done" << std::endl;
-		_active_location = -1;
+		std::cout << "CGI location done" << std::endl;
+		_active_location = false;
+	}
+	else if (_locations[n].mIsPrefic() && _locations[n].haveRoot())
+	{
+		std::cout << "Prefix location done" << std::endl;
+		_active_location = false;
 	}
 	else
 	{
-		std::cout << "location wrong : " << _locations[n].getLocationPrefix() << " : " << _locations[n].getType()[0] << " : " << _locations[n].getMethods() << " : " << _locations[n].getRoot() << " : " << _locations[n].getCgiPath() << std::endl;
+		std::cout << "location wrong : " << _locations[n].getLocationPrefix() << " : " << _locations[n].getType() << " : " << _locations[n].getMethods() << " : " << _locations[n].getRoot() << " : " << _locations[n].getCgiPath() << std::endl;
 		_locations.pop_back();
-		_active_location = -1;
+		_active_location = false;
 	}
 }
 

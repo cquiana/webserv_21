@@ -57,8 +57,15 @@ bool Http_config::haveActiveServer() const {
 	return (_active_server);
 }
 
+std::vector<int> Http_config::getAllErrorPagesInts() const {
+	return (_error_page_ints);
+}
 
-std::string Http_config::getErrorPage(int page){
+std::vector<std::string> Http_config::getAllErrorPages() const {
+	return (_error_page_strings);
+}
+
+std::string Http_config::getErrorPage(int page) {
 	int n = 0;
 
 	for(std::vector<int>::iterator it = _error_page_ints.begin(); it != _error_page_ints.end(); it++) // ToDo WTF const !!!!?????
@@ -118,16 +125,23 @@ void Http_config::addServer() {
 
 void Http_config::checkLastServeer() {
 	int n = _servers.size() - 1;
-	if (n == 0)
-		;//throw Server_config::SizeLocationsException();   																//ToDo need change exception
-	if (_servers[n].havePort() && _servers[n].haveRoot() && !_servers[n].haveName())
+	if (n < 0)
+		throw Server_config::SizeLocationsException();   																//ToDo need change exception
+	//std::cout << "Server ### " << _servers[n].getPort() << " : " << _servers[n].getRoot() << " : " << _servers[n].getName() << " : " << _servers[n].getIndex() << " : " << _servers[n].getAutoindex() << " : " << _servers[n].haveLocation() << " : " << _servers[n].getReturnCode() << " : " << _servers[n].getReturnArdess() << std::endl;
+	//std::cout << "Server ### " << _servers[n].havePort() << " : " << _servers[n].haveRoot() << " : " << _servers[n].haveName() << std::endl;
+	if (_servers[n].havePort() && _servers[n].haveRoot() && _servers[n].haveName())
 	{
 		std::cout << "Server done" << std::endl;
 		_active_server = false;
 	}
+	else if (_servers[n].havePort() && _servers[n].haveName() && _servers[n].haveReturnCode())
+	{
+		std::cout << "Redirect server done" << std::endl;
+		_active_server = false;
+	}
 	else
 	{
-		std::cout << "Server wrong : " << _servers[n].getPort() << " : " << _servers[n].getName()[0] << " : " << _servers[n].getRoot() << " : " << _servers[n].getIndex() << " : " << _servers[n].getAutoindex() << " : " << _servers[n].haveLocation() << " : " << _servers[n].getReturnCode() << " : " << _servers[n].getReturnArdess() << std::endl;
+		std::cout << "Server wrong : " << _servers[n].getPort() << " : " << _servers[n].getName() << " : " << _servers[n].getRoot() << " : " << _servers[n].getIndex() << " : " << _servers[n].getAutoindex() << " : " << _servers[n].haveLocation() << " : " << _servers[n].getReturnCode() << " : " << _servers[n].getReturnArdess() << std::endl;
 		_servers.pop_back();
 		_active_server = false;
 	}

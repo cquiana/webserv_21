@@ -18,9 +18,9 @@ private:
 	std::string _root;
 	std::string _index;
 	int _autoindex;
-	int _return_code;
+	int _return_code; // -1 ne zadan, 0 zablokirovan, >0 = code
 	std::string _return_adress;
-	int _active_location;
+	bool _active_location;
 
 public:
 	Server_config();
