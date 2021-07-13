@@ -9,7 +9,7 @@ Location_config::~Location_config() {}
 
 Location_config::Location_config(std::string location_prefix, std::string type) :
 		_location_prefix(location_prefix), _type(type), _cgi_path(""), _root(""), _methods(0), _IsCGI(false) , _IsPrefix(false) {
-	std::cout << "Type ##_" << _type << "##_location_prefix ##_" << _location_prefix << "_## \n"; //ToDo comment Debug
+	//std::cout << "Type ##_" << _type << "##_location_prefix ##_" << _location_prefix << "_## \n";
 	if (location_prefix == "" && type != "")
 		_IsCGI = true;
 	else if (location_prefix != "" && type == "")
@@ -87,7 +87,7 @@ bool Location_config::prefixCheck(std::string prefix) const {
 
 
 std::string Location_config::getType() const {
-	std::cout << "Type ##" << _type << "##\n";
+	//std::cout << "Type ##" << _type << "##\n";
 	return _type;
 }
 

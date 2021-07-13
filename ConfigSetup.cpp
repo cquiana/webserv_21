@@ -14,7 +14,7 @@
 
 void printConfig(Http_config* http_config)
 {
-	std::cout << "Full http_config:\n";
+	std::cout << "\nFull http_config:\n";
 	std::cout << "client_max_body_size " << http_config->getMaxBody() << ";\n";
 	std::vector<int>::iterator it1 = http_config->_error_page_ints.begin();
 	std::vector<std::string>::iterator it2 = http_config->_error_page_strings.begin();
@@ -36,7 +36,7 @@ void printConfig(Http_config* http_config)
 			if ((*it3).haveIndex())
 				std::cout << "\tindex " << (*it3).getIndex() << ";\n";
 			if ((*it3).haveAutoindex())
-				std::cout << "\tautoindex " << ((*it3).getAutoindex() == 0 ? "off" : "on") << ";\n"; //ToDo need Debug
+				std::cout << "\tautoindex " << ((*it3).getAutoindex() == 0 ? "off" : "on") << ";\n";
 			if ((*it3).haveRoot())
 				std::cout << "\troot " << (*it3).getRoot() << ";\n";
 			for(std::vector<Location_config>::iterator it4 = (*it3)._locations.begin(); it4 != (*it3)._locations.end(); it4++)
@@ -55,7 +55,7 @@ void printConfig(Http_config* http_config)
 					if ((*it4).haveMethods())
 					{
 						std::cout << "\t\tmethods GET";
-						if ((*it4).getMethods() <= 3)
+						if ((*it4).getMethods() >= 6)
 							std::cout << " POST";
 						if ((*it4).getMethods() % 2 != 0)
 							std::cout << " DELETE";
@@ -111,7 +111,7 @@ size_t skipDigits(std::string in_string)
 		return (ff);
 	return (-2);
 
-//	for(std::string::iterator it = in_string.begin(); it != in_string.end(); it++) // ToDo WTF const !!!!?????
+//	for(std::string::iterator it = in_string.begin(); it != in_string.end(); it++)
 //	{
 //		size_t ff = aaa.find_first_not_of((*it));
 //		if (ff != std::string::npos)
@@ -136,17 +136,17 @@ bool checkString(std::string in_string, std::string search_string)
 	size_t not_found_pattern = in_string.find_first_not_of("\t\v\r\n ");
 	if (found_pattern == std::string::npos)
 	{
-		std::cout << "In " << in_string << " @not found " << search_string << "\n";
+		//std::cout << "In " << in_string << " @not found " << search_string << "\n"; //ToDo enable for debug
 		return (false);
 	}
 	else if (not_found_pattern < found_pattern)
 	{
-		std::cout << "In " << in_string << " @error_0 in pattern " << search_string << "\n"; 							//ToDo DEL after debug
+		std::cout << "In " << in_string << " @error_0 in pattern " << search_string << ", #" << not_found_pattern <<  ", #" << found_pattern << "\n";	//ToDo fix only this after debug
 		return (false);
 	}
 	else
 	{
-		std::cout << "In " << in_string << " found " << search_string << " at pos: " << found_pattern << "\n"; 			//ToDo DEL after debug
+		std::cout << "In " << in_string << " found " << search_string << " at pos: " << found_pattern << "\n";
 		return (true);
 	}
 }
@@ -246,7 +246,7 @@ void parseConfig(std::string in_string2, Http_config* http_config)
 		if (found_pattern2 != std::string::npos && not_found_pattern == std::string::npos && found_pattern3 != std::string::npos) // dl9 CGI
 		{
 			if (found_pattern4 != std::string::npos && found_pattern5 != std::string::npos)
-				http_config->_servers[http_config->getActiveServer()].addLocation("", in_string.substr(found_pattern4 + 1, found_pattern5 - found_pattern4 + 1));
+				http_config->_servers[http_config->getActiveServer()].addLocation("", in_string.substr(found_pattern4 + 1, found_pattern5 - found_pattern4 - 1));
 			else
 				std::cout << "In " << in_string << " @error in CGI pattern __location" << "\n";
 		}
@@ -255,7 +255,7 @@ void parseConfig(std::string in_string2, Http_config* http_config)
 			//std::cout << "addLocation " << in_string << " # " << in_string.substr(0, found_pattern3) << " # " << strString(in_string.substr(0, found_pattern3), "location", false) << "\n";
 			http_config->_servers[http_config->getActiveServer()].addLocation(strString(in_string.substr(0, found_pattern3), "location",false), "");
 		}
-			else
+		else
 			std::cout << "In " << in_string << " @error in pattern __location" << "\n";
 	}
 	else if (checkString(in_string, "cgi_path"))

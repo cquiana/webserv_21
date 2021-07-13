@@ -11,7 +11,7 @@ Server_config::Server_config() :
 Server_config::~Server_config() {}
 
 Server_config::Server_config(Server_config const &another) :
-	_port(another._port), _name(another._name), _root(another._root), _index(another._index), _autoindex(another._autoindex), _return_code(another._return_code), _return_adress(another._return_adress), _active_location(another._active_location) {}
+	_port(another._port), _name(another._name), _root(another._root), _index(another._index), _autoindex(another._autoindex), _return_code(another._return_code), _return_adress(another._return_adress), _active_location(another._active_location), _locations(another._locations) {}
 
 Server_config& Server_config::operator=(Server_config const &another) {
 	_port = another._port;
@@ -22,6 +22,7 @@ Server_config& Server_config::operator=(Server_config const &another) {
 	_return_code = another._return_code;
 	_return_adress = another._return_adress;
 	_active_location = another._active_location;
+	_locations = another._locations;
 	return *this;
 }
 
@@ -183,7 +184,7 @@ void Server_config::setReturnCode(int return_code, std::string return_adress) {
 	_return_adress = return_adress;
 }
 
-void Server_config::addLocation(std::string location_path, std::string type) { // ToDo WTF ?				need test !!!!
+void Server_config::addLocation(std::string location_path, std::string type) {
 	//Location_config nLocation(location_path, types);
 	//_locations.push_back(Location_config(location_path, types));
 	//setReturnCode(0, "");	// Block returnCode
@@ -196,7 +197,7 @@ void Server_config::addLocation(std::string location_path, std::string type) { /
 	setReturnCode(0, "");	// Block returnCode
 }
 
-void Server_config::checkLastLocation() {													// ToDo WTF ?				need test !!!!
+void Server_config::checkLastLocation() {
 	int n = _locations.size() - 1;
 	if (n < 0)
 		throw Server_config::SizeLocationsException();

@@ -5,7 +5,7 @@
 #include "Http_config.hpp"
 #include <vector>
 
-Http_config::Http_config() : _client_max_body_size(-2), _active_server(false) {}  // ToDo WTF ?											!!!!
+Http_config::Http_config() : _client_max_body_size(-2), _active_server(false) {}
 
 Http_config::~Http_config() {}
 
@@ -40,7 +40,7 @@ bool Http_config::haveServer(std::string servers_name) {
 //	else
 //		return false;
 //
-	for(std::vector<Server_config>::iterator it = _servers.begin(); it != _servers.end(); it++) // ToDo WTF const !!!!?????
+	for(std::vector<Server_config>::iterator it = _servers.begin(); it != _servers.end(); it++)
 	{
 		if ((*it).getName() == servers_name)
 			return (true);
@@ -68,7 +68,7 @@ std::vector<std::string> Http_config::getAllErrorPages() const {
 std::string Http_config::getErrorPage(int page) {
 	int n = 0;
 
-	for(std::vector<int>::iterator it = _error_page_ints.begin(); it != _error_page_ints.end(); it++) // ToDo WTF const !!!!?????
+	for(std::vector<int>::iterator it = _error_page_ints.begin(); it != _error_page_ints.end(); it++)
 	{
 		if ((*it) == page)
 			return (_error_page_strings[n]);
@@ -82,7 +82,6 @@ int Http_config::getMaxBody() const {
 }
 
 Server_config Http_config::getServer(std::string servers_name) {
-																														// ToDo WTF ? !!!!
 	for(std::vector<Server_config>::iterator it = _servers.begin(); it != _servers.end(); it++)
 	{
 		if ((*it).getName() == servers_name)
@@ -116,7 +115,6 @@ void Http_config::setMaxBody(int max_body) {
 }
 
 void Http_config::addServer() {
-																														// ToDo WTF ?	!!!!
 	if (_active_server) // -1 server can create, 0....1000000 current opened server
 		throw Http_config::ServerAlreadyOpenedException();
 	_servers.push_back(Server_config());
@@ -126,7 +124,7 @@ void Http_config::addServer() {
 void Http_config::checkLastServeer() {
 	int n = _servers.size() - 1;
 	if (n < 0)
-		throw Server_config::SizeLocationsException();   																//ToDo need change exception
+		throw Http_config::SizeServersException();
 	//std::cout << "Server ### " << _servers[n].getPort() << " : " << _servers[n].getRoot() << " : " << _servers[n].getName() << " : " << _servers[n].getIndex() << " : " << _servers[n].getAutoindex() << " : " << _servers[n].haveLocation() << " : " << _servers[n].getReturnCode() << " : " << _servers[n].getReturnArdess() << std::endl;
 	//std::cout << "Server ### " << _servers[n].havePort() << " : " << _servers[n].haveRoot() << " : " << _servers[n].haveName() << std::endl;
 	if (_servers[n].havePort() && _servers[n].haveRoot() && _servers[n].haveName())
@@ -186,6 +184,6 @@ const char *Http_config::SizeServersException::what() const throw() {
 };
 
 const char *Http_config::ServerAlreadyOpenedException::what() const throw() {
-	return ("EXCEPTION! Size of servers[] wrong...");
+	return ("EXCEPTION! There are one opened server yeat...");
 };
 
