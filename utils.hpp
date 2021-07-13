@@ -8,7 +8,7 @@
 #include <cctype>
 #include <time.h>
 
-std::string NumberToString ( int num );
+std::string numberToString ( int num );
 std::string cutLine(std::string &str, std::string const &elem);
 std::string getTime(const time_t *time);
 bool fileExist(const std::string &path);

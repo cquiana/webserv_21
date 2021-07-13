@@ -5,11 +5,18 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <string>
+#include <fcntl.h>
+#include <unistd.h>
+#include <cstring>
+#include <iostream>
+
 // #include "Webserv.hpp"
 
 class Server
 {
 private:
+	int _fd;
+	int _id;
 	std::string _host;
 	std::string _name;
 	std::string _root;
@@ -21,6 +28,7 @@ private:
 
 public:
 	Server();
+	Server(std::string ip, size_t port);
 	Server(const Server &copy);
 	~Server();
 	Server &operator=(const Server &copy);
@@ -38,6 +46,9 @@ public:
 	size_t getPort() const;
 	int getSock() const;
 	sockaddr_in getSock_Addr();
+
+	int create(int i);
+	int acceptNewConnect();
 
 };
 

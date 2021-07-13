@@ -119,12 +119,13 @@ bool Request::getCompete() {
 // 	return (_toRead.find("\r\n\r\n") != std::string::npos);
 // }
 
-void Request::receive() {
-	char buff[BUFFER_SIZE + 1];
+bool Request::receive() {
+	char buff[BUFFER_SIZE + 1]= {};
 	int ret;
 	ret = read(_sock, buff, BUFFER_SIZE);
-	if (ret == -1) {
+	if (ret < 0) {
 		std::cout << "read error\n";
+		return false;
 	} else {
 		std::cout << ret << std::endl;
 		buff[ret] = '\0';
@@ -132,6 +133,7 @@ void Request::receive() {
 		bzero(buff, BUFFER_SIZE);
 	}
 	parseRequest(_toRead);
+	return true;
 //	std::cout << ret << std::endl;
 
 //	std::cout << getMethod() << std::endl;

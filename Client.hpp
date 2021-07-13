@@ -11,7 +11,7 @@ class Response;
 enum client_status {
 	READY_TO_RECV,
 	READY_TO_SEND,
-	SENDING,
+	ALL_DATA_SENDET,
 	CONNECT_CLOSE
 };
 
@@ -20,8 +20,10 @@ class Client
 private:
 	Server _serv;
 	int _sock;
+	int _idxSrv;
 	Request _request;
-	std::string _reqMsg;
+	std::string _requestMsg;
+	std::string _responseMsg;
 	client_status _status;
 
 
@@ -30,11 +32,16 @@ public:
 	Client();
 	Client(Server &serv, int sock);
 	Client(int sock);
+	Client(int sock, int idxSrv);
 	~Client();
 
+	void setStatus(client_status st);
+	void setRequest(Request &req);
+
 	int getSock();
-	void recvReq();
-	void sendResp();
+	bool recvReq();
+	bool sendResp();
+	int getIndexOfServ();
 	client_status getStatus();
 
 //	Response startGenerateResponse(Request request);

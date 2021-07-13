@@ -1,154 +1,129 @@
-//
-// Created by Candy Quiana on 5/27/21.
-//
-
 #include "Webserv.hpp"
 
-WebServer::WebServer(/* std::vector<Server> &servers*/) {
-	// struct sockaddr_in _addr;
-	_addr.sin_family = AF_INET; // for IPv4
-	_addr.sin_port = htons(PORT); //  host to network (short)
-	_addr.sin_addr.s_addr = inet_addr(IP); // our IP
-	FD_ZERO(&_wFd);
-	FD_ZERO(&_rFd);
-	_maxFd = -1;
-}
-WebServer::WebServer(WebServer const &x) { (void)x; }
+WebServer::WebServer() {
 
-void WebServer::initServ() {
-
-	_sock = socket(AF_INET, SOCK_STREAM, 0);
-	if (_sock < 0) {
-		std::cerr << "socket error" << std::endl;
-	//TODO: решить, что делать при ошибке
-	}
-	// fcntl(_sock, F_SETFL, O_NONBLOCK);
-	// залипание порта
-	int opt = 1;
-	setsockopt(_sock, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
-
-	if (bind(_sock, (struct sockaddr*)&_addr, sizeof(sockaddr)) == -1) {
-		std::cerr << "bind error" << std::endl;
-		//TODO: решить, что делать при ошибке
-	}
-	if (listen(_sock, QLEN) == -1) {
-		std::cerr << "listen error" << std::endl;
-		//TODO: решить, что делать при ошибке
-	}
-	setMaxFd();
-	// fcntl(_sock, F_SETFL, O_NONBLOCK);
 }
 
-void WebServer::startServ() {
-	// int new_sock = 0;
-	// char read_buf[1024] = {0};
+WebServer::~WebServer() {
 
-
-	// TODO: решить в какой форме хоранить дескрипторы set, list, vector
-
-	// TODO: получить запрос
-	FD_ZERO(&_rFd);
-	FD_ZERO(&_wFd);
-	for (std::vector<Client*>::iterator it = _clients.begin(); it != _clients.end(); ++it) {
-		FD_SET((*it)->getSock(), &_rFd);
-		FD_SET((*it)->getSock(), &_wFd);
-	}
-	//  cycle servers
-	FD_SET(_sock, &_rFd);
-
-	setMaxFd();
-	// std::cout << _maxFd << std::endl;
-	struct timeval timeout = {10, 0};
-	int mx = select(_maxFd + 1, &_rFd, &_wFd, NULL, &timeout);
-	if (mx < 0)
-		std::cerr << "select error!" << std::endl;
-
-	fcntl(_sock, F_SETFL, O_NONBLOCK);
-	std::cout << "Webserv!\n";
 }
 
-void WebServer::waitConnect() {
-			//  cycle servers
-	// std::cout << _sock << std::endl;
-	if (FD_ISSET(_sock, &_rFd)) {
-	// 	std::cout << "Create Connection!\n";
-		createNewConnect(); /*createNewConnect(i); */
-	}
-}
-
-void WebServer::createNewConnect() {
-	sockaddr_in addrClient;
-	int sock_len = sizeof(_addr);
-	int new_connect = accept(_sock, (sockaddr*) &_addr, (socklen_t*)&sock_len);
-	 std::cout << "newsock = " << new_connect << std::endl;
-	if (new_connect < 0)
-		std::cerr << "accept error!" << std::endl;
-	Client* new_client(new Client(new_connect));
-	_clients.push_back(new_client);
-	// std::cout << _clients.size() << std::endl;
-	fcntl(new_connect, F_SETFL, O_NONBLOCK);
-	// std::cout << "Accept!\n";
-	FD_SET(new_connect, &_rFd);
-	FD_SET(new_connect, &_wFd);
-}
-
-void WebServer::createSock() {
-	std::vector<Client*>::iterator it;
-	// std::cout << _clients.size() << std::endl;s
-	for (it = _clients.begin(); it != _clients.end(); ++it) {
-		// добавить проверку статуса
-		if (FD_ISSET((*it)->getSock(), &_rFd) && (*it)->getStatus() == READY_TO_RECV) {
-			(*it)->recvReq();
-			std::cout << "recv\n";
+int WebServer::init()  { // file name
+	_maxSock = 0;
+	// parsing
+	// vector servers
+//	_countServ = ?
+	FD_ZERO(&_mainFdSet);
+	Server tmp(IP, PORT);
+	_serverVect.push_back(tmp);
+	_countServ = 1;
+	for (int i = 0; i < _countServ; ++i) {
+		if (_serverVect[i].create(i)) {
+			std::cout << "serv init error!\n";
+			return 1;
 		}
-		else if (FD_ISSET((*it)->getSock(), &_wFd)) {
-//			 (*it)->sendResp();
-			std::string recp = createResponse();
-//			std::cout << "send\n";
-//			std::cout << recp << std::endl;
-			send((*it)->getSock(), recp.c_str(), recp.length(), 0);
+		FD_SET(_serverVect[i].getSock(), &_mainFdSet); // adding sock in set
+		if(_serverVect[i].getSock() > _maxSock)
+			_maxSock = _serverVect[i].getSock(); // set max # of sock
+	}
+	return 0;
+}
+
+int WebServer::start() {
+	fd_set wrFdSet;
+	fd_set tmpSet;
+
+	while (1) {
+		tmpSet = _mainFdSet;
+		resetWritingSet(&wrFdSet);
+		int ret = select(_maxSock + 1, &tmpSet, &wrFdSet, 0, 0);
+		if (ret < 0) {
+			std::cout << "select error!\n";
+		}
+		std::vector<Client>::iterator it = _clients.begin();
+		for (;  it != _clients.end() ; ++it) {
+			if (it->getStatus() == READY_TO_SEND) {
+				if (FD_ISSET(it->getSock(), &wrFdSet)) {
+					if(!it->sendResp()){
+						std::cout << "send resp error!\n";
+						if (close(it->getSock()) < 0)
+							return 1;
+						FD_CLR(it->getSock(), &_mainFdSet);
+						it->setStatus(CONNECT_CLOSE);
+						_clients.erase(it);
+					}
+					else if (it->getStatus() == ALL_DATA_SENDET) {
+//						close(it->getSock());
+						it->setStatus(CONNECT_CLOSE);
+						_clients.erase(it);
+					}
+				}
+			} else {
+				if (close(it->getSock()) < 0)
+					return 1;
+				FD_CLR(it->getSock(), &_mainFdSet);
+				it->setStatus(CONNECT_CLOSE);
+				_clients.erase(it);
+			}
+			break;
+		}
+		for (int i = 0; i < _countServ; ++i) {
+			if (FD_ISSET(_serverVect[i].getSock() , &tmpSet)) {
+				int newSock = _serverVect[i].acceptNewConnect();
+				if(newSock < 0)
+					return 1;
+				FD_SET(newSock, &_mainFdSet);
+				if (newSock > _maxSock)
+					_maxSock = newSock;
+				_clients.push_back(Client(newSock, i));
+				break;
+			}
+		}
+		it = _clients.begin();
+		for (;  it != _clients.end(); ++it) {
+			if (it->getStatus() == READY_TO_RECV) {
+				if (FD_ISSET(it->getSock(), &_mainFdSet)) {
+					if(!it->recvReq()) {
+						std::cout << "recv resp error!\n";
+						if (close(it->getSock()) < 0)
+							return 1;
+						FD_CLR(it->getSock(), &_mainFdSet);
+						it->setStatus(CONNECT_CLOSE);
+						_clients.erase(it);
+					}
+//					else {
+//						it->setStatus(ALL_DATA_SENDET);
+//						FD_CLR(it->getSock(), &_mainFdSet);
+//						_clients.erase(it);
+//					}
+				}
+			} else {
+				if (close(it->getSock()) < 0)
+					return 1;
+				FD_CLR(it->getSock(), &_mainFdSet);
+				it->setStatus(CONNECT_CLOSE);
+				_clients.erase(it);
+			}
+			break;
 		}
 	}
+
+	return 0;
 }
 
-std::string WebServer::createResponse() {
-	std::string res  = " HTTP/1.1 200 OK\nContent-Type: text/html\nContent-Length: 1364\n\n";
-	std::stringstream  buff;
-	std::ifstream file("../index.html");
-	if (file.is_open()) {
+void WebServer::stop() {
 
-		buff << file.rdbuf();
-		file.close();
+}
 
+void WebServer::resetWritingSet(fd_set *wrFdSet) {
+	FD_ZERO(wrFdSet);
+	std::vector<Client>::iterator it = _clients.begin();
+	for (;  it != _clients.end() ; ++it) {
+		if (it->getStatus() == READY_TO_SEND)
+			FD_SET(it->getSock(), wrFdSet);
 	}
-	std::string body = buff.str();
-//	 std::cout << body.size() << std::endl;
-		// std::cout << res;
-	return res += body;
 }
 
-void WebServer::closeServ() {
-	close(_sock);
-}
-
-// WebServer::WebServer() {}
-// WebServer::WebServer(WebServer const &x) { (void)x; }
-WebServer& WebServer::operator=(WebServer const &x) { (void)x; return *this; }
-
-const std::vector<Client*> &WebServer::getClients(){
-	return _clients;
-}
-int WebServer::getMaxFd() {
-	return _maxFd;
-}
-
-void WebServer::setMaxFd() {
-	_maxFd = _sock;
-	for (size_t i = 0; i < getClients().size(); ++i) {
-		_maxFd = std::max(_clients[i]->getSock(), _maxFd);
-	}
-
-	// for (size_t i = 0; i < getClients().size(); ++i) {
-	// 	_maxFd = std::max(_servers[i].getSock(), _maxFd);
-	// }
-}
+//WebServer &WebServer::operator=(const WebServer &rhs) {
+//	return <#initializer#>;
+//}

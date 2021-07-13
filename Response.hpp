@@ -36,14 +36,19 @@ public:
 
     void setHeaders(const std::string &key, const std::string &value);
     void setErrors();
+	void setErrorPage(int code);
+	void setDefaultHeader();
     void setDate();
     void setLastModif(const std::string &str);
     void setBody(std::string &body);
+    void setContentLength(size_t len);
 
     std::string getHeader(std::string &key) const;
+    std::string getDate();
 
 	void startGenerateResponse();
-	void setErrorPage(int code);
+	size_t getContetntLength();
+
 	void errorPageFromFile(const std::string &path);
 	bool isCGI();
 	bool isAutoIndex();

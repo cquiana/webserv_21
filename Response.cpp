@@ -5,7 +5,7 @@ Response::Response(/* args */) {
 }
 
 Response::Response(int code) : _code(code) {
-
+	setErrors();
 }
 
 Response::~Response() {
@@ -64,7 +64,7 @@ std::string Response::responseToString() {
 	}
 	out << "\r\n";
 	std::string result = out.str();
-	return result + _body;
+	return result += _body;
 }
 
 void Response::setHeaders(const std::string &key, const std::string &value) {
@@ -114,8 +114,12 @@ Response Response::generateGET(const Request &request) {
 	file.close();
 	std::string body = buff.str();
 	setBody(body);
+	setContentLength(body.length());
+
 	return  resp;
 }
+
+
 
 void Response::setErrorPage(int code) {
 
@@ -143,11 +147,34 @@ bool Response::isCGI() {
 	std::string tmp = _request.getPath();
 	size_t dot = tmp.find_last_of('.');
 	std::string ext = tmp.substr(dot + 1);
-	return (ext == "php" || ext == "py");
+	return (ext == "js" || ext == "py");
 }
 
 bool Response::isAutoIndex() {
 	return false;
+}
+
+void Response::setDefaultHeader() {
+//	setHeaders("");
+	setDate();
+	setHeaders("Content-Type", "test/html");
+//	setHeaders("Connection", "close");
+	setHeaders("Date", _date);
+
+	setHeaders("Content-Length", numberToString(_body.length()));
+
+}
+
+std::string Response::getDate() {
+	return _date;
+}
+
+void Response::setContentLength(size_t len) {
+	_lenght = len;
+}
+
+size_t Response::getContetntLength() {
+	return _lenght;
 }
 
 

@@ -35,7 +35,7 @@ public:
 	void parseRequest(std::string request);
 	void parseHeaders(std::string &request);
 	void parseBody(std::string &request);
-	void receive();
+	bool receive();
 	size_t getContentLength();
 	const std::string &getMethod();
 	std::string getHost();

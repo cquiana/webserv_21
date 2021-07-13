@@ -17,7 +17,7 @@
 #include <algorithm>
 #include "utils.hpp"
 #include "Client.hpp"
-// #include "Server.hpp"
+#include "Server.hpp"
 
 
 #define PORT 1234
@@ -27,37 +27,38 @@
 class Client;
 class WebServer {
 public:
-	void initServ();
+	WebServer();								//default constructor
+	WebServer(WebServer const & src);  				//copy
+	~WebServer();								//destructor
+	WebServer & operator=(WebServer const & rhs);		//overload operator =
 
-	void startServ();
-	void closeServ();
-	WebServer();
-//	std::string _res;
+//	int init( std::string fileName );
+	int init();
+	int start();
+	void stop();
 
-	std::string createResponse();
+	void processClient(Client client);
+	void setReadStatus(long socket);
+	void setWritingSetFD(fd_set *wrFD);
+
+	std::map<std::string, std::string> getMap();
+	fd_set getMasterSet();
+	std::vector<Server> getServerList();
 	int getMaxFd();
-	void setMaxFd();
-	void createNewConnect();
-	void waitConnect();
-	void createSock();
-	// void reloadFd();
-	const std::vector<Client*> &getClients();
+	std::vector<int> getFdList();
+	void resetWritingSet(fd_set *wrFdSet);
+
 
 private:
 
-	std::vector<Server> _servers;
-	std::vector<Client*> _clients;
-	size_t _servMaxCount;
-	int _sock;
-	int _maxFd;
-	struct sockaddr_in _addr;
-	fd_set _rFd;
-	fd_set _wFd;
+	int					_maxSock;
+	fd_set					_mainFdSet;
+	std::vector<Server>		_serverVect;
+	std::vector<int>		_fdVect;
+	std::vector<Client>		_clients;
+	std::vector<Client>		_readyClients;
+//	Config					_config;
+	int						_countServ;
 
-
-
-	// WebServer();
-	WebServer(WebServer const &);
-	WebServer& operator=(WebServer const &);
 };
 
