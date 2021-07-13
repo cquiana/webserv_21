@@ -43,7 +43,7 @@ client_status Client::getStatus() {
 bool Client::sendResp() {
 
 	Response response(200);
-	response.generateGET(_request);
+	response.startGenerateResponse(_request);
 //	response.setDefaultHeader();
 	std::string res = response.responseToString();
 

@@ -20,7 +20,7 @@
 #include "Server.hpp"
 
 
-#define PORT 1234
+#define PORT 8888
 #define QLEN 10
 #define IP "127.0.0.1"
 
@@ -51,14 +51,13 @@ public:
 
 private:
 
-	int					_maxSock;
-	fd_set					_mainFdSet;
-	std::vector<Server>		_serverVect;
-	std::vector<int>		_fdVect;
-	std::vector<Client>		_clients;
-	std::vector<Client>		_readyClients;
+	int _maxSock;
+	fd_set _mainFdSet;
+	std::vector<Server> _serverVect;
+//	std::vector<int> _fdVect;
+	std::vector<Client> _clients;
 //	Config					_config;
-	int						_countServ;
+	int _countServ;
 
 };
 

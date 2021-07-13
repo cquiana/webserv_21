@@ -50,8 +50,9 @@ public:
 	size_t getContetntLength();
 
 	void errorPageFromFile(const std::string &path);
-	bool isCGI();
+	bool checkCGI(const Request &request);
 	bool isAutoIndex();
+	Response generateCGI(const Request &request);
 
 	Response generateGET(const Request &request); // conf
 

@@ -80,14 +80,28 @@ std::string Response::getHeader(std::string &key) const {
 }
 
 Response Response::startGenerateResponse(Request &request) {
-	std::string reqcopy = request.getMethod();
+
 	if (request.getCompete() == false)
 		setErrorPage(400);
 	if (request.getHttpVers() != "HTTP/1.1")
 		setErrorPage(505);
-//	std::cout << reqcopy << std::endl;
-//	if (request.getMethod() == "GET")
-		Response  getresp = generateGET(request);
+	std::cout << request.getMethod() << std::endl;
+	if (request.getMethod() == "GET") {
+		Response  getResp = generateGET(request);
+		return getResp;
+	}
+	else if (request.getMethod() == "POST") {
+//		Response  getResp = generateGET(request);
+//		return getResp;
+	}
+	else if (request.getMethod() == "DELETE") {
+//		Response  getResp = generateGET(request);
+//		return getResp;
+	}
+	else {
+//		Response  getResp = generateGET(request);
+//		return getResp;
+	}
 
 
 	/*в целом шаги такие:
@@ -102,8 +116,11 @@ Response Response::startGenerateResponse(Request &request) {
 
 Response Response::generateGET(const Request &request) {
 
-	//TODO: check CGI
 	Response resp(200);
+	//TODO: check CGI
+	if (checkCGI(request))
+		resp = generateCGI(request);
+
 	struct stat st;
 	std::stringstream  buff;
 	std::ifstream file("/Users/cquiana/CLionProjects/webserv_21/index.html");
@@ -143,13 +160,6 @@ void Response::setBody(std::string &body) {
 	_body = body;
 }
 
-bool Response::isCGI() {
-	std::string tmp = _request.getPath();
-	size_t dot = tmp.find_last_of('.');
-	std::string ext = tmp.substr(dot + 1);
-	return (ext == "js" || ext == "py");
-}
-
 bool Response::isAutoIndex() {
 	return false;
 }
@@ -175,6 +185,17 @@ void Response::setContentLength(size_t len) {
 
 size_t Response::getContetntLength() {
 	return _lenght;
+}
+
+Response Response::generateCGI(const Request &request) {
+	return Response();
+}
+
+bool Response::checkCGI(const Request &request) {
+		std::string tmp = _request.getPath();
+		size_t dot = tmp.find_last_of('.');
+		std::string ext = tmp.substr(dot + 1);
+		return (ext == "js" || ext == "py");
 }
 
 
