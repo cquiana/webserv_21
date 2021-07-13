@@ -1,3 +1,4 @@
+
 CMakeLists.txt
-cmake-build-debug
-web.dSYM
+cmake-build-debug/
+.idea/
