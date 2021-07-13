@@ -24,7 +24,6 @@ void printConfig(Http_config* http_config)
 		it1++;
 		it2++;
 	}
-	std::cout << "client_max_body_size " << http_config->getMaxBody() << ";\n";
 
 	for(std::vector<Server_config>::iterator it3 = http_config->_servers.begin(); it3 != http_config->_servers.end(); it3++)
 	{
