@@ -188,14 +188,15 @@ size_t Response::getContetntLength() {
 }
 
 Response Response::generateCGI(const Request &request) {
-	return Response();
+	Response respCGI(200);
+	return respCGI;
 }
 
 bool Response::checkCGI(const Request &request) {
 		std::string tmp = _request.getPath();
 		size_t dot = tmp.find_last_of('.');
 		std::string ext = tmp.substr(dot + 1);
-		return (ext == "js" || ext == "py");
+		return (ext == "py"); // или js
 }
 
 

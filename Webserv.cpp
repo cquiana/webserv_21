@@ -17,6 +17,7 @@ int WebServer::init()  { // file name
 	FD_ZERO(&_mainFdSet);
 	Server tmp(IP, PORT);
 	_serverVect.push_back(tmp);
+	// TODO: получить количество серверов из конфига
 	_countServ = 1;
 	for (int i = 0; i < _countServ; ++i) {
 		if (_serverVect[i].create(i)) {

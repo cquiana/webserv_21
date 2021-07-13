@@ -127,7 +127,7 @@ bool Request::receive() {
 		std::cout << "read error\n";
 		return false;
 	} else {
-		std::cout << ret << std::endl;
+//		std::cout << ret << std::endl;
 		buff[ret] = '\0';
 		_toRead.append(buff);
 		bzero(buff, BUFFER_SIZE);
