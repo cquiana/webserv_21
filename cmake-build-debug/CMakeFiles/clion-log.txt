@@ -1,4 +1,1 @@
-/Applications/CLion.app/Contents/bin/cmake/mac/bin/cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_COMPILER=clang++ -G "CodeBlocks - Unix Makefiles" /Users/cquiana/CLionProjects/webserv_21
--- Configuring done
--- Generating done
--- Build files have been written to: /Users/cquiana/CLionProjects/webserv_21/cmake-build-debug
+CMakeLists.txt not found in /Users/cquiana/CLionProjects/webserv_21 Select CMakeLists.txt

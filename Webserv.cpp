@@ -13,6 +13,7 @@ int WebServer::init()  { // file name
 	// parsing
 	// vector servers
 //	_countServ = ?
+// TODO: создать векторо серверов
 	FD_ZERO(&_mainFdSet);
 	Server tmp(IP, PORT);
 	_serverVect.push_back(tmp);
