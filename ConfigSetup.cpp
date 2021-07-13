@@ -141,12 +141,12 @@ bool checkString(std::string in_string, std::string search_string)
 	}
 	else if (not_found_pattern < found_pattern)
 	{
-		std::cout << "In " << in_string << " @error_0 in pattern " << search_string << ", #" << not_found_pattern <<  ", #" << found_pattern << "\n";	//ToDo fix only this after debug
+		std::cout << "In " << in_string << " @error_0 in pattern     " << search_string << ", #" << not_found_pattern <<  ", #" << found_pattern << "\n";	//ToDo fix only this after debug
 		return (false);
 	}
 	else
 	{
-		std::cout << "In " << in_string << " found " << search_string << " at pos: " << found_pattern << "\n";
+		//std::cout << "In " << in_string << " found " << search_string << " at pos: " << found_pattern << "\n"; //ToDo enable for debug
 		return (true);
 	}
 }
@@ -167,7 +167,7 @@ void parseConfig(std::string in_string2, Http_config* http_config)
 		if (e != std::string::npos && !http_config->haveActiveServer())
 			http_config->setMaxBody(intString(in_string, "client_max_body_size"));
 		else
-			std::cout << "In " << in_string << " @error in pattern __client_max_body_size" << "\n";
+			std::cout << "ERROR!!! In " << in_string << " in pattern __client_max_body_size" << "\n";
 	}
 	else if (checkString(in_string, "error_page"))
 	{
@@ -175,7 +175,7 @@ void parseConfig(std::string in_string2, Http_config* http_config)
 		if (e != std::string::npos && !http_config->haveActiveServer())
 			http_config->setErrorPage(intString(in_string, "error_page"), wwtrim(in_string.substr(ddd + skipDigits(in_string.substr(ddd)), e)));
 		else
-			std::cout << "In " << in_string << " @error in pattern __error_page" << "\n";
+			std::cout << "ERROR!!! In " << in_string << " in pattern __error_page" << "\n";
 	}
 	else if (checkString(in_string, "server"))
 	{
@@ -185,17 +185,17 @@ void parseConfig(std::string in_string2, Http_config* http_config)
 			if (http_config->haveActiveServer() && e != std::string::npos && !http_config->_servers[http_config->getActiveServer()].haveActiveLocation() && !http_config->haveServer(sn))
 				http_config->_servers[http_config->getActiveServer()].setName(sn);
 			else
-				std::cout << "In " << in_string << " @error in pattern __server_name" << "\n";
+				std::cout << "ERROR!!! In " << in_string << " in pattern __server_name" << "\n";
 		}
 		else
 		{
 			size_t found_pattern2 = in_string.find("server");
 			size_t found_pattern3 = in_string.find_first_of('{');
 			size_t not_found_pattern = in_string.substr(0, found_pattern2).find_first_not_of("\t\v\r\n ");
-			if (not_found_pattern == std::string::npos && found_pattern3 != std::string::npos && http_config->haveActiveServer() == false)
+			if (not_found_pattern == std::string::npos && found_pattern3 != std::string::npos) //&& http_config->haveActiveServer() == false)
 				http_config->addServer();                                                                                    //ToDo need mark aktive server & location until its done
 			else
-				std::cout << "In " << in_string << " @error in pattern __server" << "\n";
+				std::cout << "ERROR!!! In " << in_string << " in pattern __server" << "\n";
 		}
 	}
 	else if (checkString(in_string, "listen"))
@@ -203,7 +203,7 @@ void parseConfig(std::string in_string2, Http_config* http_config)
 		if (http_config->haveActiveServer() && e != std::string::npos && !http_config->_servers[http_config->getActiveServer()].haveActiveLocation())
 			http_config->_servers[http_config->getActiveServer()].setPort(intString(in_string, "listen"));
 		else
-			std::cout << "In " << in_string << " @error in pattern __listen" << "\n";
+			std::cout << "ERROR!!! In " << in_string << " in pattern __listen" << "\n";
 	}
 	else if (checkString(in_string, "root"))
 	{
@@ -213,7 +213,7 @@ void parseConfig(std::string in_string2, Http_config* http_config)
 		else if (http_config->haveActiveServer() && e != std::string::npos && !http_config->_servers[http_config->getActiveServer()].haveActiveLocation())
 			http_config->_servers[http_config->getActiveServer()].setRoot(strString(in_string, "root"));
 		else
-			std::cout << "In " << in_string << " @error in pattern __root" << "\n";
+			std::cout << "ERROR!!! In " << in_string << " in pattern __root" << "\n";
 	}
 	else if (checkString(in_string, "autoindex"))
 	{
@@ -224,14 +224,14 @@ void parseConfig(std::string in_string2, Http_config* http_config)
 		else if (http_config->haveActiveServer() && found_pattern5 != std::string::npos && e != std::string::npos && !http_config->_servers[http_config->getActiveServer()].haveActiveLocation())
 			http_config->_servers[http_config->getActiveServer()].setAutoindex(0);
 		else
-			std::cout << "In " << in_string << " @error in pattern __autoindex" << "\n";
+			std::cout << "ERROR!!! In " << in_string << " in pattern __autoindex" << "\n";
 	}
 	else if (checkString(in_string, "index"))
 	{
 		if (http_config->haveActiveServer() && e != std::string::npos && !http_config->_servers[http_config->getActiveServer()].haveActiveLocation())
 			http_config->_servers[http_config->getActiveServer()].setIndex(strString(in_string, "index"));
 		else
-			std::cout << "In " << in_string << " @error in pattern __index" << "\n";
+			std::cout << "ERROR!!! In " << in_string << " in pattern __index" << "\n";
 	}
 	else if (checkString(in_string, "location"))
 	{
@@ -248,7 +248,7 @@ void parseConfig(std::string in_string2, Http_config* http_config)
 			if (found_pattern4 != std::string::npos && found_pattern5 != std::string::npos)
 				http_config->_servers[http_config->getActiveServer()].addLocation("", in_string.substr(found_pattern4 + 1, found_pattern5 - found_pattern4 - 1));
 			else
-				std::cout << "In " << in_string << " @error in CGI pattern __location" << "\n";
+				std::cout << "ERROR!!! In " << in_string << " in CGI pattern __location" << "\n";
 		}
 		else if (found_pattern2 == std::string::npos && not_found_pattern == std::string::npos && found_pattern3 != std::string::npos) // dl9 PREFIX
 		{
@@ -256,14 +256,14 @@ void parseConfig(std::string in_string2, Http_config* http_config)
 			http_config->_servers[http_config->getActiveServer()].addLocation(strString(in_string.substr(0, found_pattern3), "location",false), "");
 		}
 		else
-			std::cout << "In " << in_string << " @error in pattern __location" << "\n";
+			std::cout << "ERROR!!! In " << in_string << " in pattern __location" << "\n";
 	}
 	else if (checkString(in_string, "cgi_path"))
 	{
 		if (http_config->haveActiveServer() && e != std::string::npos && http_config->_servers[http_config->getActiveServer()].haveActiveLocation())
 			http_config->_servers[http_config->getActiveServer()]._locations[http_config->_servers[http_config->getActiveServer()].getActiveLocation()].setCgiPath(strString(in_string, "cgi_path"));
 		else
-			std::cout << "In " << in_string << " @error in pattern __cgi_path" << "\n";
+			std::cout << "ERROR!!! In " << in_string << " in pattern __cgi_path" << "\n";
 	}
 	else if (checkString(in_string, "methods"))
 	{
@@ -280,7 +280,7 @@ void parseConfig(std::string in_string2, Http_config* http_config)
 		if (e != std::string::npos && methods_int <= 7 && http_config->haveActiveServer() && http_config->_servers[http_config->getActiveServer()].haveActiveLocation())
 			http_config->_servers[http_config->getActiveServer()]._locations[http_config->_servers[http_config->getActiveServer()].getActiveLocation()].setMethods(methods_int);
 		else
-			std::cout << "In " << in_string << " @error in pattern __cgi_path" << "\n";
+			std::cout << "ERROR!!! In " << in_string << " in pattern __cgi_path" << "\n";
 	}
 	else if (checkString(in_string, "return"))
 	{
@@ -288,7 +288,7 @@ void parseConfig(std::string in_string2, Http_config* http_config)
 		if (http_config->haveActiveServer() && e != std::string::npos && !http_config->_servers[http_config->getActiveServer()].haveActiveLocation())
 			http_config->_servers[http_config->getActiveServer()].setReturnCode(intString(in_string, "return"), wwtrim(in_string.substr(ddd + skipDigits(in_string.substr(ddd)), e)));
 		else
-			std::cout << "In " << in_string << " @error in pattern __return" << "\n";
+			std::cout << "ERROR!!! In " << in_string << " in pattern __return" << "\n";
 	}
 	else if (checkString(in_string, "}"))
 	{
@@ -297,7 +297,7 @@ void parseConfig(std::string in_string2, Http_config* http_config)
 		else if (http_config->haveActiveServer() && e == std::string::npos && !http_config->_servers[http_config->getActiveServer()].haveActiveLocation())
 			http_config->checkLastServeer();
 		else
-			std::cout << "In " << in_string << " @error in close pattern `}`" << "\n";
+			std::cout << "ERROR!!! In " << in_string << " in close pattern `}`" << "\n";
 	}
 }
 

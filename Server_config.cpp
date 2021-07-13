@@ -190,7 +190,7 @@ void Server_config::addLocation(std::string location_path, std::string type) {
 	//setReturnCode(0, "");	// Block returnCode
 
 	if (_active_location)
-		throw Server_config::LocationNotOpenedException();
+		throw Server_config::AnotherLocationOpenedException();
 	// std::cout << "Location_config add: " << location_path << " - " << type << std::endl;
 	_locations.push_back(Location_config(location_path, type));
 	_active_location = true;
@@ -203,12 +203,12 @@ void Server_config::checkLastLocation() {
 		throw Server_config::SizeLocationsException();
 	if (_locations[n].mIsCGI() && _locations[n].haveCgiPath() && !_locations[n].getType().empty())
 	{
-		std::cout << "CGI location done" << std::endl;
+		// std::cout << "CGI location done" << std::endl; //ToDo enable for debug
 		_active_location = false;
 	}
 	else if (_locations[n].mIsPrefic() && _locations[n].haveRoot())
 	{
-		std::cout << "Prefix location done" << std::endl;
+		// std::cout << "Prefix location done" << std::endl; //ToDo enable for debug
 		_active_location = false;
 	}
 	else
@@ -253,8 +253,8 @@ const char *Server_config::SizeLocationsException::what() const throw() {
 	return ("EXCEPTION! Size of locations[] wrong...");
 };
 
-const char *Server_config::LocationNotOpenedException::what() const throw() {
-	return ("EXCEPTION! Location Not Opened in this server...");
+const char *Server_config::AnotherLocationOpenedException::what() const throw() {
+	return ("EXCEPTION! Another Location Opened in this server...");
 };
 
 

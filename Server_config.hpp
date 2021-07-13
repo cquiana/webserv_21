@@ -86,7 +86,7 @@ public:
 	class SizeLocationsException:			public std::exception {
 		virtual const char *what() const throw() ;
 	};
-	class LocationNotOpenedException:		public std::exception {
+	class AnotherLocationOpenedException:		public std::exception {
 		virtual const char *what() const throw() ;
 	};
 

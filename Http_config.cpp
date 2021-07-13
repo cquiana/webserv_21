@@ -129,12 +129,12 @@ void Http_config::checkLastServeer() {
 	//std::cout << "Server ### " << _servers[n].havePort() << " : " << _servers[n].haveRoot() << " : " << _servers[n].haveName() << std::endl;
 	if (_servers[n].havePort() && _servers[n].haveRoot() && _servers[n].haveName())
 	{
-		std::cout << "Server done" << std::endl;
+		//std::cout << "Server done" << std::endl; //ToDo enable for debug
 		_active_server = false;
 	}
 	else if (_servers[n].havePort() && _servers[n].haveName() && _servers[n].haveReturnCode())
 	{
-		std::cout << "Redirect server done" << std::endl;
+		// std::cout << "Redirect server done" << std::endl; //ToDo enable for debug
 		_active_server = false;
 	}
 	else
