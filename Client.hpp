@@ -4,6 +4,7 @@
 //#include "Server.hpp"
 #include "Response.hpp"
 #include <unistd.h>
+#include "Http_config.hpp"
 
 
 class Request;
@@ -19,20 +20,20 @@ enum client_status {
 class Client
 {
 private:
-//	Server _serv;
 	int _sock;
-//	int _idxSrv;
 	Request _request;
 	std::string _requestMsg;
 	std::string _responseMsg;
 	client_status _status;
+	Http_config* _http_config;
+	Client();
 
 
 
 public:
-	Client();
+
 //	Client(Server &serv, int sock);
-	Client(int sock);
+	Client(int sock, Http_config *http_config);
 //	Client(int sock, int idxSrv);
 	~Client();
 

@@ -4,7 +4,7 @@ Response::Response(/* args */) {
 
 }
 
-Response::Response(int code) : _code(code) {
+Response::Response(int code, Http_config* http_config) : _code(code), _http_config(http_config) {
 	setErrors();
 }
 
@@ -104,7 +104,7 @@ Response Response::startGenerateResponse(Request &request) {
 //		return getResp;
 	}
 
-Response res(200);
+Response res(200, _http_config);
 	return (res);
 	/*в целом шаги такие:
 - разбираешься с путем до файла (в зависимости от конфига)
@@ -118,7 +118,7 @@ Response res(200);
 
 Response Response::generateGET(Request &request) {
 
-	Response resp(200);
+	Response resp(200, _http_config);
 
 	// get path from root
 
@@ -176,7 +176,7 @@ void Response::errorPageFromFile(const std::string &path) {
 	std::string body = buff.str();
 	setBody(body);
 
-	setHeaders("Content-Type", "test/html");
+	setHeaders("Content-Type", "text/html");
 }
 
 void Response::setBody(std::string &body) {
@@ -190,7 +190,7 @@ bool Response::isAutoIndex() {
 void Response::setDefaultHeader() {
 //	setHeaders("");
 	setDate();
-	setHeaders("Content-Type", "test/html");
+	setHeaders("Content-Type", "text/html");
 //	setHeaders("Connection", "close");
 	setHeaders("Date", _date);
 	if (getHeader("Content-Length").empty())
@@ -211,7 +211,7 @@ size_t Response::getContetntLength() {
 }
 
 Response Response::generateCGI(const Request &request) {
-	Response respCGI(200);
+	Response respCGI(200, _http_config);
 	return respCGI;
 }
 
