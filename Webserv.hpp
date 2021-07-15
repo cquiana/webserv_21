@@ -18,34 +18,33 @@
 #include "utils.hpp"
 #include "Client.hpp"
 #include "Server.hpp"
+#include "Http_config.hpp"
 
 
 #define PORT 8888
-#define QLEN 10
 #define IP "127.0.0.1"
 
 class Client;
 class WebServer {
 public:
-	WebServer();								//default constructor
+	WebServer();
 	WebServer(WebServer const & src);  				//copy
 	~WebServer();								//destructor
 	WebServer & operator=(WebServer const & rhs);		//overload operator =
 
-//	int init( std::string fileName );
+	int init( std::string fileName );
 	int init();
 	int start();
 	void stop();
 
-	void processClient(Client client);
+
 	void setReadStatus(long socket);
 	void setWritingSetFD(fd_set *wrFD);
 
 	std::map<std::string, std::string> getMap();
 	fd_set getMasterSet();
 	std::vector<Server> getServerList();
-	int getMaxFd();
-	std::vector<int> getFdList();
+
 	void resetWritingSet(fd_set *wrFdSet);
 
 
@@ -54,10 +53,9 @@ private:
 	int _maxSock;
 	fd_set _mainFdSet;
 	std::vector<Server> _serverVect;
-//	std::vector<int> _fdVect;
 	std::vector<Client> _clients;
-//	Config					_config;
 	int _countServ;
+	Http_config _config;
 
 };
 

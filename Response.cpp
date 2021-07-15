@@ -194,8 +194,8 @@ void Response::setDefaultHeader() {
 	setHeaders("Content-Type", "test/html");
 //	setHeaders("Connection", "close");
 	setHeaders("Date", _date);
-
-	setHeaders("Content-Length", numberToString(_body.length()));
+	if (getHeader("Content-Length").empty())
+		setHeaders("Content-Length", numberToString(_body.length()));
 
 }
 

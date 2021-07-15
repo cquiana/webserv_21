@@ -8,17 +8,18 @@ WebServer::~WebServer() {
 
 }
 
-int WebServer::init()  { // file name
+int WebServer::init(std::string fileName)  {
+
 	_maxSock = 0;
 	// parsing
 	// vector servers
 //	_countServ = ?
-// TODO: создать векторо серверов
+// TODO: создать вектор серверов
 	FD_ZERO(&_mainFdSet);
-	Server tmp(IP, PORT);
+	Server tmp(IP, PORT); // ? name
 	_serverVect.push_back(tmp);
 	// TODO: получить количество серверов из конфига
-	_countServ = 1;
+	_countServ = _serverVect.size();
 	for (int i = 0; i < _countServ; ++i) {
 		if (_serverVect[i].create(i)) {
 			std::cout << "serv init error!\n";
@@ -28,6 +29,11 @@ int WebServer::init()  { // file name
 		if(_serverVect[i].getSock() > _maxSock)
 			_maxSock = _serverVect[i].getSock(); // set max # of sock
 	}
+	return 0;
+}
+
+int WebServer::init()  { // file name
+
 	return 0;
 }
 
@@ -55,7 +61,7 @@ int WebServer::start() {
 						_clients.erase(it);
 					}
 					else if (it->getStatus() == ALL_DATA_SENDET) {
-//						close(it->getSock());
+						close(it->getSock());
 						it->setStatus(CONNECT_CLOSE);
 						_clients.erase(it);
 					}
@@ -115,6 +121,14 @@ int WebServer::start() {
 
 void WebServer::stop() {
 
+	if (!_clients.empty()) {
+		for (std::vector<Client>::iterator it = _clients.begin();  it != _clients.end() ; ++it) {
+			close(it->getSock());
+		}
+	}
+	for (int i = 0; i < _serverVect.size(); ++i) {
+		close(_serverVect[i].getSock());
+	}
 }
 
 void WebServer::resetWritingSet(fd_set *wrFdSet) {
@@ -125,6 +139,8 @@ void WebServer::resetWritingSet(fd_set *wrFdSet) {
 			FD_SET(it->getSock(), wrFdSet);
 	}
 }
+
+
 
 //WebServer &WebServer::operator=(const WebServer &rhs) {
 //	return <#initializer#>;

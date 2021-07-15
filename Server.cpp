@@ -65,7 +65,10 @@ sockaddr_in Server::getSock_Addr(){
 	return _addr;
 }
 
-Server::Server(std::string ip, size_t port) : _name(ip), _port(port){
+Server::Server(std::string ip, size_t port) : _ip(ip), _port(port){
+
+}
+Server::Server(std::string ip, size_t port, std::string name) {
 
 }
 
@@ -78,7 +81,7 @@ int Server::create(int i) {
 	}
 	// from config
 	_addr.sin_family = AF_INET;
-	_addr.sin_addr.s_addr = inet_addr(_name.c_str());
+	_addr.sin_addr.s_addr = inet_addr(_ip.c_str());
 	_addr.sin_port = htons(_port);
 
 	memset(_addr.sin_zero, 0, sizeof(_addr.sin_zero));
@@ -116,3 +119,5 @@ int Server::acceptNewConnect() {
 	fcntl(sock, F_SETFL, O_NONBLOCK);
 	return sock;
 }
+
+

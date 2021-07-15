@@ -43,7 +43,7 @@ public:
     void setBody(std::string &body);
     void setContentLength(size_t len);
 
-    std::string getHeader(std::string &key) const;
+    std::string getHeader(const std::string &key) const;
     std::string getDate();
 
 	void startGenerateResponse();

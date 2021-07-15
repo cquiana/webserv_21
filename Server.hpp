@@ -15,13 +15,14 @@
 class Server
 {
 private:
-	int _fd;
-	int _id;
+
+	std::string _ip;
 	std::string _host;
 	std::string _name;
 	std::string _root;
 	size_t _port; // or ports
 
+	int _id;
 	int _sock;
 	struct sockaddr_in _addr;
 	// std::vector<Location> _location;
@@ -29,6 +30,7 @@ private:
 public:
 	Server();
 	Server(std::string ip, size_t port);
+	Server(std::string ip, size_t port, std::string name);
 	Server(const Server &copy);
 	~Server();
 	Server &operator=(const Server &copy);

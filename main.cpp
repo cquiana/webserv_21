@@ -16,10 +16,11 @@ void catchSig(void){
 
 int main() {
 
-//	std::string conf = "";
+	std::string conf = "example.conf";
 //	WebServer server;
 	try {
-		if (server.init()) // conf file
+//		if (server.init()) // conf file
+		if (server.init(conf))
 			return 1;
 		// signal
 		catchSig();
