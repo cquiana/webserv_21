@@ -24,8 +24,6 @@ void Response::setErrors() {
 	_errors[500] = "Internal Server Error";
 	_errors[505] = "HTTP version not supported";
 
-
-
 }
 
 void Response::setDate() {

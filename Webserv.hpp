@@ -51,7 +51,7 @@ private:
 	WebServer & operator=(WebServer const & rhs);		//overload operator =
 	WebServer(WebServer const & src);  				//copy
 
-	Http_config _http_config;
+	Http_config* _http_config;
 	int _maxSock;
 	fd_set _mainFdSet;
 //	std::vector<Server> _serverVect;

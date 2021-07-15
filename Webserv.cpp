@@ -1,10 +1,11 @@
 #include "Webserv.hpp"
 
 WebServer::WebServer(Http_config* http_config) {
-	_http_config = *http_config;
+	_http_config = http_config;
 	FD_ZERO(&_mainFdSet);
 	_maxSock = 0;
-	for(std::vector<Server_config>::iterator it = _http_config._servers.begin(); it != _http_config._servers.end(); it++)
+	for(std::vector<Server_config>::iterator it = _http_config->_servers.begin(); it != _http_config->_servers.end();
+	it++)
 	{
 		FD_SET((*it).getSocket(), &_mainFdSet);
 		if((*it).getSocket() > _maxSock)
@@ -81,7 +82,7 @@ int WebServer::loop() {
 			break;
 		}
 
-		for(std::vector<Server_config>::iterator it2 = _http_config._servers.begin(); it2 != _http_config._servers.end(); it2++)
+		for(std::vector<Server_config>::iterator it2 = _http_config->_servers.begin(); it2 != _http_config->_servers.end(); it2++)
 		{
 			if (FD_ISSET((*it2).getSocket() , &tmpSet)) {
 				int newSock = (*it2).acceptNewConnect();
@@ -149,7 +150,7 @@ void WebServer::stop() {
 		}
 	}
 
-	for(std::vector<Server_config>::iterator it3 = _http_config._servers.begin(); it3 != _http_config._servers.end(); it3++)
+	for(std::vector<Server_config>::iterator it3 = _http_config->_servers.begin(); it3 != _http_config->_servers.end(); it3++)
 	{
 		close((*it3).getSocket());
 	}
