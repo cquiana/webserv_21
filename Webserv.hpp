@@ -1,4 +1,5 @@
-#pragma once
+#ifndef WEBSERVER_HPP
+# define WEBSERVER_HPP
 
 #include <iostream>
 #include <fstream>
@@ -59,3 +60,4 @@ private:
 
 };
 
+#endif

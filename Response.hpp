@@ -1,4 +1,5 @@
-#pragma once
+#ifndef RESPONSE_HPP
+# define RESPONSE_HPP
 #include "Webserv.hpp"
 #include "Request.hpp"
 #include "utils.hpp"
@@ -57,5 +58,6 @@ public:
 	Response generateGET(Request &request); // conf
 
 };
+#endif
 
 

@@ -2,7 +2,8 @@
 // Created by Candy Quiana on 6/23/21.
 //
 
-#pragma once
+#ifndef UTILS_HPP
+# define UTILS_HPP
 #include <sstream>
 #include <sys/stat.h>
 #include <cctype>
@@ -17,6 +18,7 @@ std::string ft_tolower(std::string str);
 long checkSize(const char *str, int n);
 std::string ft_skip_space(std::string str);
 
+#endif
 
 
 

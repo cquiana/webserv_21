@@ -71,7 +71,7 @@ void Response::setHeaders(const std::string &key, const std::string &value) {
 	_headers[ft_tolower(key)] = value;
 }
 
-std::string Response::getHeader(std::string &key) const {
+std::string Response::getHeader(const std::string &key) const {
 	try {
 		return _headers.at(ft_tolower(key));
 	} catch  (const std::out_of_range &) {
@@ -106,7 +106,8 @@ Response Response::startGenerateResponse(Request &request) {
 //		return getResp;
 	}
 
-
+Response res(200);
+	return (res);
 	/*в целом шаги такие:
 - разбираешься с путем до файла (в зависимости от конфига)
 - проверяешь есть ли он, права доступа, папка ли это (мы еще тут же проверяли, сgi ли это, и, если да, то запускали и дальше уже)

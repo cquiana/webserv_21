@@ -1,4 +1,5 @@
-#pragma once
+#ifndef REQUEST_HPP
+# define REQUEST_HPP
 // #include "Webserv.hpp"
 #include "utils.hpp"
 #include <sys/types.h>
@@ -51,4 +52,5 @@ public:
 	bool checkHeader();
 
 };
+#endif
 

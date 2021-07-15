@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SERVER_HPP
+# define SERVER_HPP
 #include <sys/socket.h>
 #include <sys/time.h>
 #include <sys/types.h>
@@ -53,5 +54,5 @@ public:
 	int acceptNewConnect();
 
 };
-
+#endif
 

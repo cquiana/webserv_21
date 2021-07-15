@@ -229,7 +229,7 @@ int Server_config::acceptNewConnect() {
 	return sock;
 }
 
-int Server_config::initSocket()
+void Server_config::initSocket()
 {
 	if (haveSocket())
 		throw Server_config::ServerSocketException();

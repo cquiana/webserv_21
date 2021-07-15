@@ -67,7 +67,7 @@ public:
 	void setAutoindex(int autoindex);
 	void setReturnCode(int return_code, std::string return_adress);
 
-	int initSocket();
+	void initSocket();
 	int acceptNewConnect();
 	void addLocation(std::string location_path, std::string type);
 	void checkLastLocation();

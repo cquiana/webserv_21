@@ -2,17 +2,17 @@
 
 //WebServer server;
 
-void sigHandler(int num) {
-	(void)num;
-	std::cout << "stoping webserv\n";
-	server.stop();
-	exit(1);
-}
-
-void catchSig(void){
-	signal(SIGINT, sigHandler);
-	signal(SIGQUIT, sigHandler);
-}
+//void sigHandler(int num) {
+//	(void)num;
+//	std::cout << "stoping webserv\n";
+//	server.stop();
+//	exit(1);
+//}
+//
+//void catchSig(void){
+//	signal(SIGINT, sigHandler);
+//	signal(SIGQUIT, sigHandler);
+//}
 
 int main() {
 

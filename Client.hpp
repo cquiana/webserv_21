@@ -1,4 +1,5 @@
-#pragma once
+#ifndef CLIENT_HPP
+# define CLIENT_HPP
 #include "Request.hpp"
 #include "Server.hpp"
 #include "Response.hpp"
@@ -46,6 +47,7 @@ public:
 
 //	Response startGenerateResponse(Request request);
 };
+#endif
 
 
 
