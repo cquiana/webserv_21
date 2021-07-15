@@ -19,11 +19,11 @@ WebServer::~WebServer() {}
 //	_maxSock = 0;
 //	// parsing
 //	// vector servers
-////	_countServ = ?
-//// TODO: создать вектор серверов
-//	Server tmp("getName", 123); // ? name 				//ToDo dl9 pervogo servera tolko
+// //	_countServ = ?
+//
+//	Server tmp("getName", 123); // ? name
 //	_serverVect.push_back(tmp);
-//	// TODO: получить количество серверов из конфига
+//
 //	_countServ = _serverVect.size();
 //	for (int i = 0; i < _countServ; ++i) {
 //		if (_serverVect[i].create(i)) {
