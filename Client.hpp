@@ -1,7 +1,7 @@
 #ifndef CLIENT_HPP
 # define CLIENT_HPP
 #include "Request.hpp"
-#include "Server.hpp"
+//#include "Server.hpp"
 #include "Response.hpp"
 #include <unistd.h>
 
@@ -19,7 +19,7 @@ enum client_status {
 class Client
 {
 private:
-	Server _serv;
+//	Server _serv;
 	int _sock;
 //	int _idxSrv;
 	Request _request;
@@ -31,9 +31,9 @@ private:
 
 public:
 	Client();
-	Client(Server &serv, int sock);
+//	Client(Server &serv, int sock);
 	Client(int sock);
-	Client(int sock, int idxSrv);
+//	Client(int sock, int idxSrv);
 	~Client();
 
 	void setStatus(client_status st);
@@ -42,7 +42,7 @@ public:
 	int getSock();
 	bool recvReq();
 	bool sendResp();
-	int getIndexOfServ();
+//	int getIndexOfServ();
 	client_status getStatus();
 
 //	Response startGenerateResponse(Request request);

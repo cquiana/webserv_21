@@ -64,9 +64,9 @@ void Client::setStatus(client_status st) {
 	_status = st;
 }
 
-int Client::getIndexOfServ() {
-	return _idxSrv;
-}
+//int Client::getIndexOfServ() {
+//	return _idxSrv;
+//}
 
 void Client::setRequest(Request &req){
 	_request = req;

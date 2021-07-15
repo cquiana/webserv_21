@@ -18,7 +18,7 @@
 #include <algorithm>
 #include "utils.hpp"
 #include "Client.hpp"
-#include "Server.hpp"
+//#include "Server.hpp"
 #include "Http_config.hpp"
 #include "ConfigParser.hpp"
 
@@ -42,7 +42,7 @@ public:
 
 	std::map<std::string, std::string> getMap();
 	fd_set getMasterSet();
-	std::vector<Server> getServerList();
+//	std::vector<Server> getServerList();
 
 	void resetWritingSet(fd_set *wrFdSet);
 
@@ -54,7 +54,7 @@ private:
 	Http_config _http_config;
 	int _maxSock;
 	fd_set _mainFdSet;
-	std::vector<Server> _serverVect;
+//	std::vector<Server> _serverVect;
 	std::vector<Client> _clients;
 	int _countServ;
 
