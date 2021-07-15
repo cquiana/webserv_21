@@ -59,7 +59,7 @@ public:
 //	std::string getRootByLocation(std::string type, std::string loc);
 	std::string getRootByLocation(std::string loc);
 	bool checkCGIbyType(std::string cgi);
-	std::string getCGIbyType(std::string cgi);
+	std::string getCGIpachByType(std::string cgi);
 
 	void setPort(int port);
 	void setName(std::string name);

@@ -140,7 +140,7 @@ bool Server_config::checkCGIbyType(std::string cgi) {
 	return (false);
 }
 
-std::string Server_config::getCGIbyType(std::string cgi) {
+std::string Server_config::getCGIpachByType(std::string cgi) {
 	if (!checkCGIbyType(cgi))
 		throw Server_config::ServerCGInotFoundException();
 	for(std::vector<Location_config>::iterator it = _locations.begin(); it != _locations.end(); it++)
