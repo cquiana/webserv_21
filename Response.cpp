@@ -81,11 +81,14 @@ std::string Response::getHeader(std::string &key) const {
 
 Response Response::startGenerateResponse(Request &request) {
 
+
 	if (request.getCompete() == false)
 		setErrorPage(400);
 	if (request.getHttpVers() != "HTTP/1.1")
 		setErrorPage(505);
 	std::cout << request.getMethod() << std::endl;
+//	if (isDirectory("/Users/cquiana/CLionProjects/webserv_21/index.html"))
+//		std::cout << "/Users/cquiana/CLionProjects/webserv_21\n";
 	if (request.getMethod() == "GET") {
 		Response  getResp = generateGET(request);
 		return getResp;
@@ -114,25 +117,45 @@ Response Response::startGenerateResponse(Request &request) {
 
 }
 
-Response Response::generateGET(const Request &request) {
+Response Response::generateGET(Request &request) {
 
 	Response resp(200);
+
+	// get path from root
+
+	// path + request path
+
+	std::string rootPath = "/Users/cquiana/CLionProjects/webserv_21";
+	int autoindex = 1;
+
+	std::string fullPath(rootPath + request.getPath());
+
+	if (isDirectory(rootPath)) {
+		// check autoindex
+		if (autoindex == 1) {
+			// generate view
+		}
+	}
+
 	//TODO: check CGI
 	if (checkCGI(request))
 		resp = generateCGI(request);
-
-	struct stat st;
-	std::stringstream  buff;
-	std::ifstream file("/Users/cquiana/CLionProjects/webserv_21/index.html");
-	if (!file.is_open()) {
-		std::cerr << "Open file error\n";
+	else {
+		struct stat st;
+		std::stringstream  buff;
+		fullPath += "index.html";
+		std::ifstream file(fullPath);
+		if (!file.is_open()) {
+			std::cerr << "Open file error\n";
+		}
+		buff << file.rdbuf();
+		file.close();
+		std::string body = buff.str();
+		setBody(body);
+//		std::cout << body.length() << std::endl;
+		setContentLength(body.length());
 	}
-	buff << file.rdbuf();
-	file.close();
-	std::string body = buff.str();
-	setBody(body);
-	setContentLength(body.length());
-
+	setDefaultHeader();
 	return  resp;
 }
 
@@ -153,6 +176,7 @@ void Response::errorPageFromFile(const std::string &path) {
 	file.close();
 	std::string body = buff.str();
 	setBody(body);
+
 	setHeaders("Content-Type", "test/html");
 }
 
@@ -196,7 +220,7 @@ bool Response::checkCGI(const Request &request) {
 		std::string tmp = _request.getPath();
 		size_t dot = tmp.find_last_of('.');
 		std::string ext = tmp.substr(dot + 1);
-		return (ext == "py"); // или js
+		return (ext == "py" || ext == "js"); // или js
 }
 
 

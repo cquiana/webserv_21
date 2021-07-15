@@ -54,7 +54,7 @@ public:
 	bool isAutoIndex();
 	Response generateCGI(const Request &request);
 
-	Response generateGET(const Request &request); // conf
+	Response generateGET(Request &request); // conf
 
 };
 
