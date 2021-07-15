@@ -80,18 +80,35 @@ int WebServer::loop() {
 			}
 			break;
 		}
-		for (int i = 0; i < _countServ; ++i) {
-			if (FD_ISSET(_serverVect[i].getSock() , &tmpSet)) {
-				int newSock = _serverVect[i].acceptNewConnect();
+
+		for(std::vector<Server_config>::iterator it2 = _http_config._servers.begin(); it2 != _http_config._servers.end(); it2++)
+		{
+			if (FD_ISSET((*it2).getSocket() , &tmpSet)) {
+				int newSock = (*it2).acceptNewConnect();
 				if(newSock < 0)
 					return 1;
 				FD_SET(newSock, &_mainFdSet);
 				if (newSock > _maxSock)
 					_maxSock = newSock;
-				_clients.push_back(Client(newSock, i));
+//				_clients.push_back(Client(newSock, i));
+				_clients.push_back(Client(newSock));
 				break;
 			}
 		}
+
+
+//		for (int i = 0; i < _countServ; ++i) {
+//			if (FD_ISSET(_serverVect[i].getSock() , &tmpSet)) {
+//				int newSock = _serverVect[i].acceptNewConnect();
+//				if(newSock < 0)
+//					return 1;
+//				FD_SET(newSock, &_mainFdSet);
+//				if (newSock > _maxSock)
+//					_maxSock = newSock;
+//				_clients.push_back(Client(newSock, i));
+//				break;
+//			}
+//		}
 		it = _clients.begin();
 		for (;  it != _clients.end(); ++it) {
 			if (it->getStatus() == READY_TO_RECV) {
@@ -131,9 +148,15 @@ void WebServer::stop() {
 			close(it->getSock());
 		}
 	}
-	for (int i = 0; i < _serverVect.size(); ++i) {
-		close(_serverVect[i].getSock());
+
+	for(std::vector<Server_config>::iterator it3 = _http_config._servers.begin(); it3 != _http_config._servers.end(); it3++)
+	{
+		close((*it3).getSocket());
 	}
+
+//	for (int i = 0; i < _serverVect.size(); ++i) {
+//		close(_serverVect[i].getSock());
+//	}
 }
 
 void WebServer::resetWritingSet(fd_set *wrFdSet) {

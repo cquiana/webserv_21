@@ -21,7 +21,7 @@ class Client
 private:
 	Server _serv;
 	int _sock;
-	int _idxSrv;
+//	int _idxSrv;
 	Request _request;
 	std::string _requestMsg;
 	std::string _responseMsg;
