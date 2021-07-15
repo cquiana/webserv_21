@@ -8,7 +8,9 @@
 #include <string>
 #include <vector>
 #include <iostream>
+#include <netinet/in.h>
 #include "Location_config.hpp"
+#include <fcntl.h>
 
 class Server_config
 {
@@ -17,10 +19,13 @@ private:
 	std::string _name;
 	std::string _root;
 	std::string _index;
+	int _socket;
 	int _autoindex;
 	int _return_code; // -1 ne zadan, 0 zablokirovan, >0 = code
 	std::string _return_adress;
 	bool _active_location;
+
+	struct sockaddr_in _addr;
 
 public:
 	Server_config();
@@ -34,6 +39,7 @@ public:
 	bool haveName() const;
 	bool haveRoot() const;
 	bool haveIndex() const;
+	bool haveSocket() const;
 	bool haveAutoindex() const;
 	bool haveLocation() const;
 	bool haveReturnCode() const;
@@ -45,6 +51,7 @@ public:
 	std::string getRoot() const;
 	std::string getIndex() const;
 	int getAutoindex() const;
+	int getSocket() const;
 	int getReturnCode() const;
 	std::string getReturnArdess() const;
 	int getActiveLocation() const;
@@ -55,10 +62,13 @@ public:
 	void setPort(int port);
 	void setName(std::string name);
 	void setRoot(std::string root);
+	void setSocket(int sock);
 	void setIndex(std::string index);
 	void setAutoindex(int autoindex);
 	void setReturnCode(int return_code, std::string return_adress);
 
+	int initSocket();
+	int acceptNewConnect();
 	void addLocation(std::string location_path, std::string type);
 	void checkLastLocation();
 
@@ -86,9 +96,16 @@ public:
 	class SizeLocationsException:			public std::exception {
 		virtual const char *what() const throw() ;
 	};
-	class AnotherLocationOpenedException:		public std::exception {
+	class AnotherLocationOpenedException:	public std::exception {
 		virtual const char *what() const throw() ;
 	};
+	class ServerSocketInitError:			public std::exception {
+		virtual const char *what() const throw() ;
+	};
+	class ServerSocketException:			public std::exception {
+		virtual const char *what() const throw() ;
+	};
+
 
 
 //	class CodePageNumberAlraedySetException: public std::exception {

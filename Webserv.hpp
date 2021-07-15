@@ -19,6 +19,7 @@
 #include "Client.hpp"
 #include "Server.hpp"
 #include "Http_config.hpp"
+#include "ConfigParser.hpp"
 
 
 #define PORT 8888
@@ -27,16 +28,13 @@
 class Client;
 class WebServer {
 public:
-	WebServer();
-	WebServer(WebServer const & src);  				//copy
+	WebServer(Http_config* http_config);
 	~WebServer();								//destructor
-	WebServer & operator=(WebServer const & rhs);		//overload operator =
 
-	int init( std::string fileName );
-	int init();
-	int start();
+//	int init( std::string fileName );
+//	int init();
+	int loop();
 	void stop();
-
 
 	void setReadStatus(long socket);
 	void setWritingSetFD(fd_set *wrFD);
@@ -47,15 +45,17 @@ public:
 
 	void resetWritingSet(fd_set *wrFdSet);
 
-
 private:
+	WebServer();
+	WebServer & operator=(WebServer const & rhs);		//overload operator =
+	WebServer(WebServer const & src);  				//copy
 
+	Http_config _http_config;
 	int _maxSock;
 	fd_set _mainFdSet;
 	std::vector<Server> _serverVect;
 	std::vector<Client> _clients;
 	int _countServ;
-	Http_config _config;
 
 };
 

@@ -9,16 +9,17 @@ Http_config::Http_config() : _client_max_body_size(-2), _active_server(false) {}
 
 Http_config::~Http_config() {}
 
-//Http_config::Http_config(Http_config const &another) :
-//		_client_max_body_size(another._client_max_body_size), _error_page_ints(another._error_page_ints), _error_page_strings(another._error_page_strings), _servers(another._servers) {}
-//
-//Http_config& Http_config::operator=(Http_config const &another) {
-//	_client_max_body_size = another._client_max_body_size;
-//	_error_page_ints = another._error_page_ints;
-//	_error_page_strings = another._error_page_strings;
-//	_servers = another._servers;
-//	return *this;
-//}
+Http_config::Http_config(Http_config const &another) :
+		_client_max_body_size(another._client_max_body_size), _error_page_ints(another._error_page_ints), _error_page_strings(another._error_page_strings), _servers(another._servers), _active_server(another._active_server){}
+
+Http_config& Http_config::operator=(Http_config const &another) {
+	_client_max_body_size = another._client_max_body_size;
+	_error_page_ints = another._error_page_ints;
+	_error_page_strings = another._error_page_strings;
+	_servers = another._servers;
+	_active_server = another._active_server;
+	return *this;
+}
 
 bool Http_config::haveErrorPage(int page) const {
 	if (std::find(_error_page_ints.begin(), _error_page_ints.end(), page) != _error_page_ints.end())
@@ -127,7 +128,8 @@ void Http_config::checkLastServeer() {
 		throw Http_config::SizeServersException();
 	//std::cout << "Server ### " << _servers[n].getPort() << " : " << _servers[n].getRoot() << " : " << _servers[n].getName() << " : " << _servers[n].getIndex() << " : " << _servers[n].getAutoindex() << " : " << _servers[n].haveLocation() << " : " << _servers[n].getReturnCode() << " : " << _servers[n].getReturnArdess() << std::endl;
 	//std::cout << "Server ### " << _servers[n].havePort() << " : " << _servers[n].haveRoot() << " : " << _servers[n].haveName() << std::endl;
-	if (_servers[n].havePort() && _servers[n].haveRoot() && _servers[n].haveName())
+
+	if (_servers[n].havePort() && _servers[n].haveName() && _servers[n].haveRoot())
 	{
 		//std::cout << "Server done" << std::endl; //ToDo enable for debug
 		_active_server = false;
@@ -142,7 +144,9 @@ void Http_config::checkLastServeer() {
 		std::cout << "Server wrong : " << _servers[n].getPort() << " : " << _servers[n].getName() << " : " << _servers[n].getRoot() << " : " << _servers[n].getIndex() << " : " << _servers[n].getAutoindex() << " : " << _servers[n].haveLocation() << " : " << _servers[n].getReturnCode() << " : " << _servers[n].getReturnArdess() << std::endl;
 		_servers.pop_back();
 		_active_server = false;
+		return;
 	}
+	_servers[n].initSocket();
 }
 
 
@@ -185,5 +189,9 @@ const char *Http_config::SizeServersException::what() const throw() {
 
 const char *Http_config::ServerAlreadyOpenedException::what() const throw() {
 	return ("EXCEPTION! There are one opened server yeat...");
+};
+
+const char *Http_config::ServerSocketException::what() const throw() {
+	return ("EXCEPTION! Server socket exception...");
 };
 

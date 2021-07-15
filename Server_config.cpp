@@ -4,14 +4,15 @@
 
 #include "Server_config.hpp"
 #include "Location_config.hpp"
+#include "Webserv.hpp"
 
 Server_config::Server_config() :
-	_port(-1), _name(""), _root(""), _index(""), _autoindex(-1), _return_code(-1), _return_adress(""), _active_location(false) {}
+	_port(-1), _name(""), _root(""), _index(""), _autoindex(-1), _return_code(-1), _return_adress(""), _active_location(false), _socket(-1) {}
 
 Server_config::~Server_config() {}
 
 Server_config::Server_config(Server_config const &another) :
-	_port(another._port), _name(another._name), _root(another._root), _index(another._index), _autoindex(another._autoindex), _return_code(another._return_code), _return_adress(another._return_adress), _active_location(another._active_location), _locations(another._locations) {}
+	_port(another._port), _name(another._name), _root(another._root), _index(another._index), _autoindex(another._autoindex), _return_code(another._return_code), _return_adress(another._return_adress), _active_location(another._active_location), _locations(another._locations), _socket(another._socket) {}
 
 Server_config& Server_config::operator=(Server_config const &another) {
 	_port = another._port;
@@ -23,6 +24,7 @@ Server_config& Server_config::operator=(Server_config const &another) {
 	_return_adress = another._return_adress;
 	_active_location = another._active_location;
 	_locations = another._locations;
+	_socket = another._socket;
 	return *this;
 }
 
@@ -47,6 +49,13 @@ bool Server_config::haveIndex() const {
 
 bool Server_config::haveAutoindex() const {
 	if (_autoindex != -1)
+		return true;
+	else
+		return false;
+}
+
+bool Server_config::haveSocket() const {
+	if (_socket != -1)
 		return true;
 	else
 		return false;
@@ -100,6 +109,10 @@ int Server_config::getAutoindex() const {
 	return _autoindex;
 }
 
+int Server_config::getSocket() const {
+	return _socket;
+}
+
 int Server_config::getReturnCode() const {
 	return _return_code;
 }
@@ -143,6 +156,13 @@ void Server_config::setPort(int port) {
 		throw Server_config::PortAlraedySetException();
 	else
 		_port = port;
+}
+
+void Server_config::setSocket(int sock) {
+	if (haveSocket())
+		throw Server_config::PortAlraedySetException();																	//ToDo change exception
+	else
+		_socket = sock;
 }
 
 void Server_config::setName(std::string name) {
@@ -195,6 +215,48 @@ void Server_config::addLocation(std::string location_path, std::string type) {
 	_locations.push_back(Location_config(location_path, type));
 	_active_location = true;
 	setReturnCode(0, "");	// Block returnCode
+}
+
+int Server_config::acceptNewConnect() {
+	struct sockaddr_in address;
+	unsigned int addrLen = sizeof(address);
+	int sock = accept(_socket, (struct sockaddr *)&address, (socklen_t *)
+			&addrLen);
+	if (sock < 0) {
+		throw Server_config::ServerSocketInitError();
+	}
+	fcntl(sock, F_SETFL, O_NONBLOCK);
+	return sock;
+}
+
+int Server_config::initSocket()
+{
+	if (haveSocket())
+		throw Server_config::ServerSocketException();
+	int sock = socket(AF_INET, SOCK_STREAM, 0);
+	if (sock < 0)
+		throw Server_config::ServerSocketException();
+	_addr.sin_family = AF_INET;
+	_addr.sin_addr.s_addr = inet_addr(IP);
+	_addr.sin_port = htons(getPort());
+
+	memset(_addr.sin_zero, 0, sizeof(_addr.sin_zero));
+
+	int ret = 1;
+	int res = setsockopt(sock, SOL_SOCKET, SO_REUSEPORT, &ret, sizeof(_addr));
+	if (res < 0)
+		throw Server_config::ServerSocketException();
+
+	res = bind(sock, (struct sockaddr *) &_addr, sizeof(_addr));
+	if (res < 0)
+	{
+		close(sock);
+		throw Server_config::ServerSocketException();
+	}
+	res = listen(sock, 100);
+	if (res < 0)
+		throw Server_config::ServerSocketException();
+	setSocket(sock);
 }
 
 void Server_config::checkLastLocation() {
@@ -255,6 +317,14 @@ const char *Server_config::SizeLocationsException::what() const throw() {
 
 const char *Server_config::AnotherLocationOpenedException::what() const throw() {
 	return ("EXCEPTION! Another Location Opened in this server...");
+};
+
+const char *Server_config::ServerSocketInitError::what() const throw() {
+	return ("EXCEPTION! Server Socket Init Error...");
+};
+
+const char *Server_config::ServerSocketException::what() const throw() {
+	return ("EXCEPTION! Server socket exception...");
 };
 
 

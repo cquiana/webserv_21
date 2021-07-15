@@ -15,11 +15,10 @@ private:
 	int _client_max_body_size;
 	bool _active_server;
 
-	Http_config(Http_config const &another);
-	Http_config &operator=(Http_config const &another);
-
 public:
 	Http_config();
+	Http_config(Http_config const &another);
+	Http_config &operator=(Http_config const &another);
 	~Http_config();
 
 	std::vector<Server_config> _servers;
@@ -76,6 +75,10 @@ public:
 	class ServerAlreadyOpenedException:		public std::exception {
 		virtual const char *what() const throw() ;
 	};
+	class ServerSocketException:		public std::exception {
+		virtual const char *what() const throw() ;
+	};
+
 
 };
 

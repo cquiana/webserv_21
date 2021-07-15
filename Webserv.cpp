@@ -1,43 +1,48 @@
 #include "Webserv.hpp"
 
-WebServer::WebServer() {
-
-}
-
-WebServer::~WebServer() {
-
-}
-
-int WebServer::init(std::string fileName)  {
-
-	_maxSock = 0;
-	// parsing
-	// vector servers
-//	_countServ = ?
-// TODO: создать вектор серверов
+WebServer::WebServer(Http_config* http_config) {
+	_http_config = *http_config;
 	FD_ZERO(&_mainFdSet);
-	Server tmp(IP, PORT); // ? name
-	_serverVect.push_back(tmp);
-	// TODO: получить количество серверов из конфига
-	_countServ = _serverVect.size();
-	for (int i = 0; i < _countServ; ++i) {
-		if (_serverVect[i].create(i)) {
-			std::cout << "serv init error!\n";
-			return 1;
-		}
-		FD_SET(_serverVect[i].getSock(), &_mainFdSet); // adding sock in set
-		if(_serverVect[i].getSock() > _maxSock)
-			_maxSock = _serverVect[i].getSock(); // set max # of sock
+	_maxSock = 0;
+	for(std::vector<Server_config>::iterator it = _http_config._servers.begin(); it != _http_config._servers.end(); it++)
+	{
+		FD_SET((*it).getSocket(), &_mainFdSet);
+		if((*it).getSocket() > _maxSock)
+			_maxSock = (*it).getSocket(); // set max # of sock
 	}
-	return 0;
 }
 
-int WebServer::init()  { // file name
+WebServer::~WebServer() {}
 
-	return 0;
-}
+//int WebServer::init(std::string aaa)  {
+//
+//	_maxSock = 0;
+//	// parsing
+//	// vector servers
+////	_countServ = ?
+//// TODO: создать вектор серверов
+//	Server tmp("getName", 123); // ? name 				//ToDo dl9 pervogo servera tolko
+//	_serverVect.push_back(tmp);
+//	// TODO: получить количество серверов из конфига
+//	_countServ = _serverVect.size();
+//	for (int i = 0; i < _countServ; ++i) {
+//		if (_serverVect[i].create(i)) {
+//			std::cout << "serv init error!\n";
+//			return 1;
+//		}
+//		FD_SET(_serverVect[i].getSock(), &_mainFdSet); // adding sock in set
+//		if(_serverVect[i].getSock() > _maxSock)
+//			_maxSock = _serverVect[i].getSock(); // set max # of sock
+//	}
+//	return 0;
+//}
 
-int WebServer::start() {
+//int WebServer::init()  { // file name
+//
+//	return 0;
+//}
+
+int WebServer::loop() {
 	fd_set wrFdSet;
 	fd_set tmpSet;
 
