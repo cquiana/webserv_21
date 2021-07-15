@@ -8,13 +8,13 @@ Client::Client(int sock) : _sock(sock), _request(sock), _status(READY_TO_RECV) {
 
 }
 
-Client::Client(int sock, int idxSrv) : _sock(sock), _idxSrv(idxSrv), _status(READY_TO_RECV) {
+//Client::Client(int sock, int idxSrv) : _sock(sock), _idxSrv(idxSrv), _status(READY_TO_RECV) {
+//
+//}
 
-}
-
-Client::Client(Server &serv, int sock) : _serv(serv), _sock(sock), _request(sock){
-
-}
+//Client::Client(Server &serv, int sock) : _serv(serv), _sock(sock), _request(sock){
+//
+//}
 
 Client::~Client() {
 //	close(_sock);
