@@ -130,6 +130,27 @@ std::string Server_config::getRootByLocation(std::string loc) {
 	return (_root);
 }
 
+
+bool Server_config::checkCGIbyType(std::string cgi) {
+	for(std::vector<Location_config>::iterator it = _locations.begin(); it != _locations.end(); it++)
+	{
+		if ((*it).mIsCGI() && (*it).haveCgiPath() && (*it).haveType(cgi))
+			return (true);
+	}
+	return (false);
+}
+
+std::string Server_config::getCGIbyType(std::string cgi) {
+	if (!checkCGIbyType(cgi))
+		throw Server_config::ServerCGInotFoundException();
+	for(std::vector<Location_config>::iterator it = _locations.begin(); it != _locations.end(); it++)
+	{
+		if ((*it).mIsCGI() && (*it).haveCgiPath() && (*it).haveType(cgi))
+			return ((*it).getCgiPath());
+	}
+	return ("");
+}
+
 //std::string Server_config::getRootByLocation(std::string type, std::string loc) {
 //	for(std::vector<Location_config>::iterator it = _locations.begin(); it != _locations.end(); it++)
 //	{
@@ -325,6 +346,10 @@ const char *Server_config::ServerSocketInitError::what() const throw() {
 
 const char *Server_config::ServerSocketException::what() const throw() {
 	return ("EXCEPTION! Server socket exception...");
+};
+
+const char *Server_config::ServerCGInotFoundException::what() const throw() {
+	return ("EXCEPTION! Server CGI not Found exception...");
 };
 
 
