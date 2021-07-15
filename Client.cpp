@@ -2,19 +2,10 @@
 #define BUFFER_SIZE 10000;
 
 
-Client::Client() { }
-
-Client::Client(int sock) : _sock(sock), _request(sock), _status(READY_TO_RECV) {
+Client::Client(int sock, Http_config *http_config) : _sock(sock), _request(sock), _status(READY_TO_RECV),
+_http_config(http_config) {
 
 }
-
-//Client::Client(int sock, int idxSrv) : _sock(sock), _idxSrv(idxSrv), _status(READY_TO_RECV) {
-//
-//}
-
-//Client::Client(Server &serv, int sock) : _serv(serv), _sock(sock), _request(sock){
-//
-//}
 
 Client::~Client() {
 //	close(_sock);
@@ -42,7 +33,7 @@ client_status Client::getStatus() {
 
 bool Client::sendResp() {
 
-	Response response(200);
+	Response response(200, _http_config);
 	response.startGenerateResponse(_request);
 //	response.setDefaultHeader();
 	std::string res = response.responseToString();
@@ -63,10 +54,6 @@ bool Client::sendResp() {
 void Client::setStatus(client_status st) {
 	_status = st;
 }
-
-//int Client::getIndexOfServ() {
-//	return _idxSrv;
-//}
 
 void Client::setRequest(Request &req){
 	_request = req;
