@@ -7,6 +7,11 @@ _http_config(http_config) {
 
 }
 
+Client::Client(int sock, Server_config &server_config) : _sock(sock),
+_request(sock), _status(READY_TO_RECV), _server_config(server_config) {
+
+}
+
 Client::~Client() {
 //	close(_sock);
 }
@@ -33,7 +38,8 @@ client_status Client::getStatus() {
 
 bool Client::sendResp() {
 
-	Response response(200, _http_config);
+//	Response response(200, _http_config);
+	Response response(200, _server_config);
 	response.startGenerateResponse(_request);
 //	response.setDefaultHeader();
 	std::string res = response.responseToString();
@@ -58,3 +64,5 @@ void Client::setStatus(client_status st) {
 void Client::setRequest(Request &req){
 	_request = req;
 }
+
+

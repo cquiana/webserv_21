@@ -92,7 +92,8 @@ int WebServer::loop() {
 				if (newSock > _maxSock)
 					_maxSock = newSock;
 //				_clients.push_back(Client(newSock, i));
-				_clients.push_back(Client(newSock, _http_config));
+//				_clients.push_back(Client(newSock, _http_config));
+				_clients.push_back(Client(newSock, (*it2)));
 				break;
 			}
 		}
