@@ -1,6 +1,6 @@
 #include "Request.hpp"
 
-#define BUFFER_SIZE 10000
+#define BUFFER_SIZE 100000
 
 Request::Request(int sock) : _sock(sock), _isComplete(false),
 							_correctBody(true), _contentLength (0) {
