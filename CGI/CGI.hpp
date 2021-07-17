@@ -1,18 +1,19 @@
-#ifndef WEBSERV_21_CGI_H
-#define WEBSERV_21_CGI_H
+#ifndef CGI_HPP
+#define CGI_HPP
 
 #include <iostream>
 #include <cstdlib>
 #include <cstring>
+#include <map>
 
 class CGI {
 private:
 	char**  _env;
-	const std::string &_request;
+	std::map<std::string, std::string> _headers;
 
 	void pushEnv(const std::string &key, const std::string &value);
 public:
-	CGI(const std::string &request);
+	CGI(std::map<std::string, std::string> headers);
 	~CGI();
 	void Start();
 };
