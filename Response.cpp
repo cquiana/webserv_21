@@ -93,6 +93,7 @@ Response Response::startGenerateResponse() {
 		generateGET();
 	else if (_request.getMethod() == "POST") {
 //		Response  getResp = generateGET(request);
+//curl -X POST -F 'image=@/Users/cquiana/Desktop/img.png' http://127.0.0.1:60080/images
 //		return getResp;
 //		getResp = generatePOST(request);
 	}
@@ -136,8 +137,8 @@ bool Response::methodDELETE() {
 		}
 	}
 	std::string fullPath(_server_config.getRoot() + _request.getPath());
-//	int ret = std::remove(fullPath.c_str());
-	int ret = unlink(fullPath.c_str());
+	int ret = std::remove(fullPath.c_str());
+//	int ret = unlink(fullPath.c_str());
 	if (ret < 0)
 		setErrorCode(403);
 	else
@@ -173,10 +174,11 @@ bool Response::generateGET() {
 	}
 	
 	if (checkCGI()) {
-		_CGIResponse =  generateCGI();
-		setBody(_CGIResponse);
-		setContentLength(_CGIResponse.length());
-		setErrorCode(200);
+//		CGI _cgiResponse(_request, _server_config.getCGIpachByType(), );
+//		_CGIResponse =  generateCGI();
+//		setBody(_CGIResponse);
+//		setContentLength(_CGIResponse.length());
+//		setErrorCode(200);
 //		setHeaders("Last-Modified", _lastModif);
 //		setHeaders("Mime-Type", getMimeType(fullPath));
 	}
