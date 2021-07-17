@@ -1,3 +1,4 @@
 .idea
 .vscode
 CGI/compile/python
+/CMakeLists.txt
