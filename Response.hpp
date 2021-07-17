@@ -10,9 +10,9 @@
 class Response
 {
 private:
-
+	Response();
 public:
-//	Request _request;
+	Request const &_request;
 	std::map<std::string, std::string> _headers;
 	std::map<int, std::string> _errors;
 	std::string _body;
@@ -26,16 +26,15 @@ public:
 
 	std::string _result;
 
-    Response(/* args */);
+
 //	Response(int code, Http_config* http_config);
-	Response(int code);
-	Response(int code, Server_config &server_config);
+	Response(int code, Server_config &server_config, const Request &request);
 
 
     ~Response();
 
     std::string responseToString();
-    Response startGenerateResponse(Request &request); // serv conf
+    Response startGenerateResponse(); // serv conf
 
     void setHeaders(const std::string &key, const std::string &value);
     void setErrors();
@@ -57,11 +56,11 @@ public:
 
 	void errorPageFromFile(const std::string &path);
 	void errorPageGenerator(int code);
-	bool checkCGI(Request &request);
+	bool checkCGI();
 
-	std::string generateCGI(Request &request);
-	void generateGET(Request &request); // conf
-	void methodDelete(Request &request);
+	std::string generateCGI();
+	bool generateGET(); // conf
+	void methodDelete();
 	void generateAutoindex();
 	std::string getMimeType(const std::string &file);
 

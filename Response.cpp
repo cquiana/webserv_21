@@ -1,19 +1,11 @@
 #include "Response.hpp"
 
-Response::Response(/* args */) {
-
-}
-
 //Response::Response(int code, Http_config* http_config) : _code(code), _http_config(http_config) {
 //	setErrors();
 //}
 
-Response::Response(int code) : _code(code) {
-	setErrors();
-}
-
-Response::Response(int code, Server_config &server_config) : _code(code),
-_server_config(server_config) {
+Response::Response(int code, Server_config &server_config, const Request &request) : _code(code),
+_server_config(server_config), _request(request) {
 	setErrors();
 }
 
@@ -27,13 +19,13 @@ void Response::setErrors() {
 	_errors[201] = "Created";
 	_errors[204] = "No Content";
 	_errors[300] = "Multiple Choices";
-	_errors[301] = "Moved Permanently";
-	_errors[302] = "Found";
-	_errors[303] = "See Other";
-	_errors[304] = "Not Modified";
-	_errors[305] = "Use Proxy";
-	_errors[307] = "Temporary Redirect";
-	_errors[308] = "Permanent Redirect";
+//	_errors[301] = "Moved Permanently";
+//	_errors[302] = "Found";
+//	_errors[303] = "See Other";
+//	_errors[304] = "Not Modified";
+//	_errors[305] = "Use Proxy";
+//	_errors[307] = "Temporary Redirect";
+//	_errors[308] = "Permanent Redirect";
 	_errors[400] = "Bad Request";
 	_errors[403] = "Forbidden";
 	_errors[404] = "Not Found";
@@ -91,21 +83,21 @@ std::string Response::getHeader(const std::string &key) const {
 	}
 }
 
-Response Response::startGenerateResponse(Request &request) {
+Response Response::startGenerateResponse() {
 
-	if (!request.getCompete())
+	if (!_request.getCompete())
 		setErrorCode(400);
-	if (request.getHttpVers() != "HTTP/1.1")
+	if (_request.getHttpVers() != "HTTP/1.1")
 		setErrorCode(505);
-	if (request.getMethod() == "GET")
-		generateGET(request);
-	else if (request.getMethod() == "POST") {
+	if (_request.getMethod() == "GET")
+		generateGET();
+	else if (_request.getMethod() == "POST") {
 //		Response  getResp = generateGET(request);
 //		return getResp;
 //		getResp = generatePOST(request);
 	}
-	else if (request.getMethod() == "DELETE") {
-		methodDelete(request);
+	else if (_request.getMethod() == "DELETE") {
+		methodDelete();
 	}
 	else {
 //		Response  getResp = generateGET(request);
@@ -118,22 +110,22 @@ Response Response::startGenerateResponse(Request &request) {
 
 void Response::finishGenerateResponse() {
 	if (getErrorCode() >= 400 && _body.empty()) {
-		if (_errors.count(_code)) {
-			try {
-				errorPageFromFile(_errors.at(_code));
-			} catch (std::runtime_error &e) {
-				std::cerr << e.what() << std::endl;
-				errorPageGenerator(getErrorCode());
-			}
-		}
-		else
+//		if (_errors.count(_code)) {
+//			try {
+//				errorPageFromFile(_errors.at(_code));
+//			} catch (std::runtime_error &e) {
+//				std::cerr << e.what() << std::endl;
+//				errorPageGenerator(getErrorCode());
+//			}
+//		}
+//		else
 			errorPageGenerator(getErrorCode());
 	}
 
 }
 
-void Response::methodDelete(Request &request) {
-	std::string fullPath(_server_config.getRoot() + request.getPath());
+void Response::methodDelete() {
+	std::string fullPath(_server_config.getRoot() + _request.getPath());
 	int ret = std::remove(fullPath.c_str());
 	if (ret < 0)
 		setErrorCode(403);
@@ -141,9 +133,20 @@ void Response::methodDelete(Request &request) {
 		setErrorCode(200);
 }
 
-void Response::generateGET(Request &request) {
+bool Response::generateGET() {
 
-	std::string fullPath(_server_config.getRoot() + request.getPath());
+
+	for (std::vector<Location_config>::iterator it = _server_config._locations.begin(); it !=  _server_config
+	._locations.end(); ++it) {
+		if ((*it).getLocationPrefix() == _request.getLocatinPath()) {
+			if ((*it).getMethods() < 1) {
+				setErrorCode(405);
+				return false;
+			}
+		}
+
+	}
+	std::string fullPath(_server_config.getRoot() + _request.getPath());
 	if (isDirectory(fullPath)) {
 		if (fullPath.back() != '/')
 			fullPath += "/";
@@ -151,11 +154,15 @@ void Response::generateGET(Request &request) {
 			generateAutoindex();
 		else if (_server_config.haveIndex())
 			fullPath += _server_config.getIndex();
-		else
-			setErrorCode(403); // error page
+		else{
+			setErrorCode(403);
+			return false;
+		}
+			// error page
 	}
-	if (checkCGI(request)) {
-		_CGIResponse =  generateCGI(request);
+	
+	if (checkCGI()) {
+		_CGIResponse =  generateCGI();
 		setBody(_CGIResponse);
 		setContentLength(_CGIResponse.length());
 		setErrorCode(200);
@@ -163,6 +170,10 @@ void Response::generateGET(Request &request) {
 //		setHeaders("Mime-Type", getMimeType(fullPath));
 	}
 	else {
+		if (!fileExist(fullPath)) {
+			setErrorCode(404);
+			return false;
+		}
 		std::stringstream  buff;
 		std::ifstream file(fullPath);
 		if (!file.is_open())
@@ -177,7 +188,7 @@ void Response::generateGET(Request &request) {
 		setHeaders("Last-Modified", _lastModif);
 		setHeaders("Mime-Type", getMimeType(fullPath));
 	}
-
+	return true;
 }
 
 void Response::setErrorCode(int code) {
@@ -198,6 +209,7 @@ void Response::setDefaultHeader() {
 	setHeaders("Date", getDate());
 	if (getHeader("Content-Length").empty())
 		setHeaders("Content-Length", numberToString(_body.length()));
+	setHeaders("Connection", "close");
 }
 
 std::string Response::getDate() {
@@ -212,14 +224,14 @@ size_t Response::getContetntLength() {
 	return _lenght;
 }
 
-std::string Response::generateCGI(Request &request) {
+std::string Response::generateCGI() {
 	std::string str = "";
 	setCGIResponse(str);
 	return str;
 }
 
-bool Response::checkCGI(Request &request) {
-		std::string tmp = request.getPath();
+bool Response::checkCGI() {
+		std::string tmp = _request.getPath();
 		size_t dot = tmp.find_last_of('.');
 		std::string ext = tmp.substr(dot + 1);
 		return (ext == "py" || ext == "js"); // или js
@@ -250,7 +262,7 @@ std::string Response::getMimeType(const std::string &file) {
 		return "text/css";
 	if (end == "js")
 		return "application/javascript";
-	if (end == "js")
+	if (end == "py")
 		return "application/octet-stream";
 	return "text/plain";
 }

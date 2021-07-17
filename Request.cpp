@@ -1,6 +1,6 @@
 #include "Request.hpp"
 
-#define BUFFER_SIZE 4096
+#define BUFFER_SIZE 10000
 
 Request::Request(int sock) : _sock(sock), _isComplete(false),
 							_correctBody(true), _contentLength (0) {
@@ -10,6 +10,12 @@ Request::Request() {
 }
 
 Request::~Request() {
+}
+
+void Request::setLocationPath(){
+	std::string location = getUri();
+	size_t pos = location.find_last_of('/');
+	_location = location.substr(0, pos + 1);
 }
 
 void Request::parseRequest(std::string request) {
@@ -22,7 +28,7 @@ void Request::parseHeaders(std::string &request) {
 	_headers["method"] = cutLine(line, " ");
 	_headers["path"] = cutLine(line, " ");
 	_headers["version"] = cutLine(line, " ");
-
+	setLocationPath();
 	line.erase();
 	for (line = cutLine(request, "\r\n"); !line.empty(); line = cutLine(request, "\r\n")) {
 		std::string key = ft_skip_space(cutLine(line, ":"));
@@ -55,8 +61,9 @@ void Request::parseBody(std::string &request) {
 
 }
 
-const std::string  &Request::getMethod() {
-	return (_headers["method"]);
+const std::string & Request::getMethod() const
+{
+	return (_headers.at("method"));
 }
 
 size_t Request::getContentLength() {
@@ -90,10 +97,11 @@ std::string Request::getUserAgent(){
 std::string Request::getUri(){
 	return _headers["path"];
 }
-std::string Request::getPath() {
+std::string Request::getPath() const
+{
 	std::string res;
 
-	res = _headers["path"];
+	res = _headers.at("path");
 	size_t query = res.find('?');
 	if (query != std::string::npos)
 		res.erase(query);
@@ -111,7 +119,8 @@ std::string Request::getQueryString() {
 		return res.substr(query + 1);
 }
 
-bool Request::getCompete() {
+bool Request::getCompete() const
+{
 	return _isComplete;
 }
 
@@ -122,10 +131,14 @@ bool Request::getCompete() {
 bool Request::receive() {
 	char buff[BUFFER_SIZE + 1]= {};
 	int ret;
-	ret = read(_sock, buff, BUFFER_SIZE);
+	ret = recv(_sock, buff, BUFFER_SIZE, 0);
+//	ret = read(_sock, buff, BUFFER_SIZE);
 	if (ret < 0) {
+//		throw Request::ReadErrorException();
+
 		std::cout << "read error\n";
 		return false;
+
 	} else {
 //		std::cout << ret << std::endl;
 		buff[ret] = '\0';
@@ -139,10 +152,35 @@ bool Request::receive() {
 //	std::cout << getMethod() << std::endl;
 }
 
-std::string Request::getHttpVers()
+const std::string Request::getHttpVers() const
 {
 	std::string res;
 
-	res = _headers["version"];
+	res = _headers.at("version");
 	return res;
 }
+
+std::string Request::getLocatinPath() const
+{
+	return _location;
+}
+
+void Request::eraseRequest(){
+	_headers.clear();
+	_uri.clear();
+	_queryString.clear();
+	_reqBody.clear();
+	_location.clear();
+	_toRead.clear();
+	_contentLength = 0;
+	_isComplete = false;
+	_correctBody = false;
+	_sock = 0;
+
+}
+
+const char *Request::ReadErrorException::what() const throw() {
+	return ("EXCEPTION! Read from socket error...");
+};
+
+

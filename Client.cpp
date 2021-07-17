@@ -39,8 +39,8 @@ client_status Client::getStatus() {
 bool Client::sendResp() {
 
 //	Response response(200, _http_config);
-	Response response(200, _server_config);
-	response.startGenerateResponse(_request);
+	Response response(200, _server_config, _request);
+	response.startGenerateResponse();
 //	response.setDefaultHeader();
 	std::string res = response.responseToString();
 
@@ -51,6 +51,7 @@ bool Client::sendResp() {
 	}
 	if (ret == response.getContetntLength())
 		_status = ALL_DATA_SENDET;
+	_request.eraseRequest();
 //	_responseMsg.erase(0, ret); // clear responce
 
 	return true;

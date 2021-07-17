@@ -263,8 +263,8 @@ void Server_config::initSocket()
 
 	memset(_addr.sin_zero, 0, sizeof(_addr.sin_zero));
 
-	int ret = 1;
-	int res = setsockopt(sock, SOL_SOCKET, SO_REUSEPORT, &ret, sizeof(_addr));
+	int r = 1;
+	int res = setsockopt(sock, SOL_SOCKET, SO_REUSEPORT, &r, sizeof(r));
 	if (res < 0)
 		throw Server_config::ServerSocketException();
 
@@ -274,7 +274,7 @@ void Server_config::initSocket()
 		close(sock);
 		throw Server_config::ServerSocketException();
 	}
-	res = listen(sock, 100);
+	res = listen(sock, 0);
 	if (res < 0)
 		throw Server_config::ServerSocketException();
 	setSocket(sock);

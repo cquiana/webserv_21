@@ -52,7 +52,7 @@ int WebServer::loop() {
 		tmpSet = _mainFdSet;
 //		struct timeval tv = {10, 0};
 		resetWritingSet(&wrFdSet);
-		int ret = select(_maxSock + 1, &tmpSet, &wrFdSet, NULL, NULL);
+		int ret = select(_maxSock + 1, &tmpSet, &wrFdSet, NULL, 0);
 		if (ret < 0) {
 			std::cout << "select error!\n";
 		}
@@ -64,7 +64,7 @@ int WebServer::loop() {
 						std::cout << "send resp error!\n";
 						if (close(it->getSock()) < 0)
 							return 1;
-						FD_CLR(it->getSock(), &_mainFdSet);
+						FD_CLR(it->getSock(), &wrFdSet);
 						it->setStatus(CONNECT_CLOSE);
 						_clients.erase(it);
 					} else {
@@ -74,7 +74,7 @@ int WebServer::loop() {
 						_clients.erase(it);
 					}
 				}
-			} else {
+			} else if (it->getStatus() == ALL_DATA_SENDET) {
 				if (close(it->getSock()) < 0)
 					return 1;
 				FD_CLR(it->getSock(), &_mainFdSet);
@@ -93,30 +93,15 @@ int WebServer::loop() {
 				FD_SET(newSock, &_mainFdSet);
 				if (newSock > _maxSock)
 					_maxSock = newSock;
-//				_clients.push_back(Client(newSock, i));
 //				_clients.push_back(Client(newSock, _http_config));
 				_clients.push_back(Client(newSock, (*it2)));
 				break;
 			}
 		}
-
-
-//		for (int i = 0; i < _countServ; ++i) {
-//			if (FD_ISSET(_serverVect[i].getSock() , &tmpSet)) {
-//				int newSock = _serverVect[i].acceptNewConnect();
-//				if(newSock < 0)
-//					return 1;
-//				FD_SET(newSock, &_mainFdSet);
-//				if (newSock > _maxSock)
-//					_maxSock = newSock;
-//				_clients.push_back(Client(newSock, i));
-//				break;
-//			}
-//		}
 		it = _clients.begin();
 		for (;  it != _clients.end(); ++it) {
 			if (it->getStatus() == READY_TO_RECV) {
-				if (FD_ISSET(it->getSock(), &_mainFdSet)) {
+				if (FD_ISSET(it->getSock(), &tmpSet)) {
 					if(!it->recvReq()) {
 						std::cout << "recv resp error!\n";
 						if (close(it->getSock()) < 0)
@@ -125,28 +110,11 @@ int WebServer::loop() {
 						it->setStatus(CONNECT_CLOSE);
 						_clients.erase(it);
 					}
-//					else {
-//						it->setStatus(ALL_DATA_SENDET);
-//						FD_CLR(it->getSock(), &_mainFdSet);
-//						_clients.erase(it);
-//					}
 				}
-			} else if (it->getStatus() == ALL_DATA_SENDET) {
-				FD_CLR(it->getSock(), &_mainFdSet);
-				close(it->getSock());
-				_clients.erase(it);
-			}
-			else {
-				if (close(it->getSock()) < 0)
-					return 1;
-				FD_CLR(it->getSock(), &_mainFdSet);
-				it->setStatus(CONNECT_CLOSE);
-				_clients.erase(it);
 			}
 			break;
 		}
 	}
-
 	return 0;
 }
 
@@ -157,15 +125,10 @@ void WebServer::stop() {
 			close(it->getSock());
 		}
 	}
-
 	for(std::vector<Server_config>::iterator it3 = _http_config->_servers.begin(); it3 != _http_config->_servers.end(); it3++)
 	{
 		close((*it3).getSocket());
 	}
-
-//	for (int i = 0; i < _serverVect.size(); ++i) {
-//		close(_serverVect[i].getSock());
-//	}
 }
 
 void WebServer::resetWritingSet(fd_set *wrFdSet) {
@@ -176,9 +139,3 @@ void WebServer::resetWritingSet(fd_set *wrFdSet) {
 			FD_SET(it->getSock(), wrFdSet);
 	}
 }
-
-
-
-//WebServer &WebServer::operator=(const WebServer &rhs) {
-//	return <#initializer#>;
-//}

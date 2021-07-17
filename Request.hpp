@@ -18,6 +18,7 @@ private:
 	std::string _uri;
 	std::string _queryString;
 	std::string _reqBody;
+	std::string _location;
 	std::string _toRead;
 
 	size_t _contentLength;
@@ -37,19 +38,29 @@ public:
 	void parseHeaders(std::string &request);
 	void parseBody(std::string &request);
 	bool receive();
+
+	void setLocationPath();
+
 	size_t getContentLength();
-	const std::string &getMethod();
+	const std::string & getMethod() const;
 	std::string getHost();
 	std::string  &getReqBody();
 	std::string getAuthType();
 	std::string getConnection();
 	std::string getUserAgent();
 	std::string getUri();
-	std::string getPath();
+	std::string getPath() const;
 	std::string getQueryString();
-	std::string getHttpVers();
-	bool getCompete() ;
-	bool checkHeader();
+	const std::string getHttpVers() const;
+	std::string getLocatinPath() const;
+	bool getCompete() const;
+	bool checkHeader() const;
+
+	void eraseRequest();
+
+	class ReadErrorException:			public std::exception {
+		virtual const char *what() const throw() ;
+	};
 
 };
 #endif
