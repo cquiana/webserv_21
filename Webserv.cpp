@@ -1,92 +1,141 @@
-//
-// Created by Candy Quiana on 5/27/21.
-//
-
 #include "Webserv.hpp"
 
-void WebServer::initServ() {
-
-	_sock = socket(AF_INET, SOCK_STREAM, 0);
-	if (_sock < 0) {
-		std::cerr << "socket error" << std::endl;
-		//TODO: решить, что делать при ошибке
+WebServer::WebServer(Http_config* http_config) {
+	_http_config = http_config;
+	FD_ZERO(&_mainFdSet);
+	_maxSock = 0;
+	for(std::vector<Server_config>::iterator it = _http_config->_servers.begin(); it != _http_config->_servers.end();
+	it++)
+	{
+		FD_SET((*it).getSocket(), &_mainFdSet);
+		if((*it).getSocket() > _maxSock)
+			_maxSock = (*it).getSocket(); // set max # of sock
 	}
-	std::cout << _sock << std::endl;
-
-	// залипание порта
-	int opt = 1;
-	setsockopt(_sock, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
-
-	struct sockaddr_in _addr;
-	_addr.sin_family = AF_INET; // for IPv4
-	_addr.sin_port = htons(PORT); //  host to network (short)
-	_addr.sin_addr.s_addr = inet_addr(IP); // our IP
-	// если не получилось с адресом
-	if (_addr.sin_addr.s_addr == INADDR_NONE) {
-		std::cerr << "inet_addr error" << std::endl;
-		//TODO: решить, что делать при ошибке
-	}
-	if (bind(_sock, ( sockaddr*)&_addr, sizeof(_addr)) == -1) {
-		std::cerr << "bind error" << std::endl;
-		//TODO: решить, что делать при ошибке
-	}
-	if (listen(_sock, QLEN) == -1) {
-		std::cerr << "listen error" << std::endl;
-		//TODO: решить, что делать при ошибке
-	}
-	//  fcntl(fd, F_SETFL, O_NONBLOCK);
 }
 
-void WebServer::startServ() {
-	int new_sock;
-	socklen_t sock_len = sizeof(_addr);
-	struct timeval timeout;
-	timeout.tv_sec = 10;
-	timeout.tv_usec = 0;
-	fd_set rfd;
+WebServer::~WebServer() {}
 
-	// TODO: получить запрос
+//int WebServer::init(std::string aaa)  {
+//
+//	_maxSock = 0;
+//	// parsing
+//	// vector servers
+// //	_countServ = ?
+//
+//	Server tmp("getName", 123); // ? name
+//	_serverVect.push_back(tmp);
+//
+//	_countServ = _serverVect.size();
+//	for (int i = 0; i < _countServ; ++i) {
+//		if (_serverVect[i].create(i)) {
+//			std::cout << "serv init error!\n";
+//			return 1;
+//		}
+//		FD_SET(_serverVect[i].getSock(), &_mainFdSet); // adding sock in set
+//		if(_serverVect[i].getSock() > _maxSock)
+//			_maxSock = _serverVect[i].getSock(); // set max # of sock
+//	}
+//	return 0;
+//}
+
+//int WebServer::init()  { // file name
+//
+//	return 0;
+//}
+
+int WebServer::loop() {
+	fd_set wrFdSet;
+	fd_set tmpSet;
+
 	while (1) {
-		FD_ZERO(&rfd);
-		int max_fd = _sock;
-
-		new_sock = accept(_sock, (sockaddr*)&_addr, &sock_len);
-		if (new_sock < 0)
-			std::cerr << "accept error!" << std::endl;
-		FD_SET(new_sock, &rfd);
-		max_fd = new_sock;
-		std::cout << max_fd << std::endl;
-		fcntl(new_sock, F_SETFL, O_NONBLOCK);
-		char read_buf[1024] = {0};
-		int mx = select(max_fd + 1, &rfd, NULL, NULL, &timeout);
-		if (mx < 0)
-			std::cerr << "select error!" << std::endl;
-
-		if (FD_ISSET(new_sock, &rfd)){
-			int was_red = recv(new_sock, read_buf, 1024, 0);
-			if (was_red <= 0) {
-				std::cout << "Nothing to read! " << std::endl;
-				close(new_sock);
-				continue;
+		FD_ZERO(&tmpSet);
+		tmpSet = _mainFdSet;
+//		struct timeval tv = {10, 0};
+		resetWritingSet(&wrFdSet);
+		int ret = select(_maxSock + 1, &tmpSet, &wrFdSet, NULL, 0);
+		if (ret < 0) {
+			std::cout << "select error!\n";
+		}
+		std::vector<Client>::iterator it = _clients.begin();
+		for (;  it != _clients.end() ; ++it) {
+			if (it->getStatus() == READY_TO_SEND) {
+				if (FD_ISSET(it->getSock(), &wrFdSet)) {
+					if(!it->sendResp()){
+						std::cout << "send resp error!\n";
+						if (close(it->getSock()) < 0)
+							return 1;
+						FD_CLR(it->getSock(), &wrFdSet);
+						it->setStatus(CONNECT_CLOSE);
+						_clients.erase(it);
+					} else {
+						close(it->getSock());
+						FD_CLR(it->getSock(), &_mainFdSet);
+						it->setStatus(CONNECT_CLOSE);
+						_clients.erase(it);
+					}
+				}
+			} else if (it->getStatus() == ALL_DATA_SENDET) {
+				if (close(it->getSock()) < 0)
+					return 1;
+				FD_CLR(it->getSock(), &_mainFdSet);
+				it->setStatus(CONNECT_CLOSE);
+				_clients.erase(it);
 			}
-			std::string hello = "HTTP/1.1 200 OK\nContent-Type: text/plain\nContent-Length: 12\n\nHello world!";
-			send(new_sock, hello.c_str(), hello.size(), 0);
+			break;
 		}
 
-
-		// std::cout << new_sock << std::endl;
-//	std::cout << "request: " << read_buf << std::endl;
-//	write(new_sock , hello , strlen(hello));
-//		std::cout << "Waiting new connection!" << std::endl;
-		// close(new_sock);
+		for(std::vector<Server_config>::iterator it2 = _http_config->_servers.begin(); it2 != _http_config->_servers.end(); it2++)
+		{
+			if (FD_ISSET((*it2).getSocket() , &tmpSet)) {
+				int newSock = (*it2).acceptNewConnect();
+				if(newSock < 0)
+					return 1;
+				FD_SET(newSock, &_mainFdSet);
+				if (newSock > _maxSock)
+					_maxSock = newSock;
+//				_clients.push_back(Client(newSock, _http_config));
+				_clients.push_back(Client(newSock, (*it2)));
+				break;
+			}
+		}
+		it = _clients.begin();
+		for (;  it != _clients.end(); ++it) {
+			if (it->getStatus() == READY_TO_RECV) {
+				if (FD_ISSET(it->getSock(), &tmpSet)) {
+					if(!it->recvReq()) {
+						std::cout << "recv resp error!\n";
+						if (close(it->getSock()) < 0)
+							return 1;
+						FD_CLR(it->getSock(), &_mainFdSet);
+						it->setStatus(CONNECT_CLOSE);
+						_clients.erase(it);
+					}
+				}
+			}
+			break;
+		}
 	}
-
+	return 0;
 }
 
-void WebServer::closeServ() {
-	close(_sock);
+void WebServer::stop() {
+
+	if (!_clients.empty()) {
+		for (std::vector<Client>::iterator it = _clients.begin();  it != _clients.end() ; ++it) {
+			close(it->getSock());
+		}
+	}
+	for(std::vector<Server_config>::iterator it3 = _http_config->_servers.begin(); it3 != _http_config->_servers.end(); it3++)
+	{
+		close((*it3).getSocket());
+	}
 }
 
-WebServer::WebServer() {}
-WebServer::WebServer(WebServer const &x) { (void)x; }
-WebServer& WebServer::operator=(WebServer const &x) { (void)x; return *this; }
+void WebServer::resetWritingSet(fd_set *wrFdSet) {
+	FD_ZERO(wrFdSet);
+	std::vector<Client>::iterator it = _clients.begin();
+	for (;  it != _clients.end() ; ++it) {
+		if (it->getStatus() == READY_TO_SEND)
+			FD_SET(it->getSock(), wrFdSet);
+	}
+}
