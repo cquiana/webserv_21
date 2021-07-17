@@ -13,7 +13,7 @@ private:
 
 	void pushEnv(const std::string &key, const std::string &value);
 public:
-	CGI(std::map<std::string, std::string> headers);
+	CGI(std::map<std::string, std::string> headers, const std::string &cgi_path, const std::string &cgi_ext);
 	~CGI();
 	void Start();
 };
