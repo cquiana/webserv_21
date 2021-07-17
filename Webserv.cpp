@@ -48,9 +48,11 @@ int WebServer::loop() {
 	fd_set tmpSet;
 
 	while (1) {
+		FD_ZERO(&tmpSet);
 		tmpSet = _mainFdSet;
+//		struct timeval tv = {10, 0};
 		resetWritingSet(&wrFdSet);
-		int ret = select(_maxSock + 1, &tmpSet, &wrFdSet, 0, 0);
+		int ret = select(_maxSock + 1, &tmpSet, &wrFdSet, NULL, NULL);
 		if (ret < 0) {
 			std::cout << "select error!\n";
 		}
@@ -65,9 +67,9 @@ int WebServer::loop() {
 						FD_CLR(it->getSock(), &_mainFdSet);
 						it->setStatus(CONNECT_CLOSE);
 						_clients.erase(it);
-					}
-					else if (it->getStatus() == ALL_DATA_SENDET) {
+					} else {
 						close(it->getSock());
+						FD_CLR(it->getSock(), &_mainFdSet);
 						it->setStatus(CONNECT_CLOSE);
 						_clients.erase(it);
 					}
@@ -129,7 +131,12 @@ int WebServer::loop() {
 //						_clients.erase(it);
 //					}
 				}
-			} else {
+			} else if (it->getStatus() == ALL_DATA_SENDET) {
+				FD_CLR(it->getSock(), &_mainFdSet);
+				close(it->getSock());
+				_clients.erase(it);
+			}
+			else {
 				if (close(it->getSock()) < 0)
 					return 1;
 				FD_CLR(it->getSock(), &_mainFdSet);
