@@ -10,6 +10,8 @@ class CGI {
 private:
 	char**  _env;
 	std::map<std::string, std::string> _headers;
+	const std::string &_cgi_path;
+	const std::string &_cgi_ext;
 
 	void pushEnv(const std::string &key, const std::string &value);
 public:
