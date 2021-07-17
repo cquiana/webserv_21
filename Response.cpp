@@ -97,7 +97,7 @@ Response Response::startGenerateResponse() {
 //		getResp = generatePOST(request);
 	}
 	else if (_request.getMethod() == "DELETE") {
-		methodDelete();
+		methodDELETE();
 	}
 	else {
 //		Response  getResp = generateGET(request);
@@ -124,13 +124,25 @@ void Response::finishGenerateResponse() {
 
 }
 
-void Response::methodDelete() {
+bool Response::methodDELETE() {
+
+	for (std::vector<Location_config>::iterator it = _server_config._locations.begin(); it !=  _server_config
+			._locations.end(); ++it) {
+		if ((*it).getLocationPrefix() == _request.getLocatinPath()) {
+			if ((*it).getMethods() < 1) {
+				setErrorCode(405);
+				return false;
+			}
+		}
+	}
 	std::string fullPath(_server_config.getRoot() + _request.getPath());
-	int ret = std::remove(fullPath.c_str());
+//	int ret = std::remove(fullPath.c_str());
+	int ret = unlink(fullPath.c_str());
 	if (ret < 0)
 		setErrorCode(403);
 	else
 		setErrorCode(200);
+	return true;
 }
 
 bool Response::generateGET() {
@@ -144,7 +156,6 @@ bool Response::generateGET() {
 				return false;
 			}
 		}
-
 	}
 	std::string fullPath(_server_config.getRoot() + _request.getPath());
 	if (isDirectory(fullPath)) {

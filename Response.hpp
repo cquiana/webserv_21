@@ -60,7 +60,7 @@ public:
 
 	std::string generateCGI();
 	bool generateGET(); // conf
-	void methodDelete();
+	bool methodDELETE();
 	void generateAutoindex();
 	std::string getMimeType(const std::string &file);
 
