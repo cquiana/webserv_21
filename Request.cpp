@@ -1,6 +1,6 @@
 #include "Request.hpp"
 
-#define BUFFER_SIZE 10000
+#define BUFFER_SIZE 100000
 
 Request::Request(int sock) : _sock(sock), _isComplete(false),
 							_correctBody(true), _contentLength (0) {
@@ -18,8 +18,13 @@ void Request::setLocationPath(){
 	_location = location.substr(0, pos + 1);
 }
 
+void Request::setHeader(const std::string &key, const std::string &value) {
+	_headers[key] = value;
+}
+
 void Request::parseRequest(std::string request) {
 	parseHeaders(request);
+	setHeader("query-string", _queryString);
 	parseBody(request);
 }
 
@@ -109,14 +114,8 @@ std::string Request::getPath() const
 }
 
 std::string Request::getQueryString() {
-	std::string res;
+	return _queryString;
 
-	res = _headers["path"];
-	size_t query = res.find('?');
-	if (query == std::string::npos)
-		return "";
-	else
-		return res.substr(query + 1);
 }
 
 bool Request::getCompete() const
@@ -178,6 +177,20 @@ void Request::eraseRequest(){
 	_sock = 0;
 
 }
+
+void Request::setQueryString() {
+	std::string res;
+
+	_queryString = "";
+	res = _headers["path"];
+	size_t query = res.find('?');
+	if (query == std::string::npos)
+		_queryString =  "";
+	else
+		_queryString += res.substr(query + 1);
+}
+
+
 
 const char *Request::ReadErrorException::what() const throw() {
 	return ("EXCEPTION! Read from socket error...");
