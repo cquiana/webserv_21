@@ -162,15 +162,17 @@ bool Response::generateGET() {
 	if (isDirectory(fullPath)) {
 		if (fullPath.back() != '/')
 			fullPath += "/";
-		if (_server_config.getAutoindex() == 1)
-			generateAutoindex();
+		if (_server_config.getAutoindex() == 1 && !_server_config.haveIndex()) {
+			generateAutoindex(fullPath);
+			return true;
+		}
 		else if (_server_config.haveIndex())
 			fullPath += _server_config.getIndex();
 		else{
 			setErrorCode(403);
 			return false;
 		}
-			// error page
+			// error pages
 	}
 	
 	if (checkCGI()) {
@@ -200,8 +202,60 @@ bool Response::generateGET() {
 		setErrorCode(200);
 		setHeaders("Last-Modified", _lastModif);
 		setHeaders("Mime-Type", getMimeType(fullPath));
+		setHeaders("Content-Type", getMimeType(fullPath));
 	}
 	return true;
+}
+
+void Response::generateListing(std::string const &path) {
+	dirent *item;
+	DIR *directory;
+	std::string body = "";
+	std::string req = _request.getPath();
+
+	if (req[req.size() - 1] != '/')
+		req += "/";
+
+	directory = opendir(path.c_str());
+	if (directory == 0)
+		return;
+	item = readdir(directory);
+
+
+	body += "<!DOCTYPE html>\n";
+	body += "<html lang=\"en\">\n";
+	body += "<head>\n";
+	body += "<meta charset=\"UTF-8\">\n";
+	body += "<title>Index of  " + req + " </title>\n";
+	body += "<link href=\"https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css\" rel=\"stylesheet\" integrity=\"sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x\" crossorigin=\"anonymous\">\n";
+	body += "</head>\n";
+	body += "<body>\n";
+	body += "<div class=\"container\">\n";
+	body += "<table class=\"table mt-5\">\n";
+	body += "<thead><tr><th scope=\"col\">Name</th></tr></thead>\n";
+	body += "<tbody>\n";
+	while (item != NULL) {
+		body += "<a href = \"";
+		body += req;
+		body += item->d_name;
+		if (item->d_type == DT_DIR)
+			body += "/";
+		body += "\">";
+		body += item->d_name;
+		if (item->d_type == DT_DIR)
+			body += "/";
+		body += "</a><br>";
+		item = readdir(directory);
+	}
+
+	body += "</tbody>\n";
+	body += "</table>\n";
+	body += "</div>\n";
+	body += "</body>\n";
+	body += "</html>\n";
+	closedir(directory);
+	setBody(body);
+	setContentLength(body.length());
 }
 
 void Response::setErrorCode(int code) {
@@ -218,7 +272,7 @@ void Response::setBody(std::string &body) {
 void Response::setDefaultHeader() {
 //	setHeaders("");
 	setDate();
-	setHeaders("Content-Type", "text/html");
+
 	setHeaders("Date", getDate());
 	if (getHeader("Content-Length").empty())
 		setHeaders("Content-Length", numberToString(_body.length()));
@@ -250,8 +304,10 @@ bool Response::checkCGI() {
 		return (ext == "py" || ext == "js"); // или js
 }
 
-void Response::generateAutoindex() {
-
+void Response::generateAutoindex(std::string const &path) {
+	generateListing(path);
+	setHeaders("Content-Type", "text/html");
+	setErrorCode(200);
 }
 
 void Response::setCGIResponse(const std::string &str) {

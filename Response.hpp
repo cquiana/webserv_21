@@ -1,5 +1,7 @@
 #ifndef RESPONSE_HPP
 # define RESPONSE_HPP
+#include <dirent.h>
+#include <sys/types.h>
 #include "Webserv.hpp"
 #include "Request.hpp"
 #include "utils.hpp"
@@ -62,7 +64,8 @@ public:
 	std::string generateCGI();
 	bool generateGET(); // conf
 	bool methodDELETE();
-	void generateAutoindex();
+	void generateAutoindex(std::string const &path);
+	void generateListing(std::string const &path);
 	std::string getMimeType(const std::string &file);
 
 	class FileCantOpenException:		public std::exception {
