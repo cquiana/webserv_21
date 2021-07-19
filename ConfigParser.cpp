@@ -16,14 +16,6 @@ void printConfig(Http_config* http_config)
 {
 	std::cout << "\nFull http_config:\n";
 	std::cout << "client_max_body_size " << http_config->getMaxBody() << ";\n";
-	std::vector<int>::iterator it1 = http_config->_error_page_ints.begin();
-	std::vector<std::string>::iterator it2 = http_config->_error_page_strings.begin();
-	while(it1 != http_config->_error_page_ints.end() || it2 != http_config->_error_page_strings.end())
-	{
-		std::cout << "error_page " << *it1 << " " << *it2 << ";\n";
-		it1++;
-		it2++;
-	}
 
 	for(std::vector<Server_config>::iterator it3 = http_config->_servers.begin(); it3 != http_config->_servers.end(); it3++)
 	{
@@ -38,6 +30,17 @@ void printConfig(Http_config* http_config)
 				std::cout << "\tautoindex " << ((*it3).getAutoindex() == 0 ? "off" : "on") << ";\n";
 			if ((*it3).haveRoot())
 				std::cout << "\troot " << (*it3).getRoot() << ";\n";
+
+
+			std::vector<int>::iterator it1 = (*it3)._error_page_ints.begin();
+			std::vector<std::string>::iterator it2 = (*it3)._error_page_strings.begin();
+			while(it1 != (*it3)._error_page_ints.end() || it2 != (*it3)._error_page_strings.end())
+			{
+				std::cout << "\terror_page " << *it1 << " " << *it2 << ";\n";
+				it1++;
+				it2++;
+			}
+
 			for(std::vector<Location_config>::iterator it4 = (*it3)._locations.begin(); it4 != (*it3)._locations.end(); it4++)
 			{
 				if ((*it4).mIsCGI())
