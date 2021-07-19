@@ -5,6 +5,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <map>
+# include <unistd.h>
 
 class CGI {
 private:
@@ -17,7 +18,7 @@ private:
 public:
 	CGI(std::map<std::string, std::string> headers, const std::string &cgi_path, const std::string &cgi_ext);
 	~CGI();
-	void Start();
+	const std::string &startCGI();
 };
 
 #endif
