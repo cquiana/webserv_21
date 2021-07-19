@@ -1,6 +1,9 @@
 #include "CGI.hpp"
 
-CGI::CGI(std::map<std::string, std::string> headers) : _env(NULL), _headers(headers) {}
+CGI::CGI(std::map<std::string, std::string> headers,
+		 const std::string &cgi_path,
+		 const std::string &cgi_ext)
+		 : _env(NULL), _headers(headers), _cgi_path(cgi_path), _cgi_ext(cgi_ext) {}
 
 CGI::~CGI() {
 	for (int i = 0; this->_env[i]; ++i) {
