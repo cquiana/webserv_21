@@ -65,6 +65,7 @@ public:
 	bool checkCGI();
 
 	std::string generateCGI();
+	bool validMethod();
 	bool generateGET(); // conf
 	bool generatePOST();
 	bool generatePUT();

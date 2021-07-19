@@ -87,8 +87,10 @@ Response Response::startGenerateResponse() {
 
 	if (!_request.getCompete())
 		setErrorCode(400);
-	if (_request.getHttpVers() != "HTTP/1.1")
+	else if (_request.getHttpVers() != "HTTP/1.1")
 		setErrorCode(505);
+	else if (!validMethod())
+		setErrorCode(405);
 	if (_request.getMethod() == "GET")
 		generateGET();
 	else if (_request.getMethod() == "POST") {
@@ -147,6 +149,7 @@ bool Response::methodDELETE() {
 
 bool Response::generateGET() {
 
+	std::string  loc = _server_config.getRootByLocation(_request.getPath());
 
 	for (std::vector<Location_config>::iterator it = _server_config._locations.begin(); it !=  _server_config
 	._locations.end(); ++it) {
@@ -299,7 +302,7 @@ bool Response::checkCGI() {
 		std::string tmp = _request.getPath();
 		size_t dot = tmp.find_last_of('.');
 		std::string ext = tmp.substr(dot + 1);
-		return (ext == "py" || ext == "js"); // или js
+		return (ext == "js"); // или js
 }
 
 void Response::generateAutoindex(std::string const &path) {
@@ -379,7 +382,22 @@ void Response::errorPageGenerator(int code) {
 	setBody(result);
 }
 
+bool Response::generatePUT() {
+	return true;
+}
 
+bool Response::validMethod() {
+	for (std::vector<Location_config>::iterator it = _server_config._locations.begin(); it !=  _server_config
+			._locations.end(); ++it) {
+		if ((*it).getLocationPrefix() == _request.getLocatinPath()) {
+			if ((*it).getMethods() < 1) {
+				setErrorCode(405);
+				return false;
+			}
+		}
+	}
+	return true;
+}
 
 
 const char *Response::FileCantOpenException::what() const throw() {
