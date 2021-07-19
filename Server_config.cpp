@@ -140,13 +140,13 @@ std::string Server_config::getRootByLocation(std::string loc) {
 }
 
 
-int Server_config::getMethodsByLocation(std::string loc) {
+int Server_config::getMethodsByLocation(std::string loc) {  // DELETE = 1, POST = 2, GET = 4
 	for(std::vector<Location_config>::iterator it = _locations.begin(); it != _locations.end(); it++)
 	{
 		if ((*it).mIsPrefic() && (*it).prefixCheck(loc))
-			return ((*it).getMethods());
+			return ((*it).getMethods());  // DELETE = 1, POST = 2, GET = 4
 	}
-	return (0);
+	return (0);  // DELETE = 1, POST = 2, GET = 4
 }
 
 
