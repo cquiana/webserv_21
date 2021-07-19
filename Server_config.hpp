@@ -58,6 +58,7 @@ public:
 
 //	std::string getRootByLocation(std::string type, std::string loc);
 	std::string getRootByLocation(std::string loc);
+	int getMethodsByLocation(std::string loc);
 	bool checkCGIbyType(std::string cgi);
 	std::string getCGIpachByType(std::string cgi);
 
