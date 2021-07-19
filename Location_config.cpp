@@ -62,7 +62,7 @@ bool Location_config::haveCgiPath() const {
 	return (!(_cgi_path.empty()));
 }
 
-bool Location_config::haveMethods() const {
+bool Location_config::haveMethods() const {  // DELETE = 1, POST = 2, GET = 4
 	if (_methods != 0)
 		return true;
 	else
@@ -103,7 +103,7 @@ std::string Location_config::getCgiPath() const{
 	return _cgi_path;
 }
 
-int Location_config::getMethods() const{
+int Location_config::getMethods() const{  // DELETE = 1, POST = 2, GET = 4
 	return _methods;
 }
 
