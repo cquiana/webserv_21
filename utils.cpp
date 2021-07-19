@@ -62,9 +62,9 @@ long checkSize(const char *str, int n) {
 
 std::string ft_skip_space(std::string str)
 {
-	std::stringstream trimmer;
-	trimmer << str;
-	str.clear();
-	trimmer >> str;
+//	std::stringstream trimmer;
+//	trimmer << str;
+//	str.clear();
+//	trimmer >> str;
 	return str;
 }

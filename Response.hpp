@@ -20,6 +20,7 @@ public:
 	std::string _date;
 	std::string _lastModif;
 	std::string _CGIResponse;
+	std::string _fullPath;
     int _code;
     size_t _lenght;
 //	Http_config* _http_config;
@@ -37,6 +38,7 @@ public:
     std::string responseToString();
     Response startGenerateResponse(); // serv conf
 
+    void setFullPath();
     void setHeaders(const std::string &key, const std::string &value);
     void setErrors();
 	void setErrorCode(int code);
@@ -49,6 +51,7 @@ public:
 
     int getErrorCode();
 
+    std::string getFullPath();
     std::string getHeader(const std::string &key) const;
     std::string getDate();
 
@@ -61,6 +64,8 @@ public:
 
 	std::string generateCGI();
 	bool generateGET(); // conf
+	bool generatePOST();
+	bool generatePUT();
 	bool methodDELETE();
 	void generateAutoindex();
 	std::string getMimeType(const std::string &file);

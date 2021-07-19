@@ -85,6 +85,7 @@ std::string Response::getHeader(const std::string &key) const {
 
 Response Response::startGenerateResponse() {
 
+	setFullPath();
 	if (!_request.getCompete())
 		setErrorCode(400);
 	if (_request.getHttpVers() != "HTTP/1.1")
@@ -148,7 +149,7 @@ bool Response::methodDELETE() {
 
 bool Response::generateGET() {
 
-
+//	std::string
 	for (std::vector<Location_config>::iterator it = _server_config._locations.begin(); it !=  _server_config
 	._locations.end(); ++it) {
 		if ((*it).getLocationPrefix() == _request.getLocatinPath()) {
@@ -158,20 +159,25 @@ bool Response::generateGET() {
 			}
 		}
 	}
-	std::string fullPath(_server_config.getRoot() + _request.getPath());
-	if (isDirectory(fullPath)) {
-		if (fullPath.back() != '/')
-			fullPath += "/";
+
+	std::string absPath;
+//	std::string fullPath(_server_config.getRoot() + _request.getPath());
+//	if (isDirectory(fullPath)) {
+//		if (fullPath.back() != '/')
+//			fullPath += "/";
 		if (_server_config.getAutoindex() == 1)
 			generateAutoindex();
-		else if (_server_config.haveIndex())
-			fullPath += _server_config.getIndex();
+		else if (_server_config.haveIndex())  {
+			absPath = getFullPath();
+			absPath += _server_config.getIndex();
+		}// возможна ошибка
+
 		else{
 			setErrorCode(403);
 			return false;
 		}
 			// error page
-	}
+//	}
 	
 	if (checkCGI()) {
 //		CGI _cgiResponse(_request, _server_config.getCGIpachByType(), );
@@ -183,24 +189,44 @@ bool Response::generateGET() {
 //		setHeaders("Mime-Type", getMimeType(fullPath));
 	}
 	else {
-		if (!fileExist(fullPath)) {
+		if (!fileExist(absPath)) {
 			setErrorCode(404);
 			return false;
 		}
 		std::stringstream  buff;
-		std::ifstream file(fullPath);
+		std::ifstream file(absPath);
 		if (!file.is_open())
 			throw Response::FileCantOpenException();
 		buff << file.rdbuf();
 		file.close();
 		std::string body = buff.str();
 		setBody(body);
-		setLastModif(fullPath);
+		setLastModif(absPath);
 		setContentLength(body.length());
 		setErrorCode(200);
 		setHeaders("Last-Modified", _lastModif);
-		setHeaders("Mime-Type", getMimeType(fullPath));
+		setHeaders("Mime-Type", getMimeType(absPath));
 	}
+
+	return true;
+}
+
+bool Response::generatePUT() {
+	std::ofstream out;
+	struct stat st;
+	if (stat(_fullPath.c_str(), &st) == 0 && S_ISREG(st.st_mode))
+		out.open(_fullPath, std::ios_base::app);
+	else
+		out.open(_fullPath);
+//	out << _request.get;
+	setErrorCode(201);
+	return true;
+}
+
+bool Response::generatePOST() {
+	if (!checkCGI())
+		return generatePUT();
+//	CGI
 	return true;
 }
 
@@ -325,14 +351,20 @@ void Response::errorPageGenerator(int code) {
 	setBody(result);
 }
 
+void Response::setFullPath() {
+	std::string fullPath = _server_config.getRootByLocation(_request.getPath());
+//	std::string fullPath(_server_config.getRoot() + _request.getPath());
+	if (isDirectory(fullPath)) {
+		if (fullPath.back() != '/')
+			fullPath += "/";
+		_fullPath = fullPath;
+	}
+}
 
-
+std::string  Response::getFullPath() {
+	return _fullPath;
+}
 
 const char *Response::FileCantOpenException::what() const throw() {
 	return ("EXCEPTION! File can't open...");
 };
-
-
-
-
-

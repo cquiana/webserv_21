@@ -57,9 +57,9 @@ public:
 	int getActiveLocation() const;
 
 //	std::string getRootByLocation(std::string type, std::string loc);
-	std::string getRootByLocation(std::string loc);
+	std::string getRootByLocation(std::string loc); // root
 	bool checkCGIbyType(std::string cgi);
-	std::string getCGIpachByType(std::string cgi);
+	std::string getCGIpachByType(std::string cgi); //путь до cgi
 
 	void setPort(int port);
 	void setName(std::string name);

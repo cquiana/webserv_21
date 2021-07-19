@@ -36,8 +36,8 @@ void Request::parseHeaders(std::string &request) {
 	setLocationPath();
 	line.erase();
 	for (line = cutLine(request, "\r\n"); !line.empty(); line = cutLine(request, "\r\n")) {
-		std::string key = ft_skip_space(cutLine(line, ":"));
-		_headers.insert(std::make_pair(ft_tolower(key), ft_skip_space(line)));
+		std::string key = ft_skip_space(cutLine(line, ": "));
+		_headers.insert(std::make_pair(ft_tolower(key), line));
 	}
 }
 
@@ -178,6 +178,9 @@ void Request::eraseRequest(){
 
 }
 
+//std::string  Request::getReqBody() {
+//	return _reqBody;
+//}
 void Request::setQueryString() {
 	std::string res;
 
