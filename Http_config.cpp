@@ -10,22 +10,13 @@ Http_config::Http_config() : _client_max_body_size(-2), _active_server(false) {}
 Http_config::~Http_config() {}
 
 Http_config::Http_config(Http_config const &another) :
-		_client_max_body_size(another._client_max_body_size), _error_page_ints(another._error_page_ints), _error_page_strings(another._error_page_strings), _servers(another._servers), _active_server(another._active_server){}
+		_client_max_body_size(another._client_max_body_size), _servers(another._servers), _active_server(another._active_server){}
 
 Http_config& Http_config::operator=(Http_config const &another) {
 	_client_max_body_size = another._client_max_body_size;
-	_error_page_ints = another._error_page_ints;
-	_error_page_strings = another._error_page_strings;
 	_servers = another._servers;
 	_active_server = another._active_server;
 	return *this;
-}
-
-bool Http_config::haveErrorPage(int page) const {
-	if (std::find(_error_page_ints.begin(), _error_page_ints.end(), page) != _error_page_ints.end())
-		return true;
-	else
-		return false;
 }
 
 bool Http_config::haveMaxBody() const {
@@ -58,26 +49,6 @@ bool Http_config::haveActiveServer() const {
 	return (_active_server);
 }
 
-std::vector<int> Http_config::getAllErrorPagesInts() const {
-	return (_error_page_ints);
-}
-
-std::vector<std::string> Http_config::getAllErrorPages() const {
-	return (_error_page_strings);
-}
-
-std::string Http_config::getErrorPage(int page) {
-	int n = 0;
-
-	for(std::vector<int>::iterator it = _error_page_ints.begin(); it != _error_page_ints.end(); it++)
-	{
-		if ((*it) == page)
-			return (_error_page_strings[n]);
-		n++;
-	}
-	throw Http_config::ErrorPageNotExistException();
-}
-
 int Http_config::getMaxBody() const {
 	return (_client_max_body_size);
 }
@@ -98,13 +69,6 @@ int Http_config::getActiveServer() const {
 	return (_servers.size() - 1);
 }
 
-
-void Http_config::setErrorPage(size_t error_page_int, std::string error_page_string) {
-	if (haveErrorPage(error_page_int))
-		throw Http_config::ErrorPageAlreadyExistException();
-	_error_page_ints.push_back(error_page_int);
-	_error_page_strings.push_back(error_page_string);
-}
 
 void Http_config::setMaxBody(int max_body) {
 	if (haveMaxBody())
@@ -165,14 +129,6 @@ const char *Http_config::MaxBodyWrongSetException::what() const throw() {
 
 const char *Http_config::ServerExistException::what() const throw() {
 	return ("EXCEPTION! Server Alraedy Set in this http...");
-};
-
-const char *Http_config::ErrorPageNotExistException::what() const throw() {
-	return ("EXCEPTION! Error Page Not Exist in this http...");
-};
-
-const char *Http_config::ErrorPageAlreadyExistException::what() const throw() {
-	return ("EXCEPTION! Error Page Alraedy Set in this http...");
 };
 
 const char *Http_config::ServerNotFoundException::what() const throw() {
