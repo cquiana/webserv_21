@@ -69,9 +69,9 @@ int main() {
 		//catchSig();
 		if (webserver.loop())
 			return  1;
-	} catch (const std::exception& e) {
-		webserver.stop();
-		return 1;
-	}
+		} catch (const std::exception& e) {
+			webserver.stop();
+			return 1;
+		}
 	return 0;
 }

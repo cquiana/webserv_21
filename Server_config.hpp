@@ -64,7 +64,7 @@ public:
 
 //	std::string getRootByLocation(std::string type, std::string loc);
 	std::string getRootByLocation(std::string loc);
-	int getMethodsByLocation(std::string loc);
+	int getMethodsByLocation(std::string loc);  // DELETE = 1, POST = 2, GET = 4
 	bool checkCGIbyType(std::string cgi);
 	std::string getCGIpachByType(std::string cgi);
 
