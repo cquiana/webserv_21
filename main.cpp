@@ -56,8 +56,8 @@ int main() {
 		return  1;
 	}
 
-	printConfig(&http_config);
-	exit (1);
+	//printConfig(&http_config);
+	//exit (1);
 
 	WebServer webserver(&http_config);
 
