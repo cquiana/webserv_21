@@ -171,8 +171,8 @@ void parseConfig(std::string in_string2, Http_config* http_config)
 	else if (checkString(in_string, "error_page"))
 	{
 		size_t ddd = in_string.find_first_of("0123456789");
-		if (e != std::string::npos && !http_config->haveActiveServer())
-			http_config->setErrorPage(intString(in_string, "error_page"), wwtrim(in_string.substr(ddd + skipDigits(in_string.substr(ddd)), e)));
+		if (e != std::string::npos && http_config->haveActiveServer() && !http_config->_servers[http_config->getActiveServer()].haveActiveLocation())
+			http_config->_servers[http_config->getActiveServer()].setErrorPage(intString(in_string, "error_page"), wwtrim(in_string.substr(ddd + skipDigits(in_string.substr(ddd)), e)));
 		else
 			std::cout << "ERROR!!! In " << in_string << " in pattern __error_page" << "\n";
 	}
