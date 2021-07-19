@@ -230,6 +230,8 @@ void Response::generateListing(std::string const &path) {
 	body += "<link href=\"https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css\" rel=\"stylesheet\" integrity=\"sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x\" crossorigin=\"anonymous\">\n";
 	body += "</head>\n";
 	body += "<body>\n";
+	body += "<h2>Index of ";
+	body +=  "<a href=\"" + req +"\">" + req + "</a></h2>";
 	body += "<div class=\"container\">\n";
 	body += "<table class=\"table mt-5\">\n";
 	body += "<thead><tr><th scope=\"col\">Name</th></tr></thead>\n";
