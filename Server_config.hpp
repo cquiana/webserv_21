@@ -34,10 +34,7 @@ public:
 	Server_config &operator=(Server_config const &another);
 
 	std::vector<Location_config> _locations;
-	std::vector<int> _error_page_ints;
-	std::vector<std::string> _error_page_strings;
 
-	bool haveErrorPage(int page) const;
 	bool havePort() const;
 	bool haveName() const;
 	bool haveRoot() const;
@@ -49,9 +46,6 @@ public:
     bool blockedReturnCode() const;
     bool haveActiveLocation() const;
 
-	std::vector<int> getAllErrorPagesInts() const;
-	std::vector<std::string> getAllErrorPages() const;
-	std::string getErrorPage(int page) ; //const not needed, else it error compile
 	int getPort() const;
 	std::string getName() const;
 	std::string getRoot() const;
@@ -64,7 +58,7 @@ public:
 
 //	std::string getRootByLocation(std::string type, std::string loc);
 	std::string getRootByLocation(std::string loc);
-	int getMethodsByLocation(std::string loc);  // DELETE = 1, POST = 2, GET = 4
+	int getMethodsByLocation(std::string loc);
 	bool checkCGIbyType(std::string cgi);
 	std::string getCGIpachByType(std::string cgi);
 
@@ -75,7 +69,6 @@ public:
 	void setIndex(std::string index);
 	void setAutoindex(int autoindex);
 	void setReturnCode(int return_code, std::string return_adress);
-	void setErrorPage(size_t error_page_int, std::string error_page_string);
 
 	void initSocket();
 	int acceptNewConnect();
@@ -116,12 +109,6 @@ public:
 		virtual const char *what() const throw() ;
 	};
 	class ServerCGInotFoundException:		public std::exception {
-		virtual const char *what() const throw() ;
-	};
-	class ErrorPageNotExistException:		public std::exception {
-		virtual const char *what() const throw() ;
-	};
-	class ErrorPageAlreadyExistException:	public std::exception {
 		virtual const char *what() const throw() ;
 	};
 
