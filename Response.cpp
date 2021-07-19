@@ -85,7 +85,6 @@ std::string Response::getHeader(const std::string &key) const {
 
 Response Response::startGenerateResponse() {
 
-	setFullPath();
 	if (!_request.getCompete())
 		setErrorCode(400);
 	if (_request.getHttpVers() != "HTTP/1.1")
@@ -94,7 +93,6 @@ Response Response::startGenerateResponse() {
 		generateGET();
 	else if (_request.getMethod() == "POST") {
 //		Response  getResp = generateGET(request);
-//curl -X POST -F 'image=@/Users/cquiana/Desktop/img.png' http://127.0.0.1:60080/images
 //		return getResp;
 //		getResp = generatePOST(request);
 	}
@@ -138,8 +136,8 @@ bool Response::methodDELETE() {
 		}
 	}
 	std::string fullPath(_server_config.getRoot() + _request.getPath());
-	int ret = std::remove(fullPath.c_str());
-//	int ret = unlink(fullPath.c_str());
+//	int ret = std::remove(fullPath.c_str());
+	int ret = unlink(fullPath.c_str());
 	if (ret < 0)
 		setErrorCode(403);
 	else
@@ -149,7 +147,7 @@ bool Response::methodDELETE() {
 
 bool Response::generateGET() {
 
-//	std::string
+
 	for (std::vector<Location_config>::iterator it = _server_config._locations.begin(); it !=  _server_config
 	._locations.end(); ++it) {
 		if ((*it).getLocationPrefix() == _request.getLocatinPath()) {
@@ -159,75 +157,103 @@ bool Response::generateGET() {
 			}
 		}
 	}
-
-	std::string absPath;
-//	std::string fullPath(_server_config.getRoot() + _request.getPath());
-//	if (isDirectory(fullPath)) {
-//		if (fullPath.back() != '/')
-//			fullPath += "/";
-		if (_server_config.getAutoindex() == 1)
-			generateAutoindex();
-		else if (_server_config.haveIndex())  {
-			absPath = getFullPath();
-			absPath += _server_config.getIndex();
-		}// возможна ошибка
-
+	std::string fullPath(_server_config.getRoot() + _request.getPath());
+	if (isDirectory(fullPath)) {
+		if (fullPath.back() != '/')
+			fullPath += "/";
+		if (_server_config.getAutoindex() == 1 && !_server_config.haveIndex()) {
+			generateAutoindex(fullPath);
+			return true;
+		}
+		else if (_server_config.haveIndex())
+			fullPath += _server_config.getIndex();
 		else{
 			setErrorCode(403);
 			return false;
 		}
-			// error page
-//	}
+			// error pages
+	}
 	
 	if (checkCGI()) {
-//		CGI _cgiResponse(_request, _server_config.getCGIpachByType(), );
-//		_CGIResponse =  generateCGI();
-//		setBody(_CGIResponse);
-//		setContentLength(_CGIResponse.length());
-//		setErrorCode(200);
+		_CGIResponse =  generateCGI();
+		setBody(_CGIResponse);
+		setContentLength(_CGIResponse.length());
+		setErrorCode(200);
 //		setHeaders("Last-Modified", _lastModif);
 //		setHeaders("Mime-Type", getMimeType(fullPath));
 	}
 	else {
-		if (!fileExist(absPath)) {
+		if (!fileExist(fullPath)) {
 			setErrorCode(404);
 			return false;
 		}
 		std::stringstream  buff;
-		std::ifstream file(absPath);
+		std::ifstream file(fullPath);
 		if (!file.is_open())
 			throw Response::FileCantOpenException();
 		buff << file.rdbuf();
 		file.close();
 		std::string body = buff.str();
 		setBody(body);
-		setLastModif(absPath);
+		setLastModif(fullPath);
 		setContentLength(body.length());
 		setErrorCode(200);
 		setHeaders("Last-Modified", _lastModif);
-		setHeaders("Mime-Type", getMimeType(absPath));
+		setHeaders("Mime-Type", getMimeType(fullPath));
+		setHeaders("Content-Type", getMimeType(fullPath));
+	}
+	return true;
+}
+
+void Response::generateListing(std::string const &path) {
+	dirent *item;
+	DIR *directory;
+	std::string body = "";
+	std::string req = _request.getPath();
+
+	if (req[req.size() - 1] != '/')
+		req += "/";
+
+	directory = opendir(path.c_str());
+	if (directory == 0)
+		return;
+	item = readdir(directory);
+
+
+	body += "<!DOCTYPE html>\n";
+	body += "<html lang=\"en\">\n";
+	body += "<head>\n";
+	body += "<meta charset=\"UTF-8\">\n";
+	body += "<title>Index of  " + req + " </title>\n";
+	body += "<link href=\"https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css\" rel=\"stylesheet\" integrity=\"sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x\" crossorigin=\"anonymous\">\n";
+	body += "</head>\n";
+	body += "<body>\n";
+	body += "<div class=\"container\">\n";
+	body += "<table class=\"table mt-5\">\n";
+	body += "<thead><tr><th scope=\"col\">Name</th></tr></thead>\n";
+	body += "<tbody>\n";
+	while (item != NULL) {
+		body += "<a href = \"";
+		body += req;
+		body += item->d_name;
+		if (item->d_type == DT_DIR)
+			body += "/";
+		body += "\">";
+		body += item->d_name;
+		if (item->d_type == DT_DIR)
+			body += "/";
+		body += "</a><br>";
+		item = readdir(directory);
 	}
 
-	return true;
-}
-
-bool Response::generatePUT() {
-	std::ofstream out;
-	struct stat st;
-	if (stat(_fullPath.c_str(), &st) == 0 && S_ISREG(st.st_mode))
-		out.open(_fullPath, std::ios_base::app);
-	else
-		out.open(_fullPath);
-//	out << _request.get;
-	setErrorCode(201);
-	return true;
-}
-
-bool Response::generatePOST() {
-	if (!checkCGI())
-		return generatePUT();
-//	CGI
-	return true;
+	body += "</tbody>\n";
+	body += "</table>\n";
+	body += "</div>\n";
+	body += "</body>\n";
+	body += "</html>\n";
+	closedir(directory);
+	setBody(body);
+	setContentLength(body.length());
 }
 
 void Response::setErrorCode(int code) {
@@ -244,7 +270,7 @@ void Response::setBody(std::string &body) {
 void Response::setDefaultHeader() {
 //	setHeaders("");
 	setDate();
-	setHeaders("Content-Type", "text/html");
+
 	setHeaders("Date", getDate());
 	if (getHeader("Content-Length").empty())
 		setHeaders("Content-Length", numberToString(_body.length()));
@@ -276,8 +302,10 @@ bool Response::checkCGI() {
 		return (ext == "py" || ext == "js"); // или js
 }
 
-void Response::generateAutoindex() {
-
+void Response::generateAutoindex(std::string const &path) {
+	generateListing(path);
+	setHeaders("Content-Type", "text/html");
+	setErrorCode(200);
 }
 
 void Response::setCGIResponse(const std::string &str) {
@@ -351,20 +379,19 @@ void Response::errorPageGenerator(int code) {
 	setBody(result);
 }
 
-void Response::setFullPath() {
-	std::string fullPath = _server_config.getRootByLocation(_request.getPath());
-//	std::string fullPath(_server_config.getRoot() + _request.getPath());
-	if (isDirectory(fullPath)) {
-		if (fullPath.back() != '/')
-			fullPath += "/";
-		_fullPath = fullPath;
-	}
-}
 
-std::string  Response::getFullPath() {
-	return _fullPath;
-}
+
 
 const char *Response::FileCantOpenException::what() const throw() {
 	return ("EXCEPTION! File can't open...");
 };
+
+
+
+
+
+
+
+
+
+
