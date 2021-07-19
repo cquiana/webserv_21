@@ -305,23 +305,23 @@ void parseConfig(std::string in_string2, Http_config* http_config)
 
 int ParseConfig2(std::string fileName)
 {
-    std::fstream file_config;
-    //std::vector<std::string> vector_str_conf_file;
-    std::string strbuf_config;
-    Http_config http_config;
-    int num_line = 0;
+	std::fstream file_config;
+	//std::vector<std::string> vector_str_conf_file;
+	std::string strbuf_config;
+	Http_config http_config;
+	int num_line = 0;
 
-    //if(!file_config.is_open())
-    //    file_config.open("example.conf",std::ios::in); // proverit kak lu4she
+	//if(!file_config.is_open())
+	//    file_config.open("example.conf",std::ios::in); // proverit kak lu4she
 	file_config.open(fileName,std::ios::in); // proverit kak lu4she
-    if (file_config.is_open()){   //checking whether the file is open
-        while(getline(file_config, strbuf_config)){ //read data from file object and put it into string.
+	if (file_config.is_open()){   //checking whether the file is open
+		while(getline(file_config, strbuf_config)){ //read data from file object and put it into string.
 
-            std::size_t found_wrong_char = strbuf_config.find_first_not_of("abcdefghijklmnopqrstuvwxyz \t\n;:*#~()\\/.0123456789{}_-|$ABCDEFGHIJKLMNOPQRSTUVWXYZ");
-            if (found_wrong_char != std::string::npos)
+			std::size_t found_wrong_char = strbuf_config.find_first_not_of("abcdefghijklmnopqrstuvwxyz \t\n;:*#~()\\/.0123456789{}_-|$ABCDEFGHIJKLMNOPQRSTUVWXYZ");
+			if (found_wrong_char != std::string::npos)
 				std::cout << "ERROR!!! Find wrong character ' " << strbuf_config[found_wrong_char] << " ' at position ' " << found_wrong_char << " ' in config file line " << num_line << std::endl << "\t" <<strbuf_config << std::endl << std::endl;
-            std::replace( strbuf_config.begin(), strbuf_config.end(), '\t', '\0'); // replace all 'x' to 'y'
-            if (strbuf_config.rfind('#', 0) != 0 && !strbuf_config.empty())
+			std::replace( strbuf_config.begin(), strbuf_config.end(), '\t', '\0'); // replace all 'x' to 'y'
+			if (strbuf_config.rfind('#', 0) != 0 && !strbuf_config.empty())
 			{
 				parseConfig(strbuf_config, &http_config);
 				//vector_str_conf_file.push_back(strbuf_config);
@@ -330,9 +330,9 @@ int ParseConfig2(std::string fileName)
 
 //            std::cout << str_config << "\n"; //print the data of the string
 			num_line++;
-        }
-        file_config.close(); //close the file object.
-    }
+		}
+		file_config.close(); //close the file object.
+	}
 
 //	printConfig(&http_config);
 //
@@ -342,5 +342,5 @@ int ParseConfig2(std::string fileName)
 //    }
 
 
-    return 0;
+	return 0;
 }
