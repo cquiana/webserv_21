@@ -22,24 +22,17 @@ public:
 	~Http_config();
 
 	std::vector<Server_config> _servers;
-	std::vector<int> _error_page_ints;
-	std::vector<std::string> _error_page_strings;
 
-	bool haveErrorPage(int page) const;
 	bool haveMaxBody() const;
 	bool haveServer(std::string servers_name);
 
 	bool haveSomeServer() const;
 	bool haveActiveServer() const;
 
-	std::vector<int> getAllErrorPagesInts() const;
-	std::vector<std::string> getAllErrorPages() const;
-	std::string getErrorPage(int page) ; //const not needed, else it error compile
 	int getMaxBody() const;
 	Server_config getServer(std::string servers_name);
 	int getActiveServer() const;
 
-	void setErrorPage(size_t error_page_int, std::string error_page_string);
 	void setMaxBody(int max_body);
 
 	void addServer();
@@ -55,12 +48,6 @@ public:
 		virtual const char *what() const throw() ;
 	};
 	class ServerExistException:				public std::exception {
-		virtual const char *what() const throw() ;
-	};
-	class ErrorPageNotExistException:		public std::exception {
-		virtual const char *what() const throw() ;
-	};
-	class ErrorPageAlreadyExistException:	public std::exception {
 		virtual const char *what() const throw() ;
 	};
 	class ServerNotFoundException:			public std::exception {
