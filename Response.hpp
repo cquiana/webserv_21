@@ -27,7 +27,7 @@ public:
 //	Http_config* _http_config;
 	Server_config _server_config;
 
-	std::string _result;
+	std::string _fullPath;
 
 
 //	Response(int code, Http_config* http_config);
@@ -48,6 +48,9 @@ public:
 	void setCGIResponse(const std::string &str);
     void setBody(std::string &body);
     void setContentLength(size_t len);
+    void setFullPath();
+
+    std::string getFullPath();
 
     int getErrorCode();
 
@@ -65,14 +68,19 @@ public:
 	std::string generateCGI();
 	bool generateGET(); // conf
 	bool methodDELETE();
-	void generateAutoindex(std::string const &path);
-	void generateListing(std::string const &path);
+	void generatePUT();
+	bool  generatePOST();
+//	void generateListing(const std::string &path);
 	std::string getMimeType(const std::string &file);
 
 	class FileCantOpenException:		public std::exception {
 		virtual const char *what() const throw() ;
 	};
 
+	void generateAutoindex(const std::string &path);
+
+
+	void generateListing(const std::string &path);
 };
 #endif
 

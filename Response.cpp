@@ -102,6 +102,7 @@ bool Response::checkAllowedMethod() {
 
 Response Response::startGenerateResponse() {
 
+	setFullPath();
 	if (!_request.getCompete())
 		setErrorCode(400);
 	if (_request.getHttpVers() != "HTTP/1.1")
@@ -111,9 +112,11 @@ Response Response::startGenerateResponse() {
 //	if (_request.getContentLength() > client_max_body_size)
 //		setErrorCode(413);
 	else {
-		if (_request.getMethod() == "GET")
+		if (_request.getMethod() == "GET" || _request.getMethod() == "HEAD")
 			generateGET();
-		else if (_request.getMethod() == "POST") {
+		else if (_request.getMethod() == "POST" || _request.getMethod() ==
+		"PUT") {
+			generatePUT();
 			//		Response  getResp = generateGET(request);
 			//curl -X POST -F 'image=@/Users/cquiana/Desktop/img.png' http://127.0.0.1:60080/images
 			//		return getResp;
@@ -154,16 +157,14 @@ bool Response::methodDELETE() {
 	if (ret < 0)
 		setErrorCode(403);
 	else
-		setErrorCode(200);
+		setErrorCode(204);
 	return true;
 }
 
 bool Response::generateGET() {
 
-	std::string fullPath(_server_config.getRoot() + _request.getPath());
+	std::string fullPath(getFullPath());
 	if (isDirectory(fullPath)) {
-		if (fullPath.back() != '/')
-			fullPath += "/";
 		if (_server_config.getAutoindex() == 1 && !_server_config.haveIndex()) {
 			generateAutoindex(fullPath);
 			return true;
@@ -209,7 +210,38 @@ bool Response::generateGET() {
 	return true;
 }
 
-void Response::generateListing(std::string const &path) {
+bool Response::generatePOST() {
+
+	return false;
+}
+
+void Response::generatePUT() {
+	std::string target = getFullPath();
+	std::ofstream os;
+	if(fileExist(target)) {
+		os.open(target, std::ios::app);
+		if (!os.is_open())
+			setErrorCode(403);
+		else {
+			os << _request.getReqBody();
+			os.close();
+			setErrorCode(200);
+		}
+	}
+	else {
+		os.open(target);
+		if (!os.is_open())
+			setErrorCode(403);
+		else {
+			os << _request.getReqBody();
+			os.close();
+			setErrorCode(201);
+		}
+
+	}
+}
+
+void Response::generateListing(const std::string &path) {
 	dirent *item;
 	DIR *directory;
 	std::string body = "";
@@ -383,6 +415,19 @@ void Response::errorPageGenerator(int code) {
 	result += "<div class=\"col\"></div>\n";
 	result += "</div>\n</div>\n</body>\n</html>\n";
 	setBody(result);
+}
+
+void Response::setFullPath() {
+	std::string fullPath(_server_config.getRoot() + _request.getPath());
+	if (isDirectory(fullPath)) {
+		if (fullPath.back() != '/')
+			fullPath += "/";
+	}
+	_fullPath = fullPath;
+}
+
+std::string Response::getFullPath() {
+	return _fullPath;
 }
 
 
