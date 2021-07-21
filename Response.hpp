@@ -15,7 +15,7 @@ class Response
 private:
 	Response();
 public:
-	Request const &_request;
+	Request &_request;
 	std::map<std::string, std::string> _headers;
 	std::map<int, std::string> _errors;
 	std::string _body;
@@ -31,7 +31,7 @@ public:
 
 
 //	Response(int code, Http_config* http_config);
-	Response(int code, Server_config &server_config, const Request &request);
+	Response(int code, Server_config &server_config, Request &request);
 
 
     ~Response();
@@ -59,6 +59,7 @@ public:
 
 	void errorPageFromFile(const std::string &path);
 	void errorPageGenerator(int code);
+	bool checkAllowedMethod();
 	bool checkCGI();
 
 	std::string generateCGI();

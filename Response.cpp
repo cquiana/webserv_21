@@ -4,7 +4,8 @@
 //	setErrors();
 //}
 
-Response::Response(int code, Server_config &server_config, const Request &request) : _code(code),
+Response::Response(int code, Server_config &server_config,  Request &request)
+: _code(code),
 _server_config(server_config), _request(request) {
 	setErrors();
 }
@@ -83,26 +84,47 @@ std::string Response::getHeader(const std::string &key) const {
 	}
 }
 
+bool Response::checkAllowedMethod() {
+
+	for (std::vector<Location_config>::iterator it = _server_config._locations.begin(); it != _server_config
+			._locations.end(); ++it) {
+		if ((*it).getLocationPrefix() == _request.getLocatinPath()) {
+			if ((*it).getMethods() == 7  && _request.getMethod() == "GET") {
+				return true;
+			} else if ((*it).getMethods() == 4  && _request.getMethod() ==
+			"POST") {
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
 Response Response::startGenerateResponse() {
 
 	if (!_request.getCompete())
 		setErrorCode(400);
 	if (_request.getHttpVers() != "HTTP/1.1")
 		setErrorCode(505);
-	if (_request.getMethod() == "GET")
-		generateGET();
-	else if (_request.getMethod() == "POST") {
-//		Response  getResp = generateGET(request);
-//curl -X POST -F 'image=@/Users/cquiana/Desktop/img.png' http://127.0.0.1:60080/images
-//		return getResp;
-//		getResp = generatePOST(request);
-	}
-	else if (_request.getMethod() == "DELETE") {
-		methodDELETE();
-	}
+//	if (!checkAllowedMethod())
+//		setErrorCode(405);
+//	if (_request.getContentLength() > client_max_body_size)
+//		setErrorCode(413);
 	else {
-//		Response  getResp = generateGET(request);
-//		return getResp;
+		if (_request.getMethod() == "GET")
+			generateGET();
+		else if (_request.getMethod() == "POST") {
+			//		Response  getResp = generateGET(request);
+			//curl -X POST -F 'image=@/Users/cquiana/Desktop/img.png' http://127.0.0.1:60080/images
+			//		return getResp;
+			//		getResp = generatePOST(request);
+		}
+		else if (_request.getMethod() == "DELETE") {
+			methodDELETE();
+		}
+		else {
+			setErrorCode(501);
+		}
 	}
 	finishGenerateResponse();
 	setDefaultHeader();
@@ -127,18 +149,8 @@ void Response::finishGenerateResponse() {
 
 bool Response::methodDELETE() {
 
-	for (std::vector<Location_config>::iterator it = _server_config._locations.begin(); it !=  _server_config
-			._locations.end(); ++it) {
-		if ((*it).getLocationPrefix() == _request.getLocatinPath()) {
-			if ((*it).getMethods() < 1) {
-				setErrorCode(405);
-				return false;
-			}
-		}
-	}
 	std::string fullPath(_server_config.getRoot() + _request.getPath());
 	int ret = std::remove(fullPath.c_str());
-//	int ret = unlink(fullPath.c_str());
 	if (ret < 0)
 		setErrorCode(403);
 	else
@@ -148,16 +160,6 @@ bool Response::methodDELETE() {
 
 bool Response::generateGET() {
 
-
-	for (std::vector<Location_config>::iterator it = _server_config._locations.begin(); it !=  _server_config
-	._locations.end(); ++it) {
-		if ((*it).getLocationPrefix() == _request.getLocatinPath()) {
-			if ((*it).getMethods() < 1) {
-				setErrorCode(405);
-				return false;
-			}
-		}
-	}
 	std::string fullPath(_server_config.getRoot() + _request.getPath());
 	if (isDirectory(fullPath)) {
 		if (fullPath.back() != '/')
@@ -382,8 +384,6 @@ void Response::errorPageGenerator(int code) {
 	result += "</div>\n</div>\n</body>\n</html>\n";
 	setBody(result);
 }
-
-
 
 
 const char *Response::FileCantOpenException::what() const throw() {

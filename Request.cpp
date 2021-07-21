@@ -72,7 +72,7 @@ const std::string & Request::getMethod() const
 }
 
 size_t Request::getContentLength() {
-		_contentLength = std::atoi(_headers["content-length"].c_str());
+		_contentLength = std::atoi(_headers.at("content-length").c_str());
 		return _contentLength;
 }
 
