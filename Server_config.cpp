@@ -12,7 +12,7 @@ Server_config::Server_config() :
 Server_config::~Server_config() {}
 
 Server_config::Server_config(Server_config const &another) :
-	_port(another._port), _name(another._name), _root(another._root), _index(another._index), _autoindex(another._autoindex), _return_code(another._return_code), _return_adress(another._return_adress), _active_location(another._active_location), _locations(another._locations), _socket(another._socket) {}
+	_port(another._port), _name(another._name), _root(another._root), _index(another._index), _autoindex(another._autoindex), _return_code(another._return_code), _return_adress(another._return_adress), _active_location(another._active_location), _locations(another._locations), _socket(another._socket), _error_page_ints(another._error_page_ints), _error_page_strings(another._error_page_strings) {}
 
 Server_config& Server_config::operator=(Server_config const &another) {
 	_port = another._port;
@@ -25,7 +25,16 @@ Server_config& Server_config::operator=(Server_config const &another) {
 	_active_location = another._active_location;
 	_locations = another._locations;
 	_socket = another._socket;
+	_error_page_ints = another._error_page_ints;
+	_error_page_strings = another._error_page_strings;
 	return *this;
+}
+
+bool Server_config::haveErrorPage(int page) const {
+	if (std::find(_error_page_ints.begin(), _error_page_ints.end(), page) != _error_page_ints.end())
+		return true;
+	else
+		return false;
 }
 
 bool Server_config::havePort() const {
@@ -131,6 +140,16 @@ std::string Server_config::getRootByLocation(std::string loc) {
 }
 
 
+int Server_config::getMethodsByLocation(std::string loc) {  // DELETE = 1, POST = 2, GET = 4
+	for(std::vector<Location_config>::iterator it = _locations.begin(); it != _locations.end(); it++)
+	{
+		if ((*it).mIsPrefic() && (*it).prefixCheck(loc))
+			return ((*it).getMethods());  // DELETE = 1, POST = 2, GET = 4
+	}
+	return (0);  // DELETE = 1, POST = 2, GET = 4
+}
+
+
 bool Server_config::checkCGIbyType(std::string cgi) {
 	for(std::vector<Location_config>::iterator it = _locations.begin(); it != _locations.end(); it++)
 	{
@@ -171,6 +190,33 @@ int Server_config::getActiveLocation() const {
 	return (-1);
 }
 
+std::vector<int> Server_config::getAllErrorPagesInts() const {
+	return (_error_page_ints);
+}
+
+std::vector<std::string> Server_config::getAllErrorPages() const {
+	return (_error_page_strings);
+}
+
+std::string Server_config::getErrorPage(int page) {
+	int n = 0;
+
+	for(std::vector<int>::iterator it = _error_page_ints.begin(); it != _error_page_ints.end(); it++)
+	{
+		if ((*it) == page)
+			return (_error_page_strings[n]);
+		n++;
+	}
+	throw Server_config::ErrorPageNotExistException();
+}
+
+
+void Server_config::setErrorPage(size_t error_page_int, std::string error_page_string) {
+	if (haveErrorPage(error_page_int))
+		throw Server_config::ErrorPageAlreadyExistException();
+	_error_page_ints.push_back(error_page_int);
+	_error_page_strings.push_back(error_page_string);
+}
 
 void Server_config::setPort(int port) {
 	if (havePort())
@@ -350,6 +396,14 @@ const char *Server_config::ServerSocketException::what() const throw() {
 
 const char *Server_config::ServerCGInotFoundException::what() const throw() {
 	return ("EXCEPTION! Server CGI not Found exception...");
+};
+
+const char *Server_config::ErrorPageNotExistException::what() const throw() {
+	return ("EXCEPTION! Error Page Not Exist in this http...");
+};
+
+const char *Server_config::ErrorPageAlreadyExistException::what() const throw() {
+	return ("EXCEPTION! Error Page Alraedy Set in this http...");
 };
 
 
