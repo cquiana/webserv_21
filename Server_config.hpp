@@ -24,6 +24,7 @@ private:
 	int _return_code; // -1 ne zadan, 0 zablokirovan, >0 = code
 	std::string _return_adress;
 	bool _active_location;
+	int _client_max_body_size;
 
 	struct sockaddr_in _addr;
 
@@ -48,6 +49,7 @@ public:
 	bool haveReturnCode() const;
     bool blockedReturnCode() const;
     bool haveActiveLocation() const;
+    bool haveMaxBody() const;
 
 	std::vector<int> getAllErrorPagesInts() const;
 	std::vector<std::string> getAllErrorPages() const;
@@ -61,6 +63,7 @@ public:
 	int getReturnCode() const;
 	std::string getReturnArdess() const;
 	int getActiveLocation() const;
+	int getMaxBody() const;
 
 //	std::string getRootByLocation(std::string type, std::string loc);
 	std::string getRootByLocation(std::string loc);
@@ -76,6 +79,7 @@ public:
 	void setAutoindex(int autoindex);
 	void setReturnCode(int return_code, std::string return_adress);
 	void setErrorPage(size_t error_page_int, std::string error_page_string);
+	void setMaxBody(int max_body);
 
 	void initSocket();
 	int acceptNewConnect();
@@ -122,6 +126,12 @@ public:
 		virtual const char *what() const throw() ;
 	};
 	class ErrorPageAlreadyExistException:	public std::exception {
+		virtual const char *what() const throw() ;
+	};
+	class MaxBodyAlreadySetException:		public std::exception {
+		virtual const char *what() const throw() ;
+	};
+	class MaxBodyWrongSetException:			public std::exception {
 		virtual const char *what() const throw() ;
 	};
 

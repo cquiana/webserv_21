@@ -67,8 +67,9 @@ void printConfig(Http_config* http_config)
 				}
 				else
 					std::cout << "ERROR at PRINT_CONFIG\n";
-
 			}
+			if ((*it3).haveMaxBody())
+				std::cout << "\tclient_max_body_size " << (*it3).getMaxBody() << ";\n";
 		}
 		else
 			std::cout << "\treturn " << (*it3).getReturnCode() << " " << (*it3).getReturnArdess() << ";\n";
@@ -313,7 +314,7 @@ int ParseConfig2(std::string fileName)
 
     //if(!file_config.is_open())
     //    file_config.open("example.conf",std::ios::in); // proverit kak lu4she
-	file_config.open(fileName,std::ios::in); // proverit kak lu4she
+	file_config.open(fileName.c_str(),std::ios::in); // proverit kak lu4she
     if (file_config.is_open()){   //checking whether the file is open
         while(getline(file_config, strbuf_config)){ //read data from file object and put it into string.
 

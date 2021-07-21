@@ -29,7 +29,7 @@ int main() {
 	//    file_config.open("example.conf",std::ios::in); // proverit kak lu4she
 	try
 	{
-		file_config.open(conf,std::ios::in); // proverit kak lu4she
+		file_config.open(conf.c_str(),std::ios::in); // proverit kak lu4she   //ToDo potreboval gcc 9vno sdelat char*
 		if (file_config.is_open()){   //checking whether the file is open
 			while(getline(file_config, strbuf_config)){ //read data from file object and put it into string.
 
@@ -56,8 +56,11 @@ int main() {
 		return  1;
 	}
 
-	//printConfig(&http_config);
-	//exit (1);
+	if (http_config.haveMaxBody())
+		http_config.setMaxBodyToServers();
+
+//	printConfig(&http_config);
+//	exit (1);
 
 	WebServer webserver(&http_config);
 
