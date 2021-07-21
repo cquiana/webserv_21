@@ -117,10 +117,6 @@ Response Response::startGenerateResponse() {
 		else if (_request.getMethod() == "POST" || _request.getMethod() ==
 		"PUT") {
 			generatePUT();
-			//		Response  getResp = generateGET(request);
-			//curl -X POST -F 'image=@/Users/cquiana/Desktop/img.png' http://127.0.0.1:60080/images
-			//		return getResp;
-			//		getResp = generatePOST(request);
 		}
 		else if (_request.getMethod() == "DELETE") {
 			methodDELETE();
@@ -175,7 +171,6 @@ bool Response::generateGET() {
 			setErrorCode(403);
 			return false;
 		}
-			// error pages
 	}
 	
 	if (checkCGI()) {
@@ -237,7 +232,6 @@ void Response::generatePUT() {
 			os.close();
 			setErrorCode(201);
 		}
-
 	}
 }
 
