@@ -64,6 +64,7 @@ public:
 	void errorPageGenerator(int code);
 	bool checkAllowedMethod();
 	bool checkCGI();
+	bool overloadClientMaxBodySize();
 
 	std::string generateCGI();
 	bool generateGET(); // conf

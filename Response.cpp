@@ -63,8 +63,8 @@ void Response::setLastModif(const std::string &str) {
 std::string Response::responseToString() {
 	std::ostringstream out;
 	out << "HTTP/1.1 " << _code << " " << _errors.at(_code) << "\r\n";
-	std::map<std::string, std::string>::const_iterator it;
-	for (it = _headers.cbegin(); it != _headers.cend(); ++it) {
+	std::map<std::string, std::string>::iterator it;
+	for (it = _headers.begin(); it != _headers.end(); ++it) {
 		out << it->first << ": " << it->second << "\r\n";
 	}
 	out << "\r\n";
@@ -89,10 +89,14 @@ bool Response::checkAllowedMethod() {
 	for (std::vector<Location_config>::iterator it = _server_config._locations.begin(); it != _server_config
 			._locations.end(); ++it) {
 		if ((*it).getLocationPrefix() == _request.getLocatinPath()) {
-			if ((*it).getMethods() == 7  && _request.getMethod() == "GET") {
+			if ((*it).getMethods() == 4 && (_request.getMethod() == "GET" ||
+			_request.getMethod() ==  "HEAD")) {
 				return true;
-			} else if ((*it).getMethods() == 4  && _request.getMethod() ==
-			"POST") {
+			} else if ((*it).getMethods() == 6 && (_request.getMethod() ==
+			"POST") || _request.getMethod() == "PUT") {
+				return true;
+			} else if ((*it).getMethods() == 7 && _request.getMethod() ==
+												  "DELETE") {
 				return true;
 			}
 		}
@@ -107,16 +111,16 @@ Response Response::startGenerateResponse() {
 		setErrorCode(400);
 	if (_request.getHttpVers() != "HTTP/1.1")
 		setErrorCode(505);
-//	if (!checkAllowedMethod())
-//		setErrorCode(405);
-//	if (_request.getContentLength() > client_max_body_size)
-//		setErrorCode(413);
+	if (!checkAllowedMethod())
+		setErrorCode(405);
+	if (overloadClientMaxBodySize())
+		setErrorCode(413);
 	else {
 		if (_request.getMethod() == "GET" || _request.getMethod() == "HEAD")
 			generateGET();
 		else if (_request.getMethod() == "POST" || _request.getMethod() ==
 		"PUT") {
-			generatePUT();
+			generatePOST();
 		}
 		else if (_request.getMethod() == "DELETE") {
 			methodDELETE();
@@ -206,7 +210,16 @@ bool Response::generateGET() {
 }
 
 bool Response::generatePOST() {
-
+	if (checkCGI()) {
+		//		CGI _cgiResponse(_request, _server_config.getCGIpachByType(), );
+		//		_CGIResponse =  generateCGI();
+		//		setBody(_CGIResponse);
+		//		setContentLength(_CGIResponse.length());
+		//		setErrorCode(200);
+		//		setHeaders("Last-Modified", _lastModif);
+		//		setHeaders("Mime-Type", getMimeType(fullPath));
+	} else
+		generatePUT();
 	return false;
 }
 
@@ -412,9 +425,11 @@ void Response::errorPageGenerator(int code) {
 }
 
 void Response::setFullPath() {
+//	std::string location = _server_config.getRoot();
+
 	std::string fullPath(_server_config.getRoot() + _request.getPath());
 	if (isDirectory(fullPath)) {
-		if (fullPath.back() != '/')
+		if (fullPath[fullPath.length() - 1] != '/')
 			fullPath += "/";
 	}
 	_fullPath = fullPath;
@@ -422,6 +437,13 @@ void Response::setFullPath() {
 
 std::string Response::getFullPath() {
 	return _fullPath;
+}
+
+bool Response::overloadClientMaxBodySize() {
+	int bodySize = _server_config.getMaxBody();
+
+	return _request.getContentLength() > bodySize || _request.getReqBody()
+	.size() > bodySize;
 }
 
 
