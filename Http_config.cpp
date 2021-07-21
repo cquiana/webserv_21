@@ -79,6 +79,13 @@ void Http_config::setMaxBody(int max_body) {
 		_client_max_body_size = max_body;
 }
 
+void Http_config::setMaxBodyToServers() {
+	if (!(haveMaxBody()))
+		throw Http_config::MaxBodyWrongSetException();
+	for(std::vector<Server_config>::iterator it = _servers.begin(); it != _servers.end(); it++)
+		(*it).setMaxBody(_client_max_body_size);
+}
+
 void Http_config::addServer() {
 	if (_active_server) // -1 server can create, 0....1000000 current opened server
 		throw Http_config::ServerAlreadyOpenedException();
