@@ -11,7 +11,7 @@ CGI::CGI(Request &request, Server_config &server_config) : _request(request), _s
 }
 
 CGI::~CGI() {
-	deleteEnv(_env);
+	//deleteEnv(_env);
 }
 
 //const std::string &CGI::startCGI() {
@@ -158,32 +158,71 @@ bool CGI::execveCGI() {
 	if ((fd1 = open("Out_file.tmp", O_RDWR | O_CREAT | O_APPEND, S_IWRITE | S_IREAD, 0755)) < 0)
 		return false;
 
+	std::string fullPath(_server_config.getRoot() + _request.getPath());
+	if (isDirectory(fullPath)) {
+		if (fullPath[fullPath.length() - 1] != '/')
+			fullPath += "/";
+	}
+	char *const argv [] = {const_cast<char *>(fullPath.c_str()), NULL};
+
+
+//	std::string tmp = _request.getPath();
+//	size_t dot = tmp.find_last_of('.');
+//	std::string ext = tmp.substr(dot + 1);
+//	std::cout << "##### " << _request.getPath() << " @@@@@\n";
+//	std::cout << "##### " << _server_config.getCGIpachByType(ext).c_str() << " @@@@@\n";
+//	std::cout << "##### " << fullPath << " @@@@@\n";
+
 	pid_t pid = fork();
-	if (pid == -1)
+	if (pid < 0)
 	{
-		std::cerr << "ERROR !!! Fork crashed..." << std::endl;
+		std::cerr << "ERROR !!! Fork crashed1..." << std::endl;
 		_out_status_int_code = 500;
 		return false;
 	}
-	else if (!pid)
+	else if (pid == 0)
 	{
 		dup2(fd0, 0);
 		dup2(fd1, 1);
 //		if (execve(cgipath, argv, _env) == -1)
-		if (execve(_request.getPath().c_str(), nullptr, _env) == -1)
-		{
-			close(fd1);
-			close(fd0);
-			remove("In_Body.tmp");
-			deleteEnv(_env);
-			exit(1);
-		}
+//		if (execve(_request.getPath().c_str(), nullptr, _env) == -1)
+//		std::string tmp = _request.getPath();
+//		size_t dot = tmp.find_last_of('.');
+//		std::string ext = tmp.substr(dot + 1);
+//
+//		std::cout << "##### " << _request.getPath() << " @@@@@\n";
+//		exit(1);
+
+//		std::string a = _server_config.getCGIpachByType(ext) + " " + fullPath;
+//		std::cerr << a << std::endl;
+
+		execve(fullPath.c_str(), argv, _env);
+//		if (execve(fullPath.c_str(), NULL, NULL) == -1)
+//			std::cerr << "ERROR !!! Fork crashed3..." << std::endl;
+//		std::cerr << errno << std::endl;
+//		std::cerr << "ERROR !!! Fork crashed2..." << std::endl;
+		_out_status_int_code = 500;
+		close(fd1);
+		close(fd0);
+		remove("In_Body.tmp");
+		deleteEnv(_env);
+		exit(1);
+//		if (execve(_server_config.getCGIpachByType(ext).c_str(), nullptr, _env) == -1)
+//		{
+//			close(fd1);
+//			close(fd0);
+//			remove("In_Body.tmp");
+//			deleteEnv(_env);
+//			exit(1);
+//		}
 	}
-	else
+	else if (pid > 0)
 	{
 		int status;
 		waitpid(pid, &status, 0);
 		lseek(fd1, 0, SEEK_SET);
+
+		std::cout << "##### " << pid << " @@@@@\n";
 
 		int ret = 1;
 		while (ret > 0)
@@ -225,7 +264,8 @@ bool CGI::execveCGI() {
 	//ToDo
 	remove("Out_file.tmp");
 	remove("In_Body.tmp");
-	deleteEnv(_env);
+	if (_env)
+		deleteEnv(_env);
 	return true;
 }
 
@@ -274,9 +314,17 @@ void CGI::setupEnv() {
 		envVectorString.push_back("HTTP_" + std::string(it->first + "=" + it->second));
 
 	_env = new char* [envVectorString.size() + 1];
-	for (size_t i = 0; i < envVectorString.size() - 1; i++)
+	for (size_t i = 0; i < envVectorString.size(); i++)
 		_env[i] = strdup(envVectorString[i].c_str());
 	_env[envVectorString.size()] = NULL;
+//	std::cout << envVectorString.size() << " # " << envVectorString.size() + 1 << "\n\n";
+//	size_t j = 0;
+//	while (_env[j])
+//	{
+//		std::cout << _env[j] << "\n";
+//		j++;
+//	}
+//	std::cout << "\n\n";
 //	_envp = convertEnvp(envVectorString);
 }
 
@@ -289,13 +337,27 @@ void CGI::setupEnv() {
 //}
 
 void CGI::deleteEnv(char** envp) {
-	size_t i = 0;
-	while (envp[i])
+
+//	std::cout << envVectorString.size() << " # " << envVectorString.size() + 1 << "\n\n";
+//	std::cout << "\n\n";
+//	size_t j = 0;
+//	while (_env[j])
+//	{
+//		std::cout << _env[j] << "\n";
+//		j++;
+//	}
+//	std::cout << "\n\n";
+	if (envp)
 	{
-		delete envp[i];
-		i++;
+		size_t i = 0;
+		while (envp[i])
+		{
+//			std::cout << envp[i] << "\n";
+			delete[] envp[i];
+			i++;
+		}
+		delete[] envp;
 	}
-	delete[] envp;
 }
 
 int CGI::getOutStatusIntCode() {

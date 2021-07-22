@@ -14,6 +14,7 @@ class Http_config
 private:
 	int _client_max_body_size;
 	bool _active_server;
+	std::string _wd;
 
 public:
 	Http_config();
@@ -32,8 +33,10 @@ public:
 	int getMaxBody() const;
 	Server_config getServer(std::string servers_name);
 	int getActiveServer() const;
+	std::string getWD();
 
 	void setMaxBody(int max_body);
+	void setWD(std::string wd);
 
 	void setMaxBodyToServers();
 

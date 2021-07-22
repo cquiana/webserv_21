@@ -14,9 +14,11 @@
 //	signal(SIGQUIT, sigHandler);
 //}
 
-int main() {
+int main(int argc, char** argv) {
 
 	std::string conf = "example.conf";
+
+	std::cout << "##### " << argv[0] << " @@@@@\n";
 
 	std::fstream file_config;
 	//std::vector<std::string> vector_str_conf_file;
