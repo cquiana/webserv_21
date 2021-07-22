@@ -78,6 +78,15 @@ bool Server_config::haveLocation() const {
 		return false;
 }
 
+bool Server_config::haveLocationByStr(std::string loc) {
+	for(std::vector<Location_config>::iterator it = _locations.begin(); it != _locations.end(); it++)
+	{
+		if ((*it).mIsPrefic() && (*it).haveRoot() && (*it).prefixCheck(loc))
+			return true;
+	}
+	return false;
+}
+
 bool Server_config::haveReturnCode() const {
 	if (_return_code > 0)
 		return true;

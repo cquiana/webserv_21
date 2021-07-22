@@ -51,6 +51,7 @@ public:
     bool blockedReturnCode() const;
     bool haveActiveLocation() const;
     bool haveMaxBody() const;
+	bool haveLocationByStr(std::string loc);
 
 	std::vector<int> getAllErrorPagesInts() const;
 	std::vector<std::string> getAllErrorPages() const;
