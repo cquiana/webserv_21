@@ -13,8 +13,6 @@
 class Request
 {
 private:
-
-	std::map<std::string, std::string> _headers;
 	std::string _uri;
 	std::string _queryString;
 	std::string _reqBody;
@@ -33,6 +31,8 @@ public:
 	Request(int sock);
 	Request();
 	virtual ~Request();
+
+	std::map<std::string, std::string> _headers;
 
 	void parseRequest(std::string request);
 	void parseHeaders(std::string &request);
