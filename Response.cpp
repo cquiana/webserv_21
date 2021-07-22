@@ -222,6 +222,7 @@ bool Response::generateGET() {
 //			return (ReturnErrorPage(NotFound, nullptr));
 		cgi.parse();
 		setErrorCode(cgi.getOutStatusIntCode());
+//		setErrorCode(200);
 		setBody(cgi.getOutStringBodyToResponse());
 		setHeaders("Content-Type", cgi.getOutStringContentType());
 		return true;
