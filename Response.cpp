@@ -209,6 +209,7 @@ bool Response::generateGET() {
 		return true;
 	}
 	else {
+
 		if (!fileExist(fullPath)) {
 			setErrorCode(404);
 			return false;
