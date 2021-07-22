@@ -89,8 +89,7 @@ bool Response::checkAllowedMethod() {
 	for (std::vector<Location_config>::iterator it = _server_config._locations.begin(); it != _server_config
 			._locations.end(); ++it) {
 		if ((*it).getLocationPrefix() == _request.getLocatinPath()) {
-			if ((*it).getMethods() >= 4 && (_request.getMethod() == "GET" ||
-			_request.getMethod() ==  "HEAD")) {
+			if ((*it).getMethods() >= 4 && _request.getMethod() == "GET") {
 				return true;
 			} else if ((*it).getMethods() >= 6 && (_request.getMethod() ==
 			"POST" || _request.getMethod() == "PUT")) {
@@ -111,8 +110,12 @@ Response Response::startGenerateResponse() {
 		setErrorCode(400);
 	if (_request.getHttpVers() != "HTTP/1.1")
 		setErrorCode(505);
-	if (!checkAllowedMethod())
+	if (!checkAllowedMethod()) {
 		setErrorCode(405);
+		finishGenerateResponse();
+		setDefaultHeader();
+		return *this;
+	}
 	if (_server_config.haveReturnCode()){
 		processRedirect();
 		finishGenerateResponse();
@@ -122,7 +125,8 @@ Response Response::startGenerateResponse() {
 	if (overloadClientMaxBodySize())
 		setErrorCode(413);
 	else {
-		if (_request.getMethod() == "GET" || _request.getMethod() == "HEAD")
+//		if (_request.getMethod() == "GET" || _request.getMethod() == "HEAD")
+		if (_request.getMethod() == "GET")
 			generateGET();
 		else if (_request.getMethod() == "POST" || _request.getMethod() ==
 		"PUT") {
