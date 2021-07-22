@@ -17,6 +17,10 @@
 int main(int argc, char** argv) {
 
 	std::string conf = "example.conf";
+	if (argc > 2) {
+		std::cerr << "To many arguments!";
+	} else if (argc == 2)
+		conf = argv[1];
 
 	std::cout << "##### " << argv[0] << " @@@@@\n";
 
