@@ -24,4 +24,4 @@ echo "<h2>Name: ", $out_res['name'], "</h2></br>";
 
 ?>
 </html>
-</body>name=123%D1%8B%D0%BF%D0%B0%D1%8B%D0%BF%D0%B0
+</body>

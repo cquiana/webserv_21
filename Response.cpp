@@ -308,10 +308,10 @@ void Response::generateListing(const std::string &path) {
 	body += "<body>\n";
 	body += "<h2>Index of ";
 	body +=  "<a href=\"" + req +"\">" + req + "</a></h2>";
-	body += "<div class=\"container\">\n";
-	body += "<table class=\"table mt-5\">\n";
-	body += "<thead><tr><th scope=\"col\">Name</th></tr></thead>\n";
-	body += "<tbody>\n";
+//	body += "<div class=\"container\">\n";
+//	body += "<table class=\"table mt-5\">\n";
+//	body += "<thead><tr><th scope=\"col\">Name</th></tr></thead>\n";
+//	body += "<tbody>\n";
 	while (item != NULL) {
 		body += "<a href = \"";
 		body += req;
@@ -326,9 +326,9 @@ void Response::generateListing(const std::string &path) {
 		item = readdir(directory);
 	}
 
-	body += "</tbody>\n";
-	body += "</table>\n";
-	body += "</div>\n";
+//	body += "</tbody>\n";
+//	body += "</table>\n";
+//	body += "</div>\n";
 	body += "</body>\n";
 	body += "</html>\n";
 	closedir(directory);
