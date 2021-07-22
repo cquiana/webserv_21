@@ -25,7 +25,7 @@ public:
 	bool execve();
 	void parse();
 	void setupEnv();
-	char** convertEnvp(std::vector<std::string> envVectorString);
+//	char** convertEnvp(std::vector<std::string> envVectorString);
 	void deleteEnv(char** envp);
 
 	int getResponseIntStatus();

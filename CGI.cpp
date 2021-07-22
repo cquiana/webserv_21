@@ -158,7 +158,13 @@ bool CGI::execve() {
 		return false;
 
 	pid_t pid = fork();
-	if (!pid)
+	if (pid == -1)
+	{
+		std::cerr << "ERROR !!! Fork crashed..." << std::endl;
+		return false;
+//		return ("Status: 500\r\n\r\n");
+	}
+	else if (!pid)
 	{
 		dup2(fd0, 0);
 		dup2(fd1, 1);
@@ -174,22 +180,43 @@ bool CGI::execve() {
 	else
 	{
 		waitpid(pid, &status, 0);
-		close(fd1);
-		close(fd0);
-		fd1 = open("filetmp", O_RDONLY);
+		lseek(fd1, 0, SEEK_SET);
 
-		for (ret = BUFFER_SIZE_CGI; ret == BUFFER_SIZE_CGI; _response_body += std::string(buff, ret))  //ToDo
+		ret = 1;
+		while (ret > 0)
 		{
-			if ((ret = read(fd1, buff, BUFFER_SIZE_CGI) == -1)
+			memset(buff, 0, BUFFER_SIZE_CGI);
+			ret = read(fd1, buff, BUFFER_SIZE_CGI - 1);
+			if (ret == -1)
 			{
-				close(fd);
+				close(fd1);
 				remove("filetmp");
 				remove("bodytmp");
 				deleteEnv(_envp);
 				return false;
 			}
-			close(fd);
+//			newBody += buff;
+			_response_body += buff;
 		}
+
+
+//		waitpid(pid, &status, 0);
+//		close(fd1);
+//		close(fd0);
+//		fd1 = open("filetmp", O_RDONLY);
+//
+//		for (ret = BUFFER_SIZE_CGI; ret == BUFFER_SIZE_CGI; _response_body += std::string(buff, ret))  //ToDo
+//		{
+//			if ((ret = read(fd1, buff, BUFFER_SIZE_CGI) == -1)
+//			{
+//				close(fd1);
+//				remove("filetmp");
+//				remove("bodytmp");
+//				deleteEnv(_envp);
+//				return false;
+//			}
+//			close(fd1);
+//		}
 	}
 
 	//ToDo
@@ -243,16 +270,20 @@ void CGI::setupEnv() {
 	for (std::map<std::string,std::string>::const_iterator it = _request._header.begin(); it != _request._header.end(); it++)
 		envVectorString.push_back("HTTP_" + std::string(it->first + "=" + it->second);
 
-	_envp = convertEnvp(envVectorString);
+	_envp = new char* [envVectorString.size() + 1];
+	for (size_t i = 0; i < envVectorString.size() - 1; i++)
+		_envp[i] = strdup(envVectorString[i].c_str());
+	_envp[envVectorString.size()] = NULL;
+//	_envp = convertEnvp(envVectorString);
 }
 
-char** CGI::convertEnvp(std::vector<std::string> envVectorString) {
-	char** ret = new char* [envVectorString.size() + 1];
-	for (size_t i = 0; i < envVectorString.size() - 1; i++)
-		ret[i] = strdup(envVectorString[i].c_str());
-	ret[envVectorString.size()] = NULL;
-	return ret;
-}
+//char** CGI::convertEnvp(std::vector<std::string> envVectorString) {
+//	char** ret = new char* [envVectorString.size() + 1];
+//	for (size_t i = 0; i < envVectorString.size() - 1; i++)
+//		ret[i] = strdup(envVectorString[i].c_str());
+//	ret[envVectorString.size()] = NULL;
+//	return ret;
+//}
 
 void CGI::deleteEnv(char** envp) {
 	size_t i = 0;
