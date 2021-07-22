@@ -1,6 +1,6 @@
 .idea
 .vscode
-CGI/compile/python
+examples/CGI/compile/python
 .DS_Store
 CMakeLists.txt
 cmake-build-debug/

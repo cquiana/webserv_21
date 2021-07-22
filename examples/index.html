@@ -10,22 +10,66 @@
 <div class="container">
     <div class="row mt-5">
         <div class="col"></div>
-        <div class="col-auto">
+        <div class="col-12 col-md-10 col-lg-5">
             <div class="card">
                 <div class="card-header text-center">
                     <h3>Главная панель</h3>
                 </div>
                 <div class="card-body">
                     <div class="card-text">
-                        <button type="button" class="btn btn-primary btn-lg me-3">Get запрос</button>
-                        <button type="button" class="btn btn-secondary btn-lg mx-3">Post запрос</button>
-                        <button type="button" class="btn btn-danger btn-lg ms-3">Delete запрос</button>
                         <div class="d-grid">
-                            <button class="btn btn-dark btn-lg mt-3" type="button">Redirect to Google</button>
+                            <div class="btn-group" role="group" aria-label="Basic mixed styles example">
+<!--                                <button class="btn btn-lg btn-primary" onclick="location.href='script2.py?name=PEER2'" type="button">-->
+<!--                                    Get запрос</button>-->
+<!--                                <form method="GET" action="script.py">-->
+<!--                                    <input class="btn btn-lg btn-primary" type=submit value=" OK ">-->
+<!--                                </form>-->
+<!--                                <a class="btn btn-lg btn-primary">Get запрос</a>-->
+                                <button class="btn btn-lg btn-danger" onclick="location.href='script.php?name=PEER2'" type="button">
+                                    Get запрос php query string</button>
+<!--                                <a class="btn btn-lg btn-danger">Delete запрос</a>-->
+                            </div>
                         </div>
+<!--                        <form class="border border-secondary rounded p-3 mt-3" action="http://localhost:60080/doc/" method="post" enctype="application/x-www-form-urlencoded">-->
+<!--                            <form class="border border-secondary rounded p-3 mt-3" action="http://localhost:60080/doc/" method="post" enctype="multipart/form-data">-->
+<!--                            <input class="form-control" type="text" placeholder="Введите что-нибудь..." name="text">-->
+                        <form method="POST" action="../www/cgiserver/script2.py">
+                            <input type=text name="name" placeholder="Input name...">
+                            <input type=submit value=" OK ">
+<!--                            <input class="form-control" type="text" placeholder="Введите что-нибудь..." name="name">-->
+                        </form>
+<!--                            <input class="form-control mt-2" type="file" id="image_uploads" name="file" >-->
+<!--                            <div class="d-grid">-->
+<!--                                <button class="btn btn-secondary btn-lg mt-2">Post запрос</button>-->
+<!--                            </div>-->
+<!--                        </form>-->
+                        <form action="http://localhost:60280/" target="_blank">
+                            <div class="d-grid" >
+                                <button class="btn btn-dark btn-lg mt-3">Redirect to Google</button>
+                            </div>
+                        </form>
                     </div>
                 </div>
             </div>
+
+<!--            <p class="text-muted mt-3 text-center">Сообщений нет</p>-->
+
+            <!--            <div class="alert alert-success mt-3" role="alert">-->
+            <!--                Привет, я первое сообщение сервера. Как же это круто!-->
+            <!--            </div>-->
+            <!--            <div class="alert alert-success mt-3" role="alert">-->
+            <!--                <img src="https://i.pinimg.com/originals/f4/d2/96/f4d2961b652880be432fb9580891ed62.png" class="img-fluid mb-2">-->
+            <!--                Ну привет, я твой второй сосед :)-->
+            <!--            </div>-->
+            <!--            <div class="alert alert-success mt-3" role="alert">-->
+            <!--                <a href="#">-->
+            <!--                    <div class="row align-items-center mb-2">-->
+            <!--                        <img class="col-auto" style="height: 50px" src="https://img.icons8.com/ios/452/file&#45;&#45;v1.png">-->
+            <!--                        <p class="col mt-3">zaklin.txt</p>-->
+            <!--                    </div>-->
+            <!--                </a>-->
+            <!--                А я с заклинаниями к вам пришел, буду вас проклинать ;)-->
+            <!--            </div>-->
         </div>
         <div class="col"></div>
     </div>

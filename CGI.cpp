@@ -38,6 +38,9 @@ bool CGI::execveCGI() {
 //	std::cout << "##### " << _server_config.getCGIpachByType(ext).c_str() << " @@@@@\n";
 //	std::cout << "##### " << fullPath << " @@@@@\n";
 
+
+//	std::cout << "##### " << _request.getQueryString() << " @@@@@\n";
+
 	pid_t pid = fork();
 	if (pid < 0)
 	{
@@ -60,11 +63,13 @@ bool CGI::execveCGI() {
 //		std::string a = _server_config.getCGIpachByType(ext) + " " + fullPath;
 //		std::cerr << a << std::endl;
 
+//		execve(a.c_str(), argv, _env);
 		execve(fullPath.c_str(), argv, _env);
 //		if (execve(fullPath.c_str(), NULL, NULL) == -1)
 //			std::cerr << "ERROR !!! Fork crashed3..." << std::endl;
 //		std::cerr << errno << std::endl;
 //		std::cerr << "ERROR !!! Fork crashed2..." << std::endl;
+		std::cerr << "execve ERROR" << std::endl;
 		_out_status_int_code = 500;
 		close(fd1);
 		close(fd0);
@@ -96,6 +101,8 @@ bool CGI::execveCGI() {
 			_out_string_body_to_response += buff;
 		}
 	}
+
+//	std::cout << "##### " << _out_string_body_to_response << " end @@@@@\n";
 	remove("Out_file.tmp");
 	remove("In_Body.tmp");
 	if (_env)
@@ -147,6 +154,8 @@ void CGI::setupEnv() {
 	for (size_t i = 0; i < envVectorString.size(); i++)
 		_env[i] = strdup(envVectorString[i].c_str());
 	_env[envVectorString.size()] = NULL;
+
+
 //	std::cout << envVectorString.size() << " # " << envVectorString.size() + 1 << "\n\n";
 //	size_t j = 0;
 //	while (_env[j])
@@ -155,6 +164,8 @@ void CGI::setupEnv() {
 //		j++;
 //	}
 //	std::cout << "\n\n";
+
+
 //	_envp = convertEnvp(envVectorString);
 }
 

@@ -26,6 +26,7 @@ void Request::parseRequest(std::string request) {
 	parseHeaders(request);
 	setHeader("query-string", _queryString);
 	setContentLength();
+	setQueryString();
 	parseBody(request);
 }
 
@@ -182,11 +183,15 @@ void Request::setQueryString() {
 
 	_queryString = "";
 	res = _headers["path"];
+
+//	std::cout << "##### " << res << " @@@@@\n";
+
 	size_t query = res.find('?');
 	if (query == std::string::npos)
 		_queryString =  "";
 	else
 		_queryString += res.substr(query + 1);
+//	std::cout << "##### " << _queryString << " @@@@@\n";
 }
 
 void Request::setContentLength() {

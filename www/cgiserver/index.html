@@ -19,18 +19,24 @@
                     <div class="card-text">
                         <div class="d-grid">
                             <div class="btn-group" role="group" aria-label="Basic mixed styles example">
-                                <a class="btn btn-lg btn-primary">Get запрос</a>
-                                <a class="btn btn-lg btn-danger">Delete запрос</a>
+<!--                                <button class="btn btn-lg btn-primary" onclick="location.href='script2.py?name=PEER2'" type="button">-->
+<!--                                    Get запрос</button>-->
+<!--                                <form method="GET" action="script.py">-->
+<!--                                    <input class="btn btn-lg btn-primary" type=submit value=" OK ">-->
+<!--                                </form>-->
+<!--                                <a class="btn btn-lg btn-primary">Get запрос</a>-->
+                                <button class="btn btn-lg btn-danger" onclick="location.href='script.php?name=PEER2'" type="button">
+                                    Get запрос php query string</button>
+<!--                                <a class="btn btn-lg btn-danger">Delete запрос</a>-->
                             </div>
                         </div>
 <!--                        <form class="border border-secondary rounded p-3 mt-3" action="http://localhost:60080/doc/" method="post" enctype="application/x-www-form-urlencoded">-->
 <!--                            <form class="border border-secondary rounded p-3 mt-3" action="http://localhost:60080/doc/" method="post" enctype="multipart/form-data">-->
 <!--                            <input class="form-control" type="text" placeholder="Введите что-нибудь..." name="text">-->
-                        <form class="border border-secondary rounded p-3 mt-3" action="script.php" method="POST">
-<!--                            <p>Имя: <input type="text" name="name" /></p>-->
-<!--                            <p>Возраст: <input type="number" name="age" /></p>-->
-<!--                            <input type="submit" value="Отправить">-->
-                            <input class="form-control" type="text" placeholder="Введите имя..." name="name">
+                        <form method="POST" action="script2.py">
+                            <input type=text name="name" placeholder="Input name...">
+                            <input type=submit value=" OK ">
+<!--                            <input class="form-control" type="text" placeholder="Введите что-нибудь..." name="name">-->
                         </form>
 <!--                            <input class="form-control mt-2" type="file" id="image_uploads" name="file" >-->
 <!--                            <div class="d-grid">-->

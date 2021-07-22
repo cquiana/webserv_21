@@ -382,7 +382,7 @@ bool Response::checkCGI() {
 		std::string tmp = _request.getPath();
 		size_t dot = tmp.find_last_of('.');
 		std::string ext = tmp.substr(dot + 1);
-		return (ext == "py" || ext == "js"); // или js
+		return (ext == "py" || ext == "php"); // или js
 }
 
 void Response::generateAutoindex(const std::string &path) {
@@ -424,7 +424,7 @@ void Response::errorPageFromFile(int code) {
 	std::ifstream file(pathToErrorPage.c_str());
 
 	if (!file.is_open()) {
-		std::cerr << "Open file error\n";
+		std::cerr << "ERROR !!! Open error file...\n";
 	}
 	buff << file.rdbuf();
 	file.close();
