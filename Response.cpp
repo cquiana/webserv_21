@@ -20,13 +20,13 @@ void Response::setErrors() {
 	_errors[201] = "Created";
 	_errors[204] = "No Content";
 	_errors[300] = "Multiple Choices";
-//	_errors[301] = "Moved Permanently";
-//	_errors[302] = "Found";
-//	_errors[303] = "See Other";
-//	_errors[304] = "Not Modified";
-//	_errors[305] = "Use Proxy";
-//	_errors[307] = "Temporary Redirect";
-//	_errors[308] = "Permanent Redirect";
+	_errors[301] = "Moved Permanently";
+	_errors[302] = "Found";
+	_errors[303] = "See Other";
+	_errors[304] = "Not Modified";
+	_errors[305] = "Use Proxy";
+	_errors[307] = "Temporary Redirect";
+	_errors[308] = "Permanent Redirect";
 	_errors[400] = "Bad Request";
 	_errors[403] = "Forbidden";
 	_errors[404] = "Not Found";
@@ -113,8 +113,12 @@ Response Response::startGenerateResponse() {
 		setErrorCode(505);
 	if (!checkAllowedMethod())
 		setErrorCode(405);
-	if (_server_config.haveReturnCode())
+	if (_server_config.haveReturnCode()){
 		processRedirect();
+		finishGenerateResponse();
+		setDefaultHeader();
+		return *this;
+	}
 	if (overloadClientMaxBodySize())
 		setErrorCode(413);
 	else {

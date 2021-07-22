@@ -56,7 +56,8 @@ void Request::parseBody(std::string &request) {
 			request.erase(0, size + 2);
 		}
 	} else { //if (_headers["Content-length"])
-		int len = std::atoi(_headers["content-length"].c_str());
+//		int len = std::atoi(_headers["content-length"].c_str());
+		int len = stringToNumber(_headers["content-length"]);
 		if (len > request.size()) {
 			_correctBody = false;
 			return;
@@ -64,7 +65,6 @@ void Request::parseBody(std::string &request) {
 		_headers["body"] = request.substr(0, len);
 		_isComplete = true;
 	}
-
 }
 
 const std::string & Request::getMethod() const
@@ -194,7 +194,8 @@ void Request::setQueryString() {
 }
 
 void Request::setContentLength() {
-	if (_headers.at("content-length").empty())
+//	_errors.count(getErrorCode())
+	if (!_headers.count("content-length"))
 		_contentLength = 0;
 	else
 		_contentLength = stringToNumber(_headers.at("content-length"));

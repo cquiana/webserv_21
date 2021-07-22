@@ -9,7 +9,7 @@ std::string numberToString (int num) {
 
 int	 stringToNumber(std::string str) {
 	std::stringstream ss;
-	int res;
+	int res = 0;
 
 	ss << str;
 	ss >> res;
