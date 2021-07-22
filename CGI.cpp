@@ -1,87 +1,89 @@
 
 #include "CGI.hpp"
 
-CGI::CGI(std::map<std::string, std::string> headers,
-		 const std::string &cgi_path,
-		 const std::string &cgi_ext)
-		 : _env(NULL), _headers(headers), _cgi_path(cgi_path), _cgi_ext(cgi_ext) {}
+//CGI::CGI(std::map<std::string, std::string> headers,
+//		 const std::string &cgi_path,
+//		 const std::string &cgi_ext)
+//		 : _env(NULL), _headers(headers), _cgi_path(cgi_path), _cgi_ext(cgi_ext) {}
+
+CGI::CGI(Request &request, Server_config &server_config) : _request(request), _server_config(server_config), _env(NULL) , _out_status_int_code(0), _out_string_content_type(""), _out_string_body_to_response("") {
+	setupEnv();
+}
 
 CGI::~CGI() {
-	for (int i = 0; this->_env[i]; ++i) {
-		delete[] this->_env[i];
-	}
-	delete[] this->_env;
+	deleteEnv(_env);
 }
 
-const std::string &CGI::startCGI() {
-	const std::string res;
+//const std::string &CGI::startCGI() {
+//	const std::string res;
+//
+//	for(std::map<std::string, std::string>::iterator it = _headers.begin(); it != _headers.end(); ++it) {
+//		CGI::pushEnv(it->first, it->second);
+//	}
+//
+//	pid_t pid;
+//	int In;
+//	int Out;
+//	int saveFdIn = dup(0);
+//	int saveFdOut = dup(1);
+//
+//	pid = fork();
+//	if (pid == -1) {
+//		std::cerr << "Fork crashed." << std::endl;
+//		//ToDo 500error here
+//	} else if (!pid) {
+//		char * const *nul = NULL;
+//		dup2(In, 0);
+//		dup2(Out, 1);
+//		execve(this->_cgi_path.c_str(), nul, this->_env);
+//	} else {
+//		char	buffer[100000] = {0};
+//
+//		waitpid(-1, NULL, 0);
+//
+//		int ret = 1;
+//		while (ret > 0)
+//		{
+//			memset(buffer, 0, 100000);
+//			ret = read(Out, buffer, 100000 - 1);
+//			res += buffer;
+//		}
+//	}
+//	dup2(saveFdIn, 0);
+//	dup2(saveFdOut, 1);
+//	close(In);
+//	close(Out);
+//	close(saveFdIn);
+//	close(saveFdOut);
+//	return res;
+//}
 
-	for(std::map<std::string, std::string>::iterator it = _headers.begin(); it != _headers.end(); ++it) {
-		CGI::pushEnv(it->first, it->second);
-	}
-
-	pid_t pid;
-	int In;
-	int Out;
-	int saveFdIn = dup(0);
-	int saveFdOut = dup(1);
-
-	pid = fork();
-	if (pid == -1) {
-		std::cerr << "Fork crashed." << std::endl;
-	} else if (!pid) {
-		char * const *nul = NULL;
-		dup2(In, 0);
-		dup2(Out, 1);
-		execve(this->_cgi_path.c_str(), nul, this->_env);
-	} else {
-		char	buffer[100000] = {0};
-
-		waitpid(-1, NULL, 0);
-
-		int ret = 1;
-		while (ret > 0)
-		{
-			memset(buffer, 0, 100000);
-			ret = read(Out, buffer, 100000 - 1);
-			res += buffer;
-		}
-	}
-	dup2(saveFdIn, 0);
-	dup2(saveFdOut, 1);
-	close(In);
-	close(Out);
-	close(saveFdIn);
-	close(saveFdOut);
-	return res;
-}
-
-void CGI::pushEnv(const std::string &key, const std::string &value) {
-	unsigned int length = 0;
-	char **res;
-	char *text = (char*)calloc(strlen(key.c_str()) + strlen(value.c_str()) + 2, sizeof(char));
-
-	strcpy(text, (key + "=" + value).c_str());
-	if (this->_env) {
-		for (int i = 0; this->_env[i]; i++) {
-			length++;
-		}
-		length += 2;
-		res = new char*[length];
-		for (int i = 0; this->_env[i]; i++) {
-			res[i] = strdup(this->_env[i]);
-			delete[] this->_env[i];
-		}
-		delete[] this->_env;
-		res[length - 2] = strdup(text);
-		res[length - 1] = NULL;
-		this->_env = res;
-	} else {
-		this->_env = new char*[2];
-		this->_env[0] = strdup(text);
-		this->_env[1] = NULL;
-	}
-}
+//void CGI::pushEnv(const std::string &key, const std::string &value) {
+//	unsigned int length = 0;
+//	char **res;
+//	char *text = (char*)calloc(strlen(key.c_str()) + strlen(value.c_str()) + 2, sizeof(char));
+//
+//	strcpy(text, (key + "=" + value).c_str());
+//	if (this->_env) {
+//		for (int i = 0; this->_env[i]; i++) {
+//			length++;
+//		}
+//		length += 2;
+//		res = new char*[length];
+//		for (int i = 0; this->_env[i]; i++) {
+//			res[i] = strdup(this->_env[i]);
+//			delete[] this->_env[i];
+//		}
+//		delete[] this->_env;
+//		res[length - 2] = strdup(text);
+//		res[length - 1] = NULL;
+//		this->_env = res;
+//	} else {
+//		this->_env = new char*[2];
+//		this->_env[0] = strdup(text);
+//		this->_env[1] = NULL;
+//	}
+//}
 
 
 
@@ -137,66 +139,67 @@ void CGI::pushEnv(const std::string &key, const std::string &value) {
 //	_response_int_status = 0;
 //}
 
-bool CGI::execve() {
-	int status, ret;
+bool CGI::execveCGI() {
 	int fd1;
 	int fd0;
 
-	const char* cgipath = _filename.c_str();
-	const char* argv[] = { const_cast<char *>(cgipath), NULL};
-	char buff[BUFFER_SIZE_CGI];
+//	const char* cgipath = _request.getPath().c_str();
+//	const char* argv[] = { const_cast<char *>(cgipath), NULL};
+	char buff[_server_config.getMaxBody()];
 
 	std::ofstream file_body;
-	file_body.open("bodytmp");
-	file_body << _request.body;
+	file_body.open("In_Body.tmp");
+	file_body << _request.getReqBody();
 	file_body.close();
 
-	if ((fd0 = open("bodytmp", O_RDONLY)) < 0)
+	if ((fd0 = open("In_Body.tmp", O_RDONLY)) < 0)
 		return false;
 
-	if ((fd1 = open("filetmp", O_RDWR | O_CREAT | O_APPEND, S_IWRITE | S_IREAD, 0755)) < 0)
+	if ((fd1 = open("Out_file.tmp", O_RDWR | O_CREAT | O_APPEND, S_IWRITE | S_IREAD, 0755)) < 0)
 		return false;
 
 	pid_t pid = fork();
 	if (pid == -1)
 	{
 		std::cerr << "ERROR !!! Fork crashed..." << std::endl;
+		_out_status_int_code = 500;
 		return false;
-//		return ("Status: 500\r\n\r\n");
 	}
 	else if (!pid)
 	{
 		dup2(fd0, 0);
 		dup2(fd1, 1);
-		if (execve(cgipath, argv, _envp) == -1)
+//		if (execve(cgipath, argv, _env) == -1)
+		if (execve(_request.getPath().c_str(), nullptr, _env) == -1)
 		{
 			close(fd1);
 			close(fd0);
-			remove("bodytmp");
-			deleteEnv(_envp);
+			remove("In_Body.tmp");
+			deleteEnv(_env);
 			exit(1);
 		}
 	}
 	else
 	{
+		int status;
 		waitpid(pid, &status, 0);
 		lseek(fd1, 0, SEEK_SET);
 
-		ret = 1;
+		int ret = 1;
 		while (ret > 0)
 		{
-			memset(buff, 0, BUFFER_SIZE_CGI);
-			ret = read(fd1, buff, BUFFER_SIZE_CGI - 1);
+			memset(buff, 0, _server_config.getMaxBody());
+			ret = read(fd1, buff, _server_config.getMaxBody() - 1);
 			if (ret == -1)
 			{
 				close(fd1);
-				remove("filetmp");
-				remove("bodytmp");
-				deleteEnv(_envp);
+				remove("Out_file.tmp");
+				remove("In_Body.tmp");
+				deleteEnv(_env);
 				return false;
 			}
 //			newBody += buff;
-			_response_body += buff;
+			_out_string_body_to_response += buff;
 		}
 
 
@@ -220,60 +223,60 @@ bool CGI::execve() {
 	}
 
 	//ToDo
-	remove("filetmp");
-	remove("bodytmp");
-	deleteEnv(_envp);
+	remove("Out_file.tmp");
+	remove("In_Body.tmp");
+	deleteEnv(_env);
 	return true;
 }
 
 void CGI::parse() {
-	size_t header_end = _response_body.find("\r\n\r\n");
-	std::string header = _response_body.substr(0, header_end);
-	size_t i = header.find("Status: ") + 8;
-	if (isdigit(header[i]))
+	size_t header_end = _out_string_body_to_response.find("\r\n\r\n");
+	std::string header = _out_string_body_to_response.substr(0, header_end);
+	size_t find_status = header.find("Status: ") + 8;
+	if (isdigit(header[find_status]))
 	{
-		while (header[i] >= '0' && header[i] <= '9')
+		while (header[find_status] >= '0' && header[find_status] <= '9')
 		{
-			_response_int_status = _response_int_status * 10 + (header[i] - '0');
-			i++;
+			_out_status_int_code = _out_status_int_code * 10 + (header[find_status] - '0');
+			find_status++;
 		}
-		i++;
-		size_t j = header.find("\r\n") - i;
-		_response_content_type = header.substr(i + j + 2, header.size() - 2);
-		_response_body.erase(0, header_end + 4);
+		find_status++;
+		size_t a = header.find("\r\n") - find_status;
+		_out_string_content_type = header.substr(find_status + a + 2, header.size() - 2);
+		_out_string_body_to_response.erase(0, header_end + 4);
 	}
-	size_t body = _response_body.size();
+	size_t body = _out_string_body_to_response.size();
 	(void)body;
 }
 
 void CGI::setupEnv() {
 	std::vector<std::string> envVectorString;
 
-	envVectorString.push_back("AUTH_TYPE=" + _location.auth);
-	envVectorString.push_back("CONTENT_LENGHT=" + std::to_string(_request._body.length()));
-	envVectorString.push_back("CONTENT_TYPE=" + _request.getValueOfHeaders("CONTENT_TYPE"));
+	envVectorString.push_back("AUTH_TYPE=" + _request.getAuthType());
+	envVectorString.push_back("CONTENT_LENGHT=" + std::to_string(_request.getContentLength()));
+	envVectorString.push_back("CONTENT_TYPE=" + _request._headers["content_type"]);
 	envVectorString.push_back("GATEWAY_INTERFACE=CGI/1.1");
-	envVectorString.push_back("PATH_INFO=" + _location.location);
-	envVectorString.push_back("PATH_TRANSLATED=" + _location.root + _location.location);
-	envVectorString.push_back("QUERY_STRING=" + _request._query_string);
-	envVectorString.push_back("REMOTE_ADDR=" + _config.ip);
-	envVectorString.push_back("REMOTE_USER=" + _request._user);
-	envVectorString.push_back("REMOTE_IDENT=" + _request._user + "." + _request.getValueOfHeaders("host"));
-	envVectorString.push_back("REQUEST_METHOD=" + _request._methodStr);
-	envVectorString.push_back("REQUEST_URI=" + _location.location);
-	envVectorString.push_back("SCRIPT_NAME=" + _location.exec);
-	envVectorString.push_back("SERVER_NAME=" + _config.server_name);
-	envVectorString.push_back("SERVER_PORT=" + std::to_string(_config.port));
+	envVectorString.push_back("PATH_INFO=" + _request.getPath());
+	envVectorString.push_back("PATH_TRANSLATED=" + _server_config.getRootByLocation(_request.getPath()) + _request.getPath());
+	envVectorString.push_back("QUERY_STRING=" + _request.getQueryString());
+	envVectorString.push_back((std::string("REMOTE_ADDR=") + IP).c_str());
+//	envVectorString.push_back("REMOTE_USER=" + _request._user);
+//	envVectorString.push_back("REMOTE_IDENT=" + _request._user + "." + _request.getValueOfHeaders("host"));
+	envVectorString.push_back("REQUEST_METHOD=" + _request.getMethod());
+	envVectorString.push_back("REQUEST_URI=" + _request.getPath());
+	envVectorString.push_back("SCRIPT_NAME=" + _request.getPath());
+	envVectorString.push_back("SERVER_NAME=" + _server_config.getName());
+	envVectorString.push_back("SERVER_PORT=" + numberToString(_server_config.getPort()));
 	envVectorString.push_back("SERVER_PROTOCOL=HTTP/1.1");
 	envVectorString.push_back("SERVER_SOFTWARE=Webserv21");
 
-	for (std::map<std::string,std::string>::const_iterator it = _request._header.begin(); it != _request._header.end(); it++)
-		envVectorString.push_back("HTTP_" + std::string(it->first + "=" + it->second);
+	for (std::map<std::string,std::string>::const_iterator it = _request._headers.begin(); it != _request._headers.end(); it++)
+		envVectorString.push_back("HTTP_" + std::string(it->first + "=" + it->second));
 
-	_envp = new char* [envVectorString.size() + 1];
+	_env = new char* [envVectorString.size() + 1];
 	for (size_t i = 0; i < envVectorString.size() - 1; i++)
-		_envp[i] = strdup(envVectorString[i].c_str());
-	_envp[envVectorString.size()] = NULL;
+		_env[i] = strdup(envVectorString[i].c_str());
+	_env[envVectorString.size()] = NULL;
 //	_envp = convertEnvp(envVectorString);
 }
 
@@ -288,19 +291,22 @@ void CGI::setupEnv() {
 void CGI::deleteEnv(char** envp) {
 	size_t i = 0;
 	while (envp[i])
-		delete envp[i++];
+	{
+		delete envp[i];
+		i++;
+	}
 	delete[] envp;
 }
 
-int CGI::getResponseIntStatus() {
-	return _response_int_status;
+int CGI::getOutStatusIntCode() {
+	return _out_status_int_code;
 }
 
-int CGI::getResponseBody() {
-	return _response_body;
+std::string& CGI::getOutStringBodyToResponse() {
+	return _out_string_body_to_response;
 }
 
-int CGI::getResponseContentType() {
-	return _response_content_type;
+std::string CGI::getOutStringContentType() {
+	return _out_string_content_type;
 }
 

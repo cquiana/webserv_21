@@ -89,25 +89,25 @@ std::string Request::getHost()  {
 		return it->second;
 	}
 }
-std::string  &Request::getReqBody() {
+std::string  &Request::getReqBody() {//ToDo check key in map
 	return (_headers["body"]);
 }
 
-std::string Request::getAuthType(){
+std::string Request::getAuthType(){ //ToDo check key in map
 	std::string res;
 	res = _headers["authorization"];
 	return res.substr(0, res.find(' '));
 }
-std::string Request::getConnection(){
+std::string Request::getConnection(){//ToDo check key in map
 	return _headers["connection"];
 }
-std::string Request::getUserAgent(){
+std::string Request::getUserAgent(){//ToDo check key in map
 	return _headers["user-agent"];
 }
-std::string Request::getUri(){
+std::string Request::getUri(){//ToDo check key in map
 	return _headers["path"];
 }
-std::string Request::getPath() const
+std::string Request::getPath() const//ToDo check key in map
 {
 	std::string res;
 

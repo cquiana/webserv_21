@@ -89,10 +89,10 @@ bool Response::checkAllowedMethod() {
 	for (std::vector<Location_config>::iterator it = _server_config._locations.begin(); it != _server_config
 			._locations.end(); ++it) {
 		if ((*it).getLocationPrefix() == _request.getLocatinPath()) {
-			if ((*it).getMethods() == 4 && (_request.getMethod() == "GET" ||
+			if ((*it).getMethods() >= 4 && (_request.getMethod() == "GET" ||
 			_request.getMethod() ==  "HEAD")) {
 				return true;
-			} else if ((*it).getMethods() == 6 && (_request.getMethod() ==
+			} else if ((*it).getMethods() >= 6 && (_request.getMethod() ==
 			"POST" || _request.getMethod() == "PUT")) {
 				return true;
 			} else if ((*it).getMethods() == 7 && _request.getMethod() ==
@@ -183,13 +183,44 @@ bool Response::generateGET() {
 	}
 	
 	if (checkCGI()) {  //ToDo CGI in
-//		CGI _cgiResponse(_request, _server_config.getCGIpachByType(), );
-//		_CGIResponse =  generateCGI();
-//		setBody(_CGIResponse);
-//		setContentLength(_CGIResponse.length());
-//		setErrorCode(200);
-//		setHeaders("Last-Modified", _lastModif);
-//		setHeaders("Mime-Type", getMimeType(fullPath));
+
+//		if (_server_config.getMaxBody() <= 0 && cur_request._body.length() > _server_config.getMaxBody())
+//		{
+//			setErrorCode(403);
+//			return false;
+//		}
+//		if (cur_request._body.length() == _location.max_body || (cur_request._body.length() == 0 && cur_request._queryString.empty()))
+//		{
+//			response_res.body = cur_request._body;-
+//			response_res.status_code_int_val = 200;
+//			return response_res;
+//		}
+
+//		std::string execFile = std::string(_server_config.getRootByLocation(_request.getPath()) + "/" + _request.getPath());
+		std::string execFile = getFullPath();
+		int fdCgi = open (execFile.c_str(), O_RDONLY);
+//		if (_location.exec.empty() || fdCgi == -1)
+		if (fdCgi == -1)
+		{
+			close(fdCgi);
+			setErrorCode(500);
+			return false;
+//			return (ReturnErrorPage(PayloadTooLadge, nullptr));
+		}
+		close(fdCgi);
+//		CGI cgi(execFile, _location, cur_request, *server_conf);
+		CGI cgi (_request, _server_config);
+		if (false == cgi.execveCGI())
+		{
+			setErrorCode(500);
+			return false;
+		}
+//			return (ReturnErrorPage(NotFound, nullptr));
+		cgi.parse();
+		setErrorCode(cgi.getOutStatusIntCode());
+		setBody(cgi.getOutStringBodyToResponse());
+		setHeaders("Content-Type", cgi.getOutStringContentType());
+		return true;
 	}
 	else {
 		if (!fileExist(fullPath)) {
@@ -346,6 +377,9 @@ std::string Response::generateCGI() {
 }
 
 bool Response::checkCGI() {
+//		std::string tmp2 = _request.getPath();
+//		size_t find_first_quest = tmp2.find_first_of('?');
+//		std::string tmp = tmp2.substr(0, find_first_quest);
 		std::string tmp = _request.getPath();
 		size_t dot = tmp.find_last_of('.');
 		std::string ext = tmp.substr(dot + 1);

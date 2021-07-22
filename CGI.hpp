@@ -11,26 +11,35 @@
 
 class CGI {
 private:
+	CGI();
 	char**  _env;
-	std::map<std::string, std::string> _headers;
-	const std::string &_cgi_path;
-	const std::string &_cgi_ext;
+	Request _request;
+	Server_config _server_config;
+	std::string _out_string_body_to_response;
+	std::string _out_string_content_type;
+	int _out_status_int_code;
 
-	void pushEnv(const std::string &key, const std::string &value);
+
+//	std::map<std::string, std::string> _headers;
+//	const std::string &_cgi_path;
+//	const std::string &_cgi_ext;
+
+//	void pushEnv(const std::string &key, const std::string &value);
 public:
-	CGI(std::map<std::string, std::string> headers, const std::string &cgi_path, const std::string &cgi_ext);
+	CGI(Request &request, Server_config &server_config);
 	~CGI();
 
 
-	bool execve();
+	bool execveCGI();
 	void parse();
 	void setupEnv();
 //	char** convertEnvp(std::vector<std::string> envVectorString);
 	void deleteEnv(char** envp);
 
-	int getResponseIntStatus();
-	int getResponseBody();
-	int getResponseContentType();
+
+	int getOutStatusIntCode();
+	std::string& getOutStringBodyToResponse();
+	std::string getOutStringContentType();
 
 
 	const std::string &startCGI();
