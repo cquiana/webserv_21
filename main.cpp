@@ -18,7 +18,6 @@ int main() {
 
 	std::string conf = "example.conf";
 
-
 	std::fstream file_config;
 	//std::vector<std::string> vector_str_conf_file;
 	std::string strbuf_config;

@@ -177,7 +177,7 @@ bool Response::generateGET() {
 		}
 	}
 	
-	if (checkCGI()) {
+	if (checkCGI()) {  //ToDo CGI in
 //		CGI _cgiResponse(_request, _server_config.getCGIpachByType(), );
 //		_CGIResponse =  generateCGI();
 //		setBody(_CGIResponse);
@@ -192,7 +192,7 @@ bool Response::generateGET() {
 			return false;
 		}
 		std::stringstream  buff;
-		std::ifstream file(fullPath);
+		std::ifstream file(fullPath.c_str());
 		if (!file.is_open())
 			throw Response::FileCantOpenException();
 		buff << file.rdbuf();
@@ -227,7 +227,7 @@ void Response::generatePUT() {
 	std::string target = getFullPath();
 	std::ofstream os;
 	if(fileExist(target)) {
-		os.open(target, std::ios::app);
+		os.open(target.c_str(), std::ios::app);
 		if (!os.is_open())
 			setErrorCode(403);
 		else {
@@ -237,7 +237,7 @@ void Response::generatePUT() {
 		}
 	}
 	else {
-		os.open(target);
+		os.open(target.c_str());
 		if (!os.is_open())
 			setErrorCode(403);
 		else {
@@ -383,7 +383,7 @@ void Response::errorPageFromFile(const std::string &path) {
 
 	std::string f;
 	std::stringstream  buff;
-	std::ifstream file(path);
+	std::ifstream file(path.c_str());
 
 	if (!file.is_open()) {
 		std::cerr << "Open file error\n";
