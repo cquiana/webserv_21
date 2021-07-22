@@ -25,6 +25,7 @@ void Request::setHeader(const std::string &key, const std::string &value) {
 void Request::parseRequest(std::string request) {
 	parseHeaders(request);
 	setHeader("query-string", _queryString);
+	setContentLength();
 	parseBody(request);
 }
 
@@ -71,9 +72,13 @@ const std::string & Request::getMethod() const
 	return (_headers.at("method"));
 }
 
+
 size_t Request::getContentLength() {
-		_contentLength = std::atoi(_headers.at("content-length").c_str());
-		return _contentLength;
+//	if (_headers.at("content-length").empty())
+//		_contentLength = 0;
+//	else
+//		_contentLength = stringToNumber(_headers.at("content-length"));
+	return _contentLength;
 }
 
 std::string Request::getHost()  {
@@ -144,9 +149,6 @@ bool Request::receive() {
 	}
 	parseRequest(_toRead);
 	return true;
-//	std::cout << ret << std::endl;
-
-//	std::cout << getMethod() << std::endl;
 }
 
 const std::string Request::getHttpVers() const
@@ -191,6 +193,12 @@ void Request::setQueryString() {
 		_queryString += res.substr(query + 1);
 }
 
+void Request::setContentLength() {
+	if (_headers.at("content-length").empty())
+		_contentLength = 0;
+	else
+		_contentLength = stringToNumber(_headers.at("content-length"));
+}
 
 
 const char *Request::ReadErrorException::what() const throw() {

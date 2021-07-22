@@ -10,6 +10,7 @@
 #include <time.h>
 
 std::string numberToString ( int num );
+int	 stringToNumber(std::string str);
 std::string cutLine(std::string &str, std::string const &elem);
 std::string getTime(const time_t *time);
 bool fileExist(const std::string &path);

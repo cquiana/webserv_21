@@ -41,6 +41,7 @@ public:
 
 	void setLocationPath();
 	void setQueryString();
+	void setContentLength();
 	void setHeader(const std::string &key, const std::string &value);
 
 	size_t getContentLength() ;

@@ -7,6 +7,15 @@ std::string numberToString (int num) {
 	return ss.str();
 }
 
+int	 stringToNumber(std::string str) {
+	std::stringstream ss;
+	int res;
+
+	ss << str;
+	ss >> res;
+	return (res);
+}
+
 std::string cutLine(std::string &str, std::string const &elem) {
 	std::string res;
 

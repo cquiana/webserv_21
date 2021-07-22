@@ -93,7 +93,7 @@ bool Response::checkAllowedMethod() {
 			_request.getMethod() ==  "HEAD")) {
 				return true;
 			} else if ((*it).getMethods() == 6 && (_request.getMethod() ==
-			"POST") || _request.getMethod() == "PUT") {
+			"POST" || _request.getMethod() == "PUT")) {
 				return true;
 			} else if ((*it).getMethods() == 7 && _request.getMethod() ==
 												  "DELETE") {
@@ -113,6 +113,8 @@ Response Response::startGenerateResponse() {
 		setErrorCode(505);
 	if (!checkAllowedMethod())
 		setErrorCode(405);
+	if (_server_config.haveReturnCode())
+		processRedirect();
 	if (overloadClientMaxBodySize())
 		setErrorCode(413);
 	else {
@@ -136,18 +138,17 @@ Response Response::startGenerateResponse() {
 
 void Response::finishGenerateResponse() {
 	if (getErrorCode() >= 400 && _body.empty()) {
-//		if (_errors.count(_code)) {
-//			try {
-//				errorPageFromFile(_errors.at(_code));
-//			} catch (std::runtime_error &e) {
-//				std::cerr << e.what() << std::endl;
-//				errorPageGenerator(getErrorCode());
-//			}
-//		}
-//		else
+		if (_errors.count(getErrorCode())) {
+			try {
+				errorPageFromFile(getErrorCode());
+			} catch (std::runtime_error &e) {
+				std::cerr << e.what() << std::endl;
+				errorPageGenerator(getErrorCode());
+			}
+		}
+		else
 			errorPageGenerator(getErrorCode());
 	}
-
 }
 
 bool Response::methodDELETE() {
@@ -347,7 +348,7 @@ bool Response::checkCGI() {
 		return (ext == "py" || ext == "js"); // или js
 }
 
-void Response::generateAutoindex(std::string const &path) {
+void Response::generateAutoindex(const std::string &path) {
 	generateListing(path);
 	setHeaders("Content-Type", "text/html");
 	setErrorCode(200);
@@ -379,11 +380,11 @@ std::string Response::getMimeType(const std::string &file) {
 	return "text/plain";
 }
 
-void Response::errorPageFromFile(const std::string &path) {
+void Response::errorPageFromFile(int code) {
 
-	std::string f;
 	std::stringstream  buff;
-	std::ifstream file(path.c_str());
+	std::string pathToErrorPage(_server_config.getRoot() + "/" + _server_config.getErrorPage(code));
+	std::ifstream file(pathToErrorPage.c_str());
 
 	if (!file.is_open()) {
 		std::cerr << "Open file error\n";
@@ -444,6 +445,11 @@ bool Response::overloadClientMaxBodySize() {
 
 	return _request.getContentLength() > bodySize || _request.getReqBody()
 	.size() > bodySize;
+}
+
+void Response::processRedirect() {
+	setErrorCode(_server_config.getReturnCode());
+	setHeaders("Location", _server_config.getReturnArdess());
 }
 
 
