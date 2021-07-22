@@ -192,7 +192,7 @@ bool Response::generateGET() {
 		if (fdCgi == -1)
 		{
 			close(fdCgi);
-			setErrorCode(500);
+			setErrorCode(404);
 			return false;
 		}
 		close(fdCgi);
@@ -238,7 +238,7 @@ bool Response::generatePOST() {
 		if (fdCgi == -1)
 		{
 			close(fdCgi);
-			setErrorCode(500);
+			setErrorCode(404);
 			return false;
 		}
 		close(fdCgi);
@@ -288,7 +288,19 @@ void Response::generateListing(const std::string &path) {
 	DIR *directory;
 	std::string body = "";
 	std::string req = _request.getPath();
-
+//	std::string req2 = _request.getPath();
+//
+//	std::string req  = req2;
+//	size_t find_slash = req.find_last_of('/');
+//	while (find_slash != std::string::npos) {
+//		req = req.substr(0, find_slash);
+//		if (_server_config.haveLocationByStr(req)) {
+//			req2 = req2.replace(0, find_slash, _server_config.getRootByLocation(req));
+//			break;
+//		}
+//		find_slash = req.find_last_of('/');
+//	}
+//	req = req2;
 	if (req[req.size() - 1] != '/')
 		req += "/";
 
@@ -308,10 +320,10 @@ void Response::generateListing(const std::string &path) {
 	body += "<body>\n";
 	body += "<h2>Index of ";
 	body +=  "<a href=\"" + req +"\">" + req + "</a></h2>";
-//	body += "<div class=\"container\">\n";
-//	body += "<table class=\"table mt-5\">\n";
-//	body += "<thead><tr><th scope=\"col\">Name</th></tr></thead>\n";
-//	body += "<tbody>\n";
+	body += "<div class=\"container\">\n";
+	body += "<table class=\"table mt-5\">\n";
+	body += "<thead><tr><th scope=\"col\">Name</th></tr></thead>\n";
+	body += "<tbody>\n";
 	while (item != NULL) {
 		body += "<a href = \"";
 		body += req;
@@ -326,9 +338,9 @@ void Response::generateListing(const std::string &path) {
 		item = readdir(directory);
 	}
 
-//	body += "</tbody>\n";
-//	body += "</table>\n";
-//	body += "</div>\n";
+	body += "</tbody>\n";
+	body += "</table>\n";
+	body += "</div>\n";
 	body += "</body>\n";
 	body += "</html>\n";
 	closedir(directory);
@@ -376,9 +388,6 @@ std::string Response::generateCGI() {
 }
 
 bool Response::checkCGI() {
-//		std::string tmp2 = _request.getPath();
-//		size_t find_first_quest = tmp2.find_first_of('?');
-//		std::string tmp = tmp2.substr(0, find_first_quest);
 		std::string tmp = _request.getPath();
 		size_t dot = tmp.find_last_of('.');
 		std::string ext = tmp.substr(dot + 1);

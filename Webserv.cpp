@@ -50,9 +50,9 @@ int WebServer::loop() {
 	while (1) {
 		FD_ZERO(&tmpSet);
 		tmpSet = _mainFdSet;
-//		struct timeval tv = {10, 0};
+		struct timeval tv = {20, 0};
 		resetWritingSet(&wrFdSet);
-		int ret = select(_maxSock + 1, &tmpSet, &wrFdSet, NULL, 0);
+		int ret = select(_maxSock + 1, &tmpSet, &wrFdSet, NULL, &tv);
 		if (ret < 0) {
 			std::cout << "select error!\n";
 		}
