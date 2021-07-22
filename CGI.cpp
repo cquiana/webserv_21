@@ -1,150 +1,15 @@
-
 #include "CGI.hpp"
-
-//CGI::CGI(std::map<std::string, std::string> headers,
-//		 const std::string &cgi_path,
-//		 const std::string &cgi_ext)
-//		 : _env(NULL), _headers(headers), _cgi_path(cgi_path), _cgi_ext(cgi_ext) {}
 
 CGI::CGI(Request &request, Server_config &server_config) : _request(request), _server_config(server_config), _env(NULL) , _out_status_int_code(0), _out_string_content_type(""), _out_string_body_to_response("") {
 	setupEnv();
 }
 
-CGI::~CGI() {
-	//deleteEnv(_env);
-}
-
-//const std::string &CGI::startCGI() {
-//	const std::string res;
-//
-//	for(std::map<std::string, std::string>::iterator it = _headers.begin(); it != _headers.end(); ++it) {
-//		CGI::pushEnv(it->first, it->second);
-//	}
-//
-//	pid_t pid;
-//	int In;
-//	int Out;
-//	int saveFdIn = dup(0);
-//	int saveFdOut = dup(1);
-//
-//	pid = fork();
-//	if (pid == -1) {
-//		std::cerr << "Fork crashed." << std::endl;
-//		//ToDo 500error here
-//	} else if (!pid) {
-//		char * const *nul = NULL;
-//		dup2(In, 0);
-//		dup2(Out, 1);
-//		execve(this->_cgi_path.c_str(), nul, this->_env);
-//	} else {
-//		char	buffer[100000] = {0};
-//
-//		waitpid(-1, NULL, 0);
-//
-//		int ret = 1;
-//		while (ret > 0)
-//		{
-//			memset(buffer, 0, 100000);
-//			ret = read(Out, buffer, 100000 - 1);
-//			res += buffer;
-//		}
-//	}
-//	dup2(saveFdIn, 0);
-//	dup2(saveFdOut, 1);
-//	close(In);
-//	close(Out);
-//	close(saveFdIn);
-//	close(saveFdOut);
-//	return res;
-//}
-
-//void CGI::pushEnv(const std::string &key, const std::string &value) {
-//	unsigned int length = 0;
-//	char **res;
-//	char *text = (char*)calloc(strlen(key.c_str()) + strlen(value.c_str()) + 2, sizeof(char));
-//
-//	strcpy(text, (key + "=" + value).c_str());
-//	if (this->_env) {
-//		for (int i = 0; this->_env[i]; i++) {
-//			length++;
-//		}
-//		length += 2;
-//		res = new char*[length];
-//		for (int i = 0; this->_env[i]; i++) {
-//			res[i] = strdup(this->_env[i]);
-//			delete[] this->_env[i];
-//		}
-//		delete[] this->_env;
-//		res[length - 2] = strdup(text);
-//		res[length - 1] = NULL;
-//		this->_env = res;
-//	} else {
-//		this->_env = new char*[2];
-//		this->_env[0] = strdup(text);
-//		this->_env[1] = NULL;
-//	}
-//}
-
-
-
-//void CGI::POST() {
-//	if (POST == cur_request._methodEnum)
-//	{
-//		if (_location.max_body > 0 && cur_request._body.length() > _location.max_body)
-//			return (ReturnErrorPage(PayloadTooLadge, nullptr));
-//		if (cur_request._body.length() == _location.max_body || (cur_request._body.length() == 0 && cur_request._queryString.empty()))
-//		{
-//			response_res.body = cur_request._body;
-//			response_res.status_code_int_val = 200;
-//			return response_res;
-//		}
-//
-//		std::string execFile = std::string(_location.root + "/" + _location.exec);
-//		int fdCgi = open (execFile.c_str(), O_RDONLY);
-//		if (_location.exec.empty() || fdCgi == -1)
-//		{
-//			close(fdCgi);
-//			return (ReturnErrorPage(PayloadTooLadge, nullptr));
-//		}
-//		close(fdCgi);
-//		CGI cgi(execFile, _location, cur_request, *server_conf);
-//		if (false == cgi.execve())
-//			return (ReturnErrorPage(NotFound, nullptr));
-//		cgi.parse();
-//		response_res.status_code_int_val = cgi.getResponseIntStatus();
-//		response_res.return_from_CGI = true;
-//		response_res.body = cgi.getResponseBody();
-//		response_res.headers["CONTENT_TYPE"] = cgi.getResponseContentType();
-//
-//		return response_res;
-//	}
-//};
-
-
-
-
-
-
-
-
-
-
-
-//CGI::CGI(std::string const &filename, Location const & location, Request const & request, Serverconf const &config) :
-//_filename(filename), _location(location), _request(request), _config(config), _envp(NULL)
-//{
-//	setupEnv();
-//	_response_body = "";
-//	_response_content_type = "";
-//	_response_int_status = 0;
-//}
+CGI::~CGI() {}
 
 bool CGI::execveCGI() {
 	int fd1;
 	int fd0;
 
-//	const char* cgipath = _request.getPath().c_str();
-//	const char* argv[] = { const_cast<char *>(cgipath), NULL};
 	char buff[_server_config.getMaxBody()];
 
 	std::ofstream file_body;
@@ -184,7 +49,6 @@ bool CGI::execveCGI() {
 	{
 		dup2(fd0, 0);
 		dup2(fd1, 1);
-//		if (execve(cgipath, argv, _env) == -1)
 //		if (execve(_request.getPath().c_str(), nullptr, _env) == -1)
 //		std::string tmp = _request.getPath();
 //		size_t dot = tmp.find_last_of('.');
@@ -207,14 +71,6 @@ bool CGI::execveCGI() {
 		remove("In_Body.tmp");
 		deleteEnv(_env);
 		exit(1);
-//		if (execve(_server_config.getCGIpachByType(ext).c_str(), nullptr, _env) == -1)
-//		{
-//			close(fd1);
-//			close(fd0);
-//			remove("In_Body.tmp");
-//			deleteEnv(_env);
-//			exit(1);
-//		}
 	}
 	else if (pid > 0)
 	{
@@ -237,33 +93,9 @@ bool CGI::execveCGI() {
 				deleteEnv(_env);
 				return false;
 			}
-//			newBody += buff;
 			_out_string_body_to_response += buff;
 		}
-
-
-//		waitpid(pid, &status, 0);
-//		close(fd1);
-//		close(fd0);
-//		fd1 = open("filetmp", O_RDONLY);
-//
-//		for (ret = BUFFER_SIZE_CGI; ret == BUFFER_SIZE_CGI; _response_body += std::string(buff, ret))  //ToDo
-//		{
-//			if ((ret = read(fd1, buff, BUFFER_SIZE_CGI) == -1)
-//			{
-//				close(fd1);
-//				remove("filetmp");
-//				remove("bodytmp");
-//				deleteEnv(_envp);
-//				return false;
-//			}
-//			close(fd1);
-//		}
 	}
-
-//	std::cout << "##### " << pid << " end @@@@@\n";
-
-	//ToDo
 	remove("Out_file.tmp");
 	remove("In_Body.tmp");
 	if (_env)
@@ -287,8 +119,6 @@ void CGI::parse() {
 		_out_string_content_type = header.substr(find_status + a + 2, header.size() - 2);
 		_out_string_body_to_response.erase(0, header_end + 4);
 	}
-//	size_t body = _out_string_body_to_response.size();
-//	(void)body;
 }
 
 void CGI::setupEnv() {
@@ -302,8 +132,6 @@ void CGI::setupEnv() {
 	envVectorString.push_back("PATH_TRANSLATED=" + _server_config.getRootByLocation(_request.getPath()) + _request.getPath());
 	envVectorString.push_back("QUERY_STRING=" + _request.getQueryString());
 	envVectorString.push_back((std::string("REMOTE_ADDR=") + IP).c_str());
-//	envVectorString.push_back("REMOTE_USER=" + _request._user);
-//	envVectorString.push_back("REMOTE_IDENT=" + _request._user + "." + _request.getValueOfHeaders("host"));
 	envVectorString.push_back("REQUEST_METHOD=" + _request.getMethod());
 	envVectorString.push_back("REQUEST_URI=" + _request.getPath());
 	envVectorString.push_back("SCRIPT_NAME=" + _request.getPath());
@@ -329,14 +157,6 @@ void CGI::setupEnv() {
 //	std::cout << "\n\n";
 //	_envp = convertEnvp(envVectorString);
 }
-
-//char** CGI::convertEnvp(std::vector<std::string> envVectorString) {
-//	char** ret = new char* [envVectorString.size() + 1];
-//	for (size_t i = 0; i < envVectorString.size() - 1; i++)
-//		ret[i] = strdup(envVectorString[i].c_str());
-//	ret[envVectorString.size()] = NULL;
-//	return ret;
-//}
 
 void CGI::deleteEnv(char** envp) {
 

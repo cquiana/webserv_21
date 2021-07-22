@@ -24,16 +24,24 @@
                             </div>
                         </div>
 <!--                        <form class="border border-secondary rounded p-3 mt-3" action="http://localhost:60080/doc/" method="post" enctype="application/x-www-form-urlencoded">-->
-                            <form class="border border-secondary rounded p-3 mt-3" action="http://localhost:60080/doc/" method="post" enctype="multipart/form-data">
+<!--                            <form class="border border-secondary rounded p-3 mt-3" action="http://localhost:60080/doc/" method="post" enctype="multipart/form-data">-->
 <!--                            <input class="form-control" type="text" placeholder="Введите что-нибудь..." name="text">-->
-                            <input class="form-control mt-2" type="file" id="image_uploads" name="file">
-                            <div class="d-grid">
-                                <button class="btn btn-secondary btn-lg mt-2">Post запрос</button>
+                        <form class="border border-secondary rounded p-3 mt-3" action="script.php" method="POST">
+<!--                            <p>Имя: <input type="text" name="name" /></p>-->
+<!--                            <p>Возраст: <input type="number" name="age" /></p>-->
+<!--                            <input type="submit" value="Отправить">-->
+                            <input class="form-control" type="text" placeholder="Введите имя..." name="name">
+                        </form>
+<!--                            <input class="form-control mt-2" type="file" id="image_uploads" name="file" >-->
+<!--                            <div class="d-grid">-->
+<!--                                <button class="btn btn-secondary btn-lg mt-2">Post запрос</button>-->
+<!--                            </div>-->
+<!--                        </form>-->
+                        <form action="http://localhost:60280/" target="_blank">
+                            <div class="d-grid" >
+                                <button class="btn btn-dark btn-lg mt-3">Redirect to Google</button>
                             </div>
                         </form>
-                        <div class="d-grid">
-                            <a class="btn btn-dark btn-lg mt-3">Redirect to Google</a>
-                        </div>
                     </div>
                 </div>
             </div>
