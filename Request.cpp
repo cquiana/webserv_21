@@ -74,10 +74,6 @@ const std::string & Request::getMethod() const
 
 
 size_t Request::getContentLength() {
-//	if (_headers.at("content-length").empty())
-//		_contentLength = 0;
-//	else
-//		_contentLength = stringToNumber(_headers.at("content-length"));
 	return _contentLength;
 }
 

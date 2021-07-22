@@ -2,7 +2,7 @@
 
 
 std::string numberToString (int num) {
-	std::ostringstream ss;
+	std::stringstream  ss;
 	ss << num;
 	return ss.str();
 }

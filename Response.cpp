@@ -142,17 +142,21 @@ Response Response::startGenerateResponse() {
 
 void Response::finishGenerateResponse() {
 	if (getErrorCode() >= 400 && _body.empty()) {
-		if (_errors.count(getErrorCode())) {
-			try {
-				errorPageFromFile(getErrorCode());
-			} catch (std::runtime_error &e) {
-				std::cerr << e.what() << std::endl;
-				errorPageGenerator(getErrorCode());
-			}
+		if (_server_config.haveErrorPage(getErrorCode())) {
+			errorPageFromFile(getErrorCode());
 		}
 		else
 			errorPageGenerator(getErrorCode());
 	}
+//		if (_errors.count(getErrorCode())) {
+//			try {
+//				errorPageFromFile(getErrorCode());
+//			} catch (std::runtime_error &e) {
+//				std::cerr << e.what() << std::endl;
+//				errorPageGenerator(getErrorCode());
+//			}
+//		}
+
 }
 
 bool Response::methodDELETE() {
