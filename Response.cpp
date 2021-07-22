@@ -4,7 +4,8 @@
 //	setErrors();
 //}
 
-Response::Response(int code, Server_config &server_config, const Request &request) : _code(code),
+Response::Response(int code, Server_config &server_config,  Request &request)
+: _code(code),
 _server_config(server_config), _request(request) {
 	setErrors();
 }
@@ -62,8 +63,8 @@ void Response::setLastModif(const std::string &str) {
 std::string Response::responseToString() {
 	std::ostringstream out;
 	out << "HTTP/1.1 " << _code << " " << _errors.at(_code) << "\r\n";
-	std::map<std::string, std::string>::const_iterator it;
-	for (it = _headers.cbegin(); it != _headers.cend(); ++it) {
+	std::map<std::string, std::string>::iterator it;
+	for (it = _headers.begin(); it != _headers.end(); ++it) {
 		out << it->first << ": " << it->second << "\r\n";
 	}
 	out << "\r\n";
@@ -83,27 +84,50 @@ std::string Response::getHeader(const std::string &key) const {
 	}
 }
 
+bool Response::checkAllowedMethod() {
+
+	for (std::vector<Location_config>::iterator it = _server_config._locations.begin(); it != _server_config
+			._locations.end(); ++it) {
+		if ((*it).getLocationPrefix() == _request.getLocatinPath()) {
+			if ((*it).getMethods() == 4 && (_request.getMethod() == "GET" ||
+			_request.getMethod() ==  "HEAD")) {
+				return true;
+			} else if ((*it).getMethods() == 6 && (_request.getMethod() ==
+			"POST") || _request.getMethod() == "PUT") {
+				return true;
+			} else if ((*it).getMethods() == 7 && _request.getMethod() ==
+												  "DELETE") {
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
 Response Response::startGenerateResponse() {
 
+	setFullPath();
 	if (!_request.getCompete())
 		setErrorCode(400);
-	else if (_request.getHttpVers() != "HTTP/1.1")
+	if (_request.getHttpVers() != "HTTP/1.1")
 		setErrorCode(505);
-	else if (!validMethod())
+	if (!checkAllowedMethod())
 		setErrorCode(405);
-	if (_request.getMethod() == "GET")
-		generateGET();
-	else if (_request.getMethod() == "POST") {
-//		Response  getResp = generateGET(request);
-//		return getResp;
-//		getResp = generatePOST(request);
-	}
-	else if (_request.getMethod() == "DELETE") {
-		methodDELETE();
-	}
+	if (overloadClientMaxBodySize())
+		setErrorCode(413);
 	else {
-//		Response  getResp = generateGET(request);
-//		return getResp;
+		if (_request.getMethod() == "GET" || _request.getMethod() == "HEAD")
+			generateGET();
+		else if (_request.getMethod() == "POST" || _request.getMethod() ==
+		"PUT") {
+			generatePOST();
+		}
+		else if (_request.getMethod() == "DELETE") {
+			methodDELETE();
+		}
+		else {
+			setErrorCode(501);
+		}
 	}
 	finishGenerateResponse();
 	setDefaultHeader();
@@ -128,42 +152,19 @@ void Response::finishGenerateResponse() {
 
 bool Response::methodDELETE() {
 
-	for (std::vector<Location_config>::iterator it = _server_config._locations.begin(); it !=  _server_config
-			._locations.end(); ++it) {
-		if ((*it).getLocationPrefix() == _request.getLocatinPath()) {
-			if ((*it).getMethods() < 1) {
-				setErrorCode(405);
-				return false;
-			}
-		}
-	}
 	std::string fullPath(_server_config.getRoot() + _request.getPath());
-//	int ret = std::remove(fullPath.c_str());
-	int ret = unlink(fullPath.c_str());
+	int ret = std::remove(fullPath.c_str());
 	if (ret < 0)
 		setErrorCode(403);
 	else
-		setErrorCode(200);
+		setErrorCode(204);
 	return true;
 }
 
 bool Response::generateGET() {
 
-	std::string  loc = _server_config.getRootByLocation(_request.getPath());
-
-	for (std::vector<Location_config>::iterator it = _server_config._locations.begin(); it !=  _server_config
-	._locations.end(); ++it) {
-		if ((*it).getLocationPrefix() == _request.getLocatinPath()) {
-			if ((*it).getMethods() < 1) {
-				setErrorCode(405);
-				return false;
-			}
-		}
-	}
-	std::string fullPath(_server_config.getRoot() + _request.getPath());
+	std::string fullPath(getFullPath());
 	if (isDirectory(fullPath)) {
-		if (fullPath.back() != '/')
-			fullPath += "/";
 		if (_server_config.getAutoindex() == 1 && !_server_config.haveIndex()) {
 			generateAutoindex(fullPath);
 			return true;
@@ -174,14 +175,14 @@ bool Response::generateGET() {
 			setErrorCode(403);
 			return false;
 		}
-			// error pages
 	}
 	
-	if (checkCGI()) {
-		_CGIResponse =  generateCGI();
-		setBody(_CGIResponse);
-		setContentLength(_CGIResponse.length());
-		setErrorCode(200);
+	if (checkCGI()) {  //ToDo CGI in
+//		CGI _cgiResponse(_request, _server_config.getCGIpachByType(), );
+//		_CGIResponse =  generateCGI();
+//		setBody(_CGIResponse);
+//		setContentLength(_CGIResponse.length());
+//		setErrorCode(200);
 //		setHeaders("Last-Modified", _lastModif);
 //		setHeaders("Mime-Type", getMimeType(fullPath));
 	}
@@ -191,7 +192,7 @@ bool Response::generateGET() {
 			return false;
 		}
 		std::stringstream  buff;
-		std::ifstream file(fullPath);
+		std::ifstream file(fullPath.c_str());
 		if (!file.is_open())
 			throw Response::FileCantOpenException();
 		buff << file.rdbuf();
@@ -208,7 +209,46 @@ bool Response::generateGET() {
 	return true;
 }
 
-void Response::generateListing(std::string const &path) {
+bool Response::generatePOST() {
+	if (checkCGI()) {
+		//		CGI _cgiResponse(_request, _server_config.getCGIpachByType(), );
+		//		_CGIResponse =  generateCGI();
+		//		setBody(_CGIResponse);
+		//		setContentLength(_CGIResponse.length());
+		//		setErrorCode(200);
+		//		setHeaders("Last-Modified", _lastModif);
+		//		setHeaders("Mime-Type", getMimeType(fullPath));
+	} else
+		generatePUT();
+	return false;
+}
+
+void Response::generatePUT() {
+	std::string target = getFullPath();
+	std::ofstream os;
+	if(fileExist(target)) {
+		os.open(target.c_str(), std::ios::app);
+		if (!os.is_open())
+			setErrorCode(403);
+		else {
+			os << _request.getReqBody();
+			os.close();
+			setErrorCode(200);
+		}
+	}
+	else {
+		os.open(target.c_str());
+		if (!os.is_open())
+			setErrorCode(403);
+		else {
+			os << _request.getReqBody();
+			os.close();
+			setErrorCode(201);
+		}
+	}
+}
+
+void Response::generateListing(const std::string &path) {
 	dirent *item;
 	DIR *directory;
 	std::string body = "";
@@ -231,6 +271,8 @@ void Response::generateListing(std::string const &path) {
 	body += "<link href=\"https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css\" rel=\"stylesheet\" integrity=\"sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x\" crossorigin=\"anonymous\">\n";
 	body += "</head>\n";
 	body += "<body>\n";
+	body += "<h2>Index of ";
+	body +=  "<a href=\"" + req +"\">" + req + "</a></h2>";
 	body += "<div class=\"container\">\n";
 	body += "<table class=\"table mt-5\">\n";
 	body += "<thead><tr><th scope=\"col\">Name</th></tr></thead>\n";
@@ -302,7 +344,7 @@ bool Response::checkCGI() {
 		std::string tmp = _request.getPath();
 		size_t dot = tmp.find_last_of('.');
 		std::string ext = tmp.substr(dot + 1);
-		return (ext == "js"); // или js
+		return (ext == "py" || ext == "js"); // или js
 }
 
 void Response::generateAutoindex(std::string const &path) {
@@ -341,7 +383,7 @@ void Response::errorPageFromFile(const std::string &path) {
 
 	std::string f;
 	std::stringstream  buff;
-	std::ifstream file(path);
+	std::ifstream file(path.c_str());
 
 	if (!file.is_open()) {
 		std::cerr << "Open file error\n";
@@ -382,32 +424,32 @@ void Response::errorPageGenerator(int code) {
 	setBody(result);
 }
 
-bool Response::generatePUT() {
-	return true;
+void Response::setFullPath() {
+//	std::string location = _server_config.getRoot();
+
+	std::string fullPath(_server_config.getRoot() + _request.getPath());
+	if (isDirectory(fullPath)) {
+		if (fullPath[fullPath.length() - 1] != '/')
+			fullPath += "/";
+	}
+	_fullPath = fullPath;
 }
 
-bool Response::validMethod() {
-	for (std::vector<Location_config>::iterator it = _server_config._locations.begin(); it !=  _server_config
-			._locations.end(); ++it) {
-		if ((*it).getLocationPrefix() == _request.getLocatinPath()) {
-			if ((*it).getMethods() < 1) {
-				setErrorCode(405);
-				return false;
-			}
-		}
-	}
-	return true;
+std::string Response::getFullPath() {
+	return _fullPath;
+}
+
+bool Response::overloadClientMaxBodySize() {
+	int bodySize = _server_config.getMaxBody();
+
+	return _request.getContentLength() > bodySize || _request.getReqBody()
+	.size() > bodySize;
 }
 
 
 const char *Response::FileCantOpenException::what() const throw() {
 	return ("EXCEPTION! File can't open...");
 };
-
-
-
-
-
 
 
 

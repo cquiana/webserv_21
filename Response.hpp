@@ -15,7 +15,7 @@ class Response
 private:
 	Response();
 public:
-	Request const &_request;
+	Request &_request;
 	std::map<std::string, std::string> _headers;
 	std::map<int, std::string> _errors;
 	std::string _body;
@@ -28,11 +28,11 @@ public:
 //	Http_config* _http_config;
 	Server_config _server_config;
 
-	std::string _result;
+	std::string _fullPath;
 
 
 //	Response(int code, Http_config* http_config);
-	Response(int code, Server_config &server_config, const Request &request);
+	Response(int code, Server_config &server_config, Request &request);
 
 
     ~Response();
@@ -50,6 +50,9 @@ public:
 	void setCGIResponse(const std::string &str);
     void setBody(std::string &body);
     void setContentLength(size_t len);
+    void setFullPath();
+
+    std::string getFullPath();
 
     int getErrorCode();
 
@@ -62,7 +65,9 @@ public:
 
 	void errorPageFromFile(const std::string &path);
 	void errorPageGenerator(int code);
+	bool checkAllowedMethod();
 	bool checkCGI();
+	bool overloadClientMaxBodySize();
 
 	std::string generateCGI();
 	bool validMethod();
@@ -70,14 +75,19 @@ public:
 	bool generatePOST();
 	bool generatePUT();
 	bool methodDELETE();
-	void generateAutoindex(std::string const &path);
-	void generateListing(std::string const &path);
+	void generatePUT();
+	bool  generatePOST();
+//	void generateListing(const std::string &path);
 	std::string getMimeType(const std::string &file);
 
 	class FileCantOpenException:		public std::exception {
 		virtual const char *what() const throw() ;
 	};
 
+	void generateAutoindex(const std::string &path);
+
+
+	void generateListing(const std::string &path);
 };
 #endif
 

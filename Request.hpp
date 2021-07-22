@@ -43,7 +43,7 @@ public:
 	void setQueryString();
 	void setHeader(const std::string &key, const std::string &value);
 
-	size_t getContentLength();
+	size_t getContentLength() ;
 	const std::string & getMethod() const;
 	std::string getHost();
 	std::string  &getReqBody();

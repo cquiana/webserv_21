@@ -7,12 +7,12 @@
 #include "Webserv.hpp"
 
 Server_config::Server_config() :
-	_port(-1), _name(""), _root(""), _index(""), _autoindex(-1), _return_code(-1), _return_adress(""), _active_location(false), _socket(-1) {}
+	_port(-1), _name(""), _root(""), _index(""), _autoindex(-1), _return_code(-1), _return_adress(""), _active_location(false), _socket(-1), _client_max_body_size(-2) {}
 
 Server_config::~Server_config() {}
 
 Server_config::Server_config(Server_config const &another) :
-	_port(another._port), _name(another._name), _root(another._root), _index(another._index), _autoindex(another._autoindex), _return_code(another._return_code), _return_adress(another._return_adress), _active_location(another._active_location), _locations(another._locations), _socket(another._socket), _error_page_ints(another._error_page_ints), _error_page_strings(another._error_page_strings) {}
+	_port(another._port), _name(another._name), _root(another._root), _index(another._index), _autoindex(another._autoindex), _return_code(another._return_code), _return_adress(another._return_adress), _active_location(another._active_location), _locations(another._locations), _socket(another._socket), _error_page_ints(another._error_page_ints), _error_page_strings(another._error_page_strings), _client_max_body_size(another._client_max_body_size) {}
 
 Server_config& Server_config::operator=(Server_config const &another) {
 	_port = another._port;
@@ -27,6 +27,7 @@ Server_config& Server_config::operator=(Server_config const &another) {
 	_socket = another._socket;
 	_error_page_ints = another._error_page_ints;
 	_error_page_strings = another._error_page_strings;
+	_client_max_body_size = another._client_max_body_size;
 	return *this;
 }
 
@@ -95,6 +96,12 @@ bool Server_config::haveActiveLocation() const {
 	return (_active_location);
 }
 
+bool Server_config::haveMaxBody() const {
+	if (_client_max_body_size == -2)
+		return false;
+	else
+		return true;
+}
 
 
 
@@ -147,6 +154,10 @@ int Server_config::getMethodsByLocation(std::string loc) {  // DELETE = 1, POST 
 			return ((*it).getMethods());  // DELETE = 1, POST = 2, GET = 4
 	}
 	return (0);  // DELETE = 1, POST = 2, GET = 4
+}
+
+int Server_config::getMaxBody() const {
+	return (_client_max_body_size);
 }
 
 
@@ -269,6 +280,15 @@ void Server_config::setReturnCode(int return_code, std::string return_adress) {
 		throw Server_config::BlockedReturnCodeException();
 	_return_code = return_code;
 	_return_adress = return_adress;
+}
+
+void Server_config::setMaxBody(int max_body) {
+	if (haveMaxBody())
+		throw Server_config::MaxBodyAlreadySetException();
+	else if (max_body < 0)
+		throw Server_config::MaxBodyWrongSetException();
+	else
+		_client_max_body_size = max_body;
 }
 
 void Server_config::addLocation(std::string location_path, std::string type) {
@@ -404,6 +424,14 @@ const char *Server_config::ErrorPageNotExistException::what() const throw() {
 
 const char *Server_config::ErrorPageAlreadyExistException::what() const throw() {
 	return ("EXCEPTION! Error Page Alraedy Set in this http...");
+};
+
+const char *Server_config::MaxBodyAlreadySetException::what() const throw() {
+	return ("EXCEPTION! Max Body Alraedy Set in this http...");
+};
+
+const char *Server_config::MaxBodyWrongSetException::what() const throw() {
+	return ("EXCEPTION! Max Body Wrong in this http...");
 };
 
 

@@ -15,7 +15,7 @@ Request::~Request() {
 void Request::setLocationPath(){
 	std::string location = getUri();
 	size_t pos = location.find_last_of('/');
-	_location = location.substr(0, pos + 1);
+	_location = location.substr(0, pos);
 }
 
 void Request::setHeader(const std::string &key, const std::string &value) {
@@ -72,7 +72,7 @@ const std::string & Request::getMethod() const
 }
 
 size_t Request::getContentLength() {
-		_contentLength = std::atoi(_headers["content-length"].c_str());
+		_contentLength = std::atoi(_headers.at("content-length").c_str());
 		return _contentLength;
 }
 
@@ -118,8 +118,7 @@ std::string Request::getQueryString() {
 
 }
 
-bool Request::getCompete() const
-{
+bool Request::getCompete() const {
 	return _isComplete;
 }
 
@@ -131,7 +130,6 @@ bool Request::receive() {
 	char buff[BUFFER_SIZE + 1]= {};
 	int ret;
 	ret = recv(_sock, buff, BUFFER_SIZE, 0);
-//	ret = read(_sock, buff, BUFFER_SIZE);
 	if (ret < 0) {
 //		throw Request::ReadErrorException();
 

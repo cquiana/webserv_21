@@ -35,6 +35,8 @@ public:
 
 	void setMaxBody(int max_body);
 
+	void setMaxBodyToServers();
+
 	void addServer();
 	void checkLastServeer();
 
