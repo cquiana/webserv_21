@@ -233,13 +233,26 @@ bool Response::generateGET() {
 
 bool Response::generatePOST() {
 	if (checkCGI()) {
-		//		CGI _cgiResponse(_request, _server_config.getCGIpachByType(), );
-		//		_CGIResponse =  generateCGI();
-		//		setBody(_CGIResponse);
-		//		setContentLength(_CGIResponse.length());
-		//		setErrorCode(200);
-		//		setHeaders("Last-Modified", _lastModif);
-		//		setHeaders("Mime-Type", getMimeType(fullPath));
+		std::string execFile = getFullPath();
+		int fdCgi = open (execFile.c_str(), O_RDONLY);
+		if (fdCgi == -1)
+		{
+			close(fdCgi);
+			setErrorCode(500);
+			return false;
+		}
+		close(fdCgi);
+		CGI cgi (_request, _server_config);
+		if (!cgi.execveCGI())
+		{
+			setErrorCode(500);
+			return false;
+		}
+		cgi.parse();
+		setErrorCode(cgi.getOutStatusIntCode());
+		setBody(cgi.getOutStringBodyToResponse());
+		setHeaders("Content-Type", cgi.getOutStringContentType());
+		return true;
 	} else
 		generatePUT();
 	return false;
