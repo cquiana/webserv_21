@@ -186,40 +186,22 @@ bool Response::generateGET() {
 		}
 	}
 	
-	if (checkCGI()) {  //ToDo CGI in
-
-//		if (_server_config.getMaxBody() <= 0 && cur_request._body.length() > _server_config.getMaxBody())
-//		{
-//			setErrorCode(403);
-//			return false;
-//		}
-//		if (cur_request._body.length() == _location.max_body || (cur_request._body.length() == 0 && cur_request._queryString.empty()))
-//		{
-//			response_res.body = cur_request._body;-
-//			response_res.status_code_int_val = 200;
-//			return response_res;
-//		}
-
-//		std::string execFile = std::string(_server_config.getRootByLocation(_request.getPath()) + "/" + _request.getPath());
+	if (checkCGI()) {
 		std::string execFile = getFullPath();
 		int fdCgi = open (execFile.c_str(), O_RDONLY);
-//		if (_location.exec.empty() || fdCgi == -1)
 		if (fdCgi == -1)
 		{
 			close(fdCgi);
 			setErrorCode(500);
 			return false;
-//			return (ReturnErrorPage(PayloadTooLadge, nullptr));
 		}
 		close(fdCgi);
-//		CGI cgi(execFile, _location, cur_request, *server_conf);
 		CGI cgi (_request, _server_config);
-		if (false == cgi.execveCGI())
+		if (!cgi.execveCGI())
 		{
 			setErrorCode(500);
 			return false;
 		}
-//			return (ReturnErrorPage(NotFound, nullptr));
 		cgi.parse();
 		setErrorCode(cgi.getOutStatusIntCode());
 		setBody(cgi.getOutStringBodyToResponse());

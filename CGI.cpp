@@ -222,7 +222,7 @@ bool CGI::execveCGI() {
 		waitpid(pid, &status, 0);
 		lseek(fd1, 0, SEEK_SET);
 
-		std::cout << "##### " << pid << " @@@@@\n";
+//		std::cout << "##### " << pid << " @@@@@\n";
 
 		int ret = 1;
 		while (ret > 0)
@@ -261,6 +261,8 @@ bool CGI::execveCGI() {
 //		}
 	}
 
+//	std::cout << "##### " << pid << " end @@@@@\n";
+
 	//ToDo
 	remove("Out_file.tmp");
 	remove("In_Body.tmp");
@@ -285,8 +287,8 @@ void CGI::parse() {
 		_out_string_content_type = header.substr(find_status + a + 2, header.size() - 2);
 		_out_string_body_to_response.erase(0, header_end + 4);
 	}
-	size_t body = _out_string_body_to_response.size();
-	(void)body;
+//	size_t body = _out_string_body_to_response.size();
+//	(void)body;
 }
 
 void CGI::setupEnv() {
