@@ -1,8 +1,14 @@
 #include "CGI.hpp"
 
-CGI::CGI(Request &request, Server_config &server_config) : _request(request), _server_config(server_config), _env(NULL) , _out_status_int_code(0), _out_string_content_type(""), _out_string_body_to_response("") {
+CGI::CGI(Request &request, Server_config &server_config) : _env(NULL) ,_request(request), _server_config(server_config), _out_string_body_to_response(""), _out_string_content_type(""), _out_status_int_code(0) {
 	setupEnv();
 }
+
+//Request _request;
+//Server_config _server_config;
+//std::string _out_string_body_to_response;
+//std::string _out_string_content_type;
+//int _out_status_int_code;
 
 CGI::~CGI() {}
 

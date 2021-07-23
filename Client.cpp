@@ -49,7 +49,7 @@ bool Client::sendResp() {
 		std::cout << "send error\n";
 		return false;
 	}
-	if (ret == response.getContetntLength())
+	if (static_cast<size_t>(ret) == response.getContetntLength())
 		_status = ALL_DATA_SENDET;
 	_request.eraseRequest();
 //	_responseMsg.erase(0, ret); // clear responce

@@ -5,8 +5,7 @@
 //}
 
 Response::Response(int code, Server_config &server_config,  Request &request)
-: _code(code),
-_server_config(server_config), _request(request) {
+: _request(request), _code(code), _server_config(server_config) {
 	setErrors();
 }
 
@@ -85,14 +84,13 @@ std::string Response::getHeader(const std::string &key) const {
 }
 
 bool Response::checkAllowedMethod() {
-
+	if (_request.getMethod() == "GET")
+		return true;
 	for (std::vector<Location_config>::iterator it = _server_config._locations.begin(); it != _server_config
 			._locations.end(); ++it) {
 		if ((*it).getLocationPrefix() == _request.getLocatinPath()) {
-			if ((*it).getMethods() >= 4 && _request.getMethod() == "GET") {
-				return true;
-			} else if ((*it).getMethods() >= 6 && (_request.getMethod() ==
-			"POST" || _request.getMethod() == "PUT")) {
+			if (((*it).getMethods() >= 6 && (_request.getMethod() ==
+			"POST" || _request.getMethod() == "PUT")) || (checkCGI())) {
 				return true;
 			} else if ((*it).getMethods() == 7 && _request.getMethod() ==
 												  "DELETE") {
@@ -110,7 +108,8 @@ Response Response::startGenerateResponse() {
 		setErrorCode(400);
 	if (_request.getHttpVers() != "HTTP/1.1")
 		setErrorCode(505);
-	if (!checkAllowedMethod()) {
+//	if (_request.getPath() != "/" && _request.&& !checkAllowedMethod()) {
+	if (_request.getPath() != "/" && !checkAllowedMethod()) {
 		setErrorCode(405);
 		finishGenerateResponse();
 		setDefaultHeader();
@@ -393,10 +392,21 @@ std::string Response::generateCGI() {
 }
 
 bool Response::checkCGI() {
-		std::string tmp = _request.getPath();
-		size_t dot = tmp.find_last_of('.');
-		std::string ext = tmp.substr(dot + 1);
-		return (ext == "py" || ext == "php"); // или js
+	std::string tmp = _request.getPath();
+	size_t dot = tmp.find_last_of('.');
+	std::string ext = tmp.substr(dot + 1);
+	bool a = (ext == "py" || ext == "php");
+	if (a)
+	{
+		for (std::vector<Location_config>::iterator it = _server_config._locations.begin(); it != _server_config
+				._locations.end(); ++it)
+		{
+			if ((*it).mIsCGI() && (*it).haveType(ext))
+				return true;
+		}
+		return false;// или js
+	}
+	return false;
 }
 
 void Response::generateAutoindex(const std::string &path) {
@@ -494,8 +504,7 @@ std::string Response::getFullPath() {
 bool Response::overloadClientMaxBodySize() {
 	int bodySize = _server_config.getMaxBody();
 
-	return _request.getContentLength() > bodySize || _request.getReqBody()
-	.size() > bodySize;
+	return _request.getContentLength() > bodySize || _request.getReqBody().size() > static_cast<size_t>(bodySize);
 }
 
 void Response::processRedirect() {

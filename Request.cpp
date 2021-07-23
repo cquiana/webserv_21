@@ -2,8 +2,8 @@
 
 #define BUFFER_SIZE 100000
 
-Request::Request(int sock) : _sock(sock), _isComplete(false),
-							_correctBody(true), _contentLength (0) {
+Request::Request(int sock) : _contentLength (0), _isComplete(false),
+							_correctBody(true), _sock(sock) {
 }
 
 Request::Request() {
@@ -59,7 +59,7 @@ void Request::parseBody(std::string &request) {
 	} else { //if (_headers["Content-length"])
 //		int len = std::atoi(_headers["content-length"].c_str());
 		int len = stringToNumber(_headers["content-length"]);
-		if (len > request.size()) {
+		if (static_cast<size_t>(len) > request.size()) {
 			_correctBody = false;
 			return;
 		}
@@ -74,7 +74,7 @@ const std::string & Request::getMethod() const
 }
 
 
-size_t Request::getContentLength() {
+int Request::getContentLength() {
 	return _contentLength;
 }
 

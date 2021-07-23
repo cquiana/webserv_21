@@ -25,7 +25,7 @@ private:
 	std::string _return_adress;
 	bool _active_location;
 	int _client_max_body_size;
-	std::string _wd;
+//	std::string _wd;
 
 	struct sockaddr_in _addr;
 
@@ -66,7 +66,7 @@ public:
 	std::string getReturnArdess() const;
 	int getActiveLocation() const;
 	int getMaxBody() const;
-	std::string getWD();
+//	std::string getWD();
 
 //	std::string getRootByLocation(std::string type, std::string loc);
 	std::string getRootByLocation(std::string loc);
@@ -83,7 +83,7 @@ public:
 	void setReturnCode(int return_code, std::string return_adress);
 	void setErrorPage(size_t error_page_int, std::string error_page_string);
 	void setMaxBody(int max_body);
-	void setWD(std::string wd);
+//	void setWD(std::string wd);
 
 	void initSocket();
 	int acceptNewConnect();

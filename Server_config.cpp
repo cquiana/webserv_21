@@ -7,12 +7,12 @@
 #include "Webserv.hpp"
 
 Server_config::Server_config() :
-	_port(-1), _name(""), _root(""), _index(""), _autoindex(-1), _return_code(-1), _return_adress(""), _active_location(false), _socket(-1), _client_max_body_size(-2) {}
+	_port(-1), _name(""), _root(""), _index(""), _socket(-1), _autoindex(-1), _return_code(-1), _return_adress(""), _active_location(false), _client_max_body_size(-2) {}
 
 Server_config::~Server_config() {}
 
 Server_config::Server_config(Server_config const &another) :
-	_port(another._port), _name(another._name), _root(another._root), _index(another._index), _autoindex(another._autoindex), _return_code(another._return_code), _return_adress(another._return_adress), _active_location(another._active_location), _locations(another._locations), _socket(another._socket), _error_page_ints(another._error_page_ints), _error_page_strings(another._error_page_strings), _client_max_body_size(another._client_max_body_size) {}
+	_port(another._port), _name(another._name), _root(another._root), _index(another._index), _socket(another._socket), _autoindex(another._autoindex), _return_code(another._return_code), _return_adress(another._return_adress), _active_location(another._active_location), _client_max_body_size(another._client_max_body_size), _locations(another._locations), _error_page_ints(another._error_page_ints), _error_page_strings(another._error_page_strings) {}
 
 Server_config& Server_config::operator=(Server_config const &another) {
 	_port = another._port;

@@ -22,7 +22,7 @@ int main(int argc, char** argv) {
 	} else if (argc == 2)
 		conf = argv[1];
 
-	//std::cout << "##### " << argv[0] << " @@@@@\n";
+//	std::cout << "##### " << argv[0] << " @@@@@\n";
 
 	std::fstream file_config;
 	//std::vector<std::string> vector_str_conf_file;

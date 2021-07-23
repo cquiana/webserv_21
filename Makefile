@@ -19,9 +19,9 @@ OBJS = $(SRCS:.cpp=.o)
 
 CL = clang++
 
-FLAGS = -std=c++98
+#FLAGS = -std=c++98
 
-#FLAGS = -std=c++98 -Wall -Wextra -Werror
+FLAGS = -std=c++98 -Wall -Wextra -Werror
 
 all: $(NAME)
 

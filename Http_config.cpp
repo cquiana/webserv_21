@@ -10,7 +10,7 @@ Http_config::Http_config() : _client_max_body_size(-2), _active_server(false) {}
 Http_config::~Http_config() {}
 
 Http_config::Http_config(Http_config const &another) :
-		_client_max_body_size(another._client_max_body_size), _servers(another._servers), _active_server(another._active_server){}
+		_client_max_body_size(another._client_max_body_size), _active_server(another._active_server), _servers(another._servers){}
 
 Http_config& Http_config::operator=(Http_config const &another) {
 	_client_max_body_size = another._client_max_body_size;

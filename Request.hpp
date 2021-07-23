@@ -44,7 +44,7 @@ public:
 	void setContentLength();
 	void setHeader(const std::string &key, const std::string &value);
 
-	size_t getContentLength() ;
+	int getContentLength() ;
 	const std::string & getMethod() const;
 	std::string getHost();
 	std::string  &getReqBody();
