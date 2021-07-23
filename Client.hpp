@@ -35,11 +35,15 @@ private:
 
 public:
 
-//	Client(Server &serv, int sock);
-	Client(int sock, Http_config *http_config);
-	Client(int sock, Server_config &server_config);
 //	Client(int sock, int idxSrv);
+//	Client(Server &serv, int sock);
+//	Client(int sock, Http_config *http_config);
+
+
 	~Client();
+	Client(int sock, Server_config &server_config);
+	Client(Client const &another);
+	Client &operator=(Client const &another);
 
 	void setStatus(client_status st);
 	void setRequest(Request &req);

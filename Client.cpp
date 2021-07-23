@@ -2,18 +2,27 @@
 #define BUFFER_SIZE 10000;
 
 
-Client::Client(int sock, Http_config *http_config) : _sock(sock), _request(sock), _status(READY_TO_RECV),
-_http_config(http_config) {
-
-}
-
-Client::Client(int sock, Server_config &server_config) : _sock(sock),
-_request(sock), _status(READY_TO_RECV), _server_config(server_config) {
-
-}
+//Client::Client(int sock, Http_config *http_config) : _sock(sock), _request(sock), _status(READY_TO_RECV),
+//_http_config(http_config) {
+//
+//}
 
 Client::~Client() {
 //	close(_sock);
+}
+
+Client::Client(int sock, Server_config &server_config) : _sock(sock),
+_request(sock), _status(READY_TO_RECV), _server_config(server_config) {}
+
+Client::Client(Client const &another) : _sock(another._sock),
+_request(another._sock), _status(another._status), _server_config(another._server_config) {}
+
+Client& Client::operator=(Client const &another) {
+	_sock = another._sock;
+	_request = another._sock;
+	_status = another._status;
+	_server_config = another._server_config;
+	return *this;
 }
 
 int Client::getSock() {
@@ -49,7 +58,7 @@ bool Client::sendResp() {
 		std::cout << "send error\n";
 		return false;
 	}
-	if (static_cast<size_t>(ret) == response.getContetntLength())
+//	if (ret == response.getContetntLength())
 		_status = ALL_DATA_SENDET;
 	_request.eraseRequest();
 //	_responseMsg.erase(0, ret); // clear responce
