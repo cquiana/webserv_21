@@ -266,7 +266,8 @@ void Response::generatePUT() {
 	std::string target = getFullPath();
 	std::ofstream os;
 	if(fileExist(target)) {
-		os.open(target.c_str(), std::ios::app);
+//		os.open(target.c_str(), std::ios::app);
+		os.open(target.c_str(), std::ios::trunc);
 		if (!os.is_open())
 			setErrorCode(403);
 		else {
