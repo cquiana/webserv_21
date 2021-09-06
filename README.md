@@ -1,2 +1,2 @@
-# webserv_21
+HTTP server
 webserver on C++
