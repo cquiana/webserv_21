@@ -18,15 +18,16 @@ enum client_status {
 	CONNECT_CLOSE
 };
 
-class Client : public Server_config
+// class Client : public Server_config
+class Client
 {
 private:
 	int _sock;
 	Request _request;
-	std::string _requestMsg;
-	std::string _responseMsg;
+	// std::string _requestMsg;
+	// std::string _responseMsg;
 	client_status _status;
-	Http_config* _http_config;
+	// Http_config* _http_config;
 	Server_config _server_config;
 
 	Client();

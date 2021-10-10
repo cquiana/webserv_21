@@ -88,7 +88,7 @@ int WebServer::loop() {
 					it->setStatus(CONNECT_CLOSE);
 					_clients.erase(it);
 				}
-//				break;
+				break;
 			}
 			else
 				break;
@@ -122,7 +122,7 @@ int WebServer::loop() {
 					}
 				}
 			}
-//			break;
+			break;
 		}
 	}
 	return 0;

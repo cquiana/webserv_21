@@ -319,7 +319,8 @@ int Server_config::acceptNewConnect() {
 	int sock = accept(_socket, (struct sockaddr *)&address, (socklen_t *)
 			&addrLen);
 	if (sock < 0) {
-		throw Server_config::ServerSocketInitError();
+		// throw Server_config::ServerSocketInitError();
+		std::cout << "ERROR !!! ServerSocketInitError... " << std::endl;
 	}
 	fcntl(sock, F_SETFL, O_NONBLOCK);
 	return sock;
@@ -335,6 +336,8 @@ void Server_config::initSocket()
 	_addr.sin_family = AF_INET;
 	_addr.sin_addr.s_addr = inet_addr(IP);
 	_addr.sin_port = htons(getPort());
+
+	fcntl(sock, F_SETFL, O_NONBLOCK);
 
 	memset(_addr.sin_zero, 0, sizeof(_addr.sin_zero));
 

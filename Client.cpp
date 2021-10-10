@@ -11,15 +11,14 @@ Client::~Client() {
 //	close(_sock);
 }
 
-Client::Client(int sock, Server_config &server_config) : _sock(sock),
-_request(sock), _status(READY_TO_RECV), _server_config(server_config) {}
+Client::Client(int sock, Server_config &server_config) : _sock(sock), _status(READY_TO_RECV), _server_config(server_config) {}
 
 Client::Client(Client const &another) : _sock(another._sock),
-_request(another._sock), _status(another._status), _server_config(another._server_config) {}
+_request(another._request), _status(another._status), _server_config(another._server_config) {}
 
 Client& Client::operator=(Client const &another) {
 	_sock = another._sock;
-	_request = another._sock;
+	_request = another._request;
 	_status = another._status;
 	_server_config = another._server_config;
 	return *this;
